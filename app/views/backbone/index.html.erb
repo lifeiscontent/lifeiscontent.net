@@ -1,0 +1,9 @@
+<% content_for(:javascripts) do %>
+  <script type="text/javascript">
+    $(function() {
+      new Aaronreisman.Routers.PostsRouter({posts: <%= @posts.to_json.html_safe -%>});
+      new Aaronreisman.Routers.StaticRouter();
+      Backbone.history.start();
+    });
+  </script>
+<% end %>

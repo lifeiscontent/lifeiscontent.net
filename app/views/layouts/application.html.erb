@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Aaron Reisman</title>
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <%= stylesheet_link_tag    "application", :media => "all" %>
+    <%= javascript_include_tag "application" %>
+    <%= csrf_meta_tags %>
+    <!--[if gte IE 9]>
+      <style type="text/css">
+        .gradient {
+           filter: none;
+        }
+      </style>
+    <![endif]-->
+  </head>
+  <body>
+  <div class="wrapper gradient">
+    <div class="content">
+      <h1 class="title"><a href="#about">Hello, I'm Aaron.</a></h1>
+      <h2 class="sub-title">I help build the internet.</h2>
+      <div id="content">
+        <h3 class="page-title" id="page-title">Loading...</h3>
+        <p class="page-body" id="page-body">
+          <img src="assets/ajax-loader.gif" alt="Loading..." />
+        </p>
+        <%= yield %>
+      </div>
+      <ol class="menu" id="menu">
+        <li><a href="#/page/about">About</a></li>
+        <li><a href="#/blog">Blog</a></li>
+        <li><a href="#/page/contact">Contact</a></li>
+        <li><a href="#/page/distractions">Distractions</a></li>
+      </ol>
+    </div>
+    <div class="portrait">
+      <img src="assets/portrait.png" alt="Portrait" />
+    </div>
+  </div>
+  <%= content_for?(:javascripts) ? yield(:javascripts) : nil %>
+  </body>
+</html>
