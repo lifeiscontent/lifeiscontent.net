@@ -52,19 +52,11 @@ table {
 
 /*   STYLE
 -----------------------------------------------------------------------------*/
-html, body { background: #4225a4; }
+html, body { background: #f8f8f8; }
 .wrapper {
-  color: #FFFFFF;
+  color: #cbcbcb;
   font: normal 12px/100% sans-serif;
   letter-spacing: -0.05em;
-  background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzY2MzNjYyIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjIzJSIgc3RvcC1jb2xvcj0iIzYwMzFjNSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjcyJSIgc3RvcC1jb2xvcj0iIzRhMjhhZCIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM0MjI1YTQiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
-  background: -moz-linear-gradient(top,  #6633cc 0%, #6031c5 23%, #4a28ad 72%, #4225a4 100%);
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#6633cc), color-stop(23%,#6031c5), color-stop(72%,#4a28ad), color-stop(100%,#4225a4));
-  background: -webkit-linear-gradient(top,  #6633cc 0%,#6031c5 23%,#4a28ad 72%,#4225a4 100%);
-  background: -o-linear-gradient(top,  #6633cc 0%,#6031c5 23%,#4a28ad 72%,#4225a4 100%);
-  background: -ms-linear-gradient(top,  #6633cc 0%,#6031c5 23%,#4a28ad 72%,#4225a4 100%);
-  background: linear-gradient(top,  #6633cc 0%,#6031c5 23%,#4a28ad 72%,#4225a4 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#6633cc', endColorstr='#4225a4',GradientType=0 );
 }
 
 .content { padding: 5%; }
@@ -79,15 +71,17 @@ html, body { background: #4225a4; }
 .page-title { font-size: 1.5em; padding: 2em 0 0em; }
 .post-title { font-size: 1.3em; }
 .post-title, .post-title + p, .page-title, .page-title + p { line-height: 1.33333333333333em; margin-top: 0.2em; }
+.title a { text-decoration: none; }
+.title a, .sub-title, .page-title { color: #505050; }
 .post-title { margin-top: 0.5em; }
 .menu { padding-top: 2em; }
 .menu li { line-height: 1em; }
-.menu li:first-letter { color: #8cff2d; }
+.menu li:first-letter { color: #505050; }
 .posts li a, .distractions li a { padding: 1em 0; }
-p a, .title a, .menu li a, .posts li a, .distractions li a { color: #ffffff; text-decoration: none; -webkit-tap-highlight-color: rgba(0,0,0,0);  font-weight: bold; }
-p a, .menu li a:hover, .menu li a.selected { color: #8cff2d; }
+p a, .menu li a, .posts li a, .distractions li a { color: #cbcbcb; text-decoration: none; -webkit-tap-highlight-color: rgba(0,0,0,0);  font-weight: bold; }
+p a, .menu li a:hover, .menu li a.selected { color: #505050; }
 .post li, .distractions li { padding: 0.3em 0; }
-.posts li a, .distractions li a { color: #8cff2d; }
+.posts li a, .distractions li a { color: #505050; }
 
 .portrait {width: 100%; text-align: right; }
 .portrait img { margin-bottom: -3px; width: 100%; max-width: 420px; max-height: 589px; vertical-align: bottom; }
