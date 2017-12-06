@@ -1,0 +1,24 @@
+.Grid {
+  display: block;
+}
+
+.Grid-cell {
+  box-sizing: border-box;
+  display: inline-block;
+  vertical-align: top;
+  width: 100%;
+}
+
+.Grid--gutter-36 {
+  margin-left: -36px;
+}
+
+.Grid--gutter-36 .Grid-cell {
+  padding-left: 36px;
+}
+
+@media screen and (min-width: 768px) {
+  .sm-Grid-cell--1of2 {
+    width: 50%;
+  }
+}
