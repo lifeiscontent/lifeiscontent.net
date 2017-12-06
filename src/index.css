@@ -5,11 +5,12 @@ body,
 }
 
 body {
-  margin: 0;
-  padding: 0;
+  color: #787878;
   font-family: 'Gotham', sans-serif;
   font-size: 12px;
   line-height: 1.5;
+  margin: 0;
+  padding: 0;
 }
 
 h1 {
@@ -27,23 +28,12 @@ h3 {
 h1,
 h2,
 h3 {
+  color: #222;
   text-transform: uppercase;
 }
 
-h1,
-h2 {
-  color: #222;
-}
-
-h3 {
-  color: #1c004c;
-}
-
-p {
-  color: #787878;
-}
-
 a {
+  color: #1c004b;
   text-decoration: none;
 }
 

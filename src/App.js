@@ -53,12 +53,25 @@ class App extends Component {
               {Object.values(contributions).map((contribution, key) => (
                 <Grid.Cell key={key} sm="1of2" className="u-margin-bottom--18">
                   <h3>
-                    <a href={contribution.url}>{contribution.title}</a>
+                    <a href={contribution.url} target="_blank">
+                      {contribution.title}
+                    </a>
                   </h3>
                   <p>{contribution.description}</p>
                 </Grid.Cell>
               ))}
             </Grid>
+          </Container>
+        </Section>
+        <Section>
+          <Container>
+            <h2>Contact</h2>
+            <p>
+              You can reach me at{' '}
+              <a href="mailto:aaron@lifeiscontent.net">
+                aaron@lifeiscontent.net
+              </a>
+            </p>
           </Container>
         </Section>
       </Article>
