@@ -1,9 +1,6 @@
 import React from 'react';
 import './index.css';
-const Container = ({ children, ...props }) => (
-  <div className="Container" {...props}>
-    {children}
-  </div>
-);
+
+const Container = props => <div className="Container" {...props} />;
 
 export default Container;

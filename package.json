@@ -19,6 +19,6 @@
   },
   "devDependencies": {
     "gh-pages": "1.1.0",
-    "svgr": "1.3.0"
+    "svgr": "1.6.0"
   }
 }

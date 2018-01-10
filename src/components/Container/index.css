@@ -1,6 +1,6 @@
 .Container {
   box-sizing: border-box;
-  max-width: 480px;
+  max-width: 768px;
   padding-left: 36px;
   padding-right: 36px;
   margin: 0 auto;

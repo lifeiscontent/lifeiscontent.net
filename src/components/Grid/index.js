@@ -1,29 +1,21 @@
 import React from 'react';
 import './index.css';
 
-const Grid = ({ children, className, extensions = [], ...props }) => (
+const Grid = ({ className, extensions = [], ...props }) => (
   <div
-    className={[
-      'Grid',
-      ...extensions.map(extension => `Grid--${extension}`),
-      className
-    ]
+    className={['Grid', ...extensions.map(extension => `Grid--${extension}`), className]
       .filter(x => x)
       .join(' ')}
-  >
-    {children}
-  </div>
+    {...props}
+  />
 );
 
-Grid.Cell = ({ children, sm, className, ...props }) => {
+Grid.Cell = ({ sm, className, ...props }) => {
   return (
     <div
-      className={['Grid-cell', sm && `sm-Grid-cell--${sm}`, className]
-        .filter(x => x)
-        .join(' ')}
-    >
-      {children}
-    </div>
+      className={['Grid-cell', sm && `sm-Grid-cell--${sm}`, className].filter(x => x).join(' ')}
+      {...props}
+    />
   );
 };
 
