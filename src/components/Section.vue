@@ -1,0 +1,29 @@
+<template lang="html">
+  <section class="Section">
+    <slot />
+  </section>
+</template>
+
+<script>
+export default {
+  name: 'Section'
+}
+</script>
+
+<style lang="css">
+.Section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-top: 100px;
+  margin-bottom: 100px;
+}
+
+@media screen and (min-width: 768px) {
+  .Section {
+    margin-top: 150px;
+    margin-bottom: 150px;
+  }
+}
+</style>
