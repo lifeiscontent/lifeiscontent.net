@@ -1,6 +1,5 @@
 {
   "endOfLine": "lf",
-  "plugins": ["@prettier/plugin-xml"],
   "semi": false,
   "singleQuote": false,
   "tabWidth": 2,

@@ -1,8 +1,10 @@
 module.exports = {
   siteMetadata: {
-    title: `lifeiscontent.net`,
-    description: `Online Presence of Aaron Reisman`,
     author: `@lifeiscontent`,
+    description: `Online Presence of Aaron Reisman`,
+    image: `/images/social.jpg`,
+    title: `lifeiscontent.net`,
+    url: 'https://lifeiscontent.net',
   },
   plugins: [
     `gatsby-plugin-react-helmet`,
@@ -24,7 +26,7 @@ module.exports = {
         background_color: `#ffffff`,
         theme_color: `#290070`,
         display: `minimal-ui`,
-        icon: `src/images/icon.svg`, // This path is relative to the root of the site.
+        icon: `src/images/icon.png`, // This path is relative to the root of the site.
       },
     },
     // this (optional) plugin enables Progressive Web App + Offline functionality
