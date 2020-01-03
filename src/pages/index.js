@@ -50,7 +50,7 @@ const IndexPage = () => (
     <Article>
       <Section>
         <Container>
-          <img src={icon} width="100%" height="400" alt="Logo" />
+          <img src={icon} width="100%" height="auto" alt="Logo" />
           <H1 textAlign="center">Life is content</H1>
           <P>
             Life is just a story and I tell stories through the content I
