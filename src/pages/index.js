@@ -6,7 +6,7 @@ import SEO from "../components/seo";
 import Typography from "../components/typography";
 import Grid from "../components/grid";
 import GridCell from "../components/grid-cell";
-import { Global, css } from "@emotion/core";
+import { Global, css } from "@emotion/react";
 import amgen from "../images/logos/amgen.svg";
 import genentech from "../images/logos/genentech.svg";
 import johnsonAndJohnson from "../images/logos/johnson-and-johnson.svg";

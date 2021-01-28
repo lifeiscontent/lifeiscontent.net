@@ -1,6 +1,6 @@
+import { css } from '@emotion/react'
 import PropTypes from "prop-types";
 import styled from "@emotion/styled";
-import { css } from "@emotion/core";
 import { marginBottom, textAlign } from "../utils/styles";
 
 const sm = props =>
@@ -9,8 +9,8 @@ const sm = props =>
         @media screen and (min-width: 768px) {
           & {
             width: ${typeof props.sm === "number"
-              ? `${props.sm * 100}%`
-              : null};
+        ? `${props.sm * 100}%`
+        : null};
           }
         }
       `
