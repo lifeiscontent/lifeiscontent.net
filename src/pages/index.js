@@ -1,53 +1,31 @@
-import React from "react";
-import Article from "../components/article";
-import Container from "../components/container";
-import Section from "../components/section";
-import SEO from "../components/seo";
-import Typography from "../components/typography";
-import Grid from "../components/grid";
-import GridCell from "../components/grid-cell";
-import { Global, css } from "@emotion/react";
-import amgen from "../images/logos/amgen.svg";
-import genentech from "../images/logos/genentech.svg";
-import johnsonAndJohnson from "../images/logos/johnson-and-johnson.svg";
-import mccormick from "../images/logos/mccormick.svg";
-import nike from "../images/logos/nike.svg";
-import novartis from "../images/logos/novartis.svg";
-import icon from "../images/icon.svg";
-
-const styles = css`
-  html,
-  body,
-  #___gatsby,
-  #gatsby-focus-wrapper {
-    height: 100%;
-  }
-
-  body {
-    color: #595959;
-    font-family: "Gotham", sans-serif;
-    font-size: 16px;
-    line-height: 1.5;
-    margin: 0;
-    padding: 0;
-  }
-
-  a {
-    color: #290070;
-    text-decoration: none;
-  }
-`;
-
-const H1 = Typography.withComponent("h1");
-const H2 = Typography.withComponent("h2");
-const H3 = Typography.withComponent("h3");
-const P = Typography.withComponent("p");
+import React from 'react';
+import { Link } from 'gatsby';
+import { Global } from '@emotion/react';
+import Page from '../components/page';
+import Container from '../components/container';
+import Section from '../components/section';
+import SEO from '../components/seo';
+import { H1, H2, H3, P } from '../components/typography';
+import Grid from '../components/grid';
+import GridCell from '../components/grid-cell';
+import amgen from '../images/logos/amgen.svg';
+import genentech from '../images/logos/genentech.svg';
+import johnsonAndJohnson from '../images/logos/johnson-and-johnson.svg';
+import mccormick from '../images/logos/mccormick.svg';
+import nike from '../images/logos/nike.svg';
+import novartis from '../images/logos/novartis.svg';
+import icon from '../images/icon.svg';
+import { globals } from '../utils/styles';
+import Nav from '../components/nav';
 
 const IndexPage = () => (
   <React.Fragment>
     <SEO title="Home" />
-    <Global styles={styles} />
-    <Article>
+    <Global styles={globals} />
+    <Nav>
+      <Link to="/blog">Blog</Link>
+    </Nav>
+    <Page>
       <Section>
         <Container>
           <img src={icon} width="100%" height="auto" alt="Logo" />
@@ -70,7 +48,12 @@ const IndexPage = () => (
               <img src={genentech} alt="Genentech" width="84" height="54" />
             </GridCell>
             <GridCell textAlign="center" sm={1 / 2} marginBottom={18}>
-              <img src={johnsonAndJohnson} alt="Johnson & johnson" width="84" height="54" />
+              <img
+                src={johnsonAndJohnson}
+                alt="Johnson & johnson"
+                width="84"
+                height="54"
+              />
             </GridCell>
             <GridCell textAlign="center" sm={1 / 2} marginBottom={18}>
               <img src={mccormick} alt="McCormick" width="84" height="54" />
@@ -167,12 +150,12 @@ const IndexPage = () => (
         <Container>
           <H2>Contact</H2>
           <P>
-            You can reach me at{" "}
+            You can reach me at{' '}
             <a href="mailto:aaron@lifeiscontent.net">aaron@lifeiscontent.net</a>
           </P>
         </Container>
       </Section>
-    </Article>
+    </Page>
   </React.Fragment>
 );
 

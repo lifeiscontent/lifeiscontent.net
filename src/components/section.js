@@ -1,4 +1,4 @@
-import PropTypes from "prop-types"
+import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 
 const Section = styled.section`
@@ -8,10 +8,10 @@ const Section = styled.section`
   justify-content: center;
   margin-top: 100px;
   margin-bottom: 100px;
-`
+`;
 
 Section.propTypes = {
   children: PropTypes.node.isRequired,
-}
+};
 
-export default Section
+export default Section;
