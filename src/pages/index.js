@@ -64,22 +64,22 @@ const IndexPage = () => (
           <P>Here’s some of the clients I’ve done work for in the past.</P>
           <Grid gutter={36}>
             <GridCell textAlign="center" sm={1 / 2} marginBottom={18}>
-              <img src={amgen} alt="AMGEN" />
+              <img src={amgen} alt="AMGEN" width="84" height="54" />
             </GridCell>
             <GridCell textAlign="center" sm={1 / 2} marginBottom={18}>
-              <img src={genentech} alt="Genentech" />
+              <img src={genentech} alt="Genentech" width="84" height="54" />
             </GridCell>
             <GridCell textAlign="center" sm={1 / 2} marginBottom={18}>
-              <img src={johnsonAndJohnson} alt="Johnson & johnson" />
+              <img src={johnsonAndJohnson} alt="Johnson & johnson" width="84" height="54" />
             </GridCell>
             <GridCell textAlign="center" sm={1 / 2} marginBottom={18}>
-              <img src={mccormick} alt="McCormick" />
+              <img src={mccormick} alt="McCormick" width="84" height="54" />
             </GridCell>
             <GridCell textAlign="center" sm={1 / 2} marginBottom={18}>
-              <img src={nike} alt="NIKE" />
+              <img src={nike} alt="NIKE" width="84" height="54" />
             </GridCell>
             <GridCell textAlign="center" sm={1 / 2} marginBottom={18}>
-              <img src={novartis} alt="Novartis" />
+              <img src={novartis} alt="Novartis" width="84" height="54" />
             </GridCell>
           </Grid>
         </Container>
