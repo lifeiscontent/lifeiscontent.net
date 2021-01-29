@@ -25,7 +25,7 @@ export default function BlogPost({ data }) {
       </Nav>
       <Page>
         <Container>
-          <Article>
+          <Article style={{ marginBottom: 20 }}>
             <H2>{post.frontmatter.title}</H2>
             <P>
               Last updated on{' '}
@@ -39,6 +39,17 @@ export default function BlogPost({ data }) {
               ))}
             </Tags>
             <Markdown dangerouslySetInnerHTML={{ __html: post.html }} />
+            <P>
+              Hope you enjoyed the read, if you have any questions, feel free to
+              reach out to me on twitter{' '}
+              <a
+                href="https://twitter.com/lifeiscontent"
+                target="_blank"
+                rel="noreferrer"
+              >
+                @lifeiscontent
+              </a>
+            </P>
           </Article>
         </Container>
       </Page>
