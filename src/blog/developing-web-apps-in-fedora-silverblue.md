@@ -66,14 +66,12 @@ sudo sysctl -p --system
 
 ### VSCode Related setup
 
-first, create a new file called `vscode-podman` and paste the contents below.
+first, create `~/.local/bin/vscode-podman` and paste the contents below.
 
 ```sh
 #!/usr/bin/env sh
 exec flatpak-spawn --host podman "$@"
 ```
-
-move it to `~/.local/bin`
 
 Next, Go to VSCode settings, to the Remote-Containers section, and update the remote.containers.dockerPath with the absolute path to our script.
 
