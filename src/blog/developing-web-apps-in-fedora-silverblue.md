@@ -81,6 +81,8 @@ code() {
 }
 ```
 
+now you can type `code /path/to/your/project` if you're inside of a toolbox or your main OS.
+
 in VSCode, we have to set these settings to get the terminal to work through our toolbox.
 
 ```json
