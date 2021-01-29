@@ -9,6 +9,8 @@ import Container from '../components/container';
 import Tags from '../components/tags';
 import Nav from '../components/nav';
 import SEO from '../components/seo';
+import { H2, P } from '../components/typography';
+import Article from '../components/article';
 
 export default function BlogPost({ data }) {
   const post = data.markdownRemark;
@@ -23,21 +25,21 @@ export default function BlogPost({ data }) {
       </Nav>
       <Page>
         <Container>
-          <article>
-            <h2>{post.frontmatter.title}</h2>
-            <p>
+          <Article>
+            <H2>{post.frontmatter.title}</H2>
+            <P>
               Last updated on{' '}
               <time dateTime={post.frontmatter.date}>
                 {Intl.DateTimeFormat().format(new Date(post.frontmatter.date))}
               </time>
-            </p>
+            </P>
             <Tags>
               {post.frontmatter.tags.map((tag) => (
                 <li key={tag}>{tag}</li>
               ))}
             </Tags>
             <Markdown dangerouslySetInnerHTML={{ __html: post.html }} />
-          </article>
+          </Article>
         </Container>
       </Page>
     </React.Fragment>

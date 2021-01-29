@@ -16,6 +16,7 @@ const Markdown = styled.div`
     background-color: #f2f2f2;
     color: #130033;
     padding: 3px 6px;
+    box-sizing: border-box;
   }
 
   pre {
@@ -23,6 +24,8 @@ const Markdown = styled.div`
     background-color: #130033;
     color: #dfccff;
     padding: 12px;
+    box-sizing: border-box;
+    max-width: 100%;
   }
 `;
 

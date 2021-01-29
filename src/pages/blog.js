@@ -9,6 +9,7 @@ import Nav from '../components/nav';
 import Tags from '../components/tags';
 import { H2 } from '../components/typography';
 import SEO from '../components/seo';
+import Article from '../components/article';
 
 export default function Blog({ data }) {
   const { posts } = data.blog;
@@ -24,7 +25,7 @@ export default function Blog({ data }) {
         <Container>
           <H2>Blog</H2>
           {posts.map((post) => (
-            <article key={post.id}>
+            <Article key={post.id}>
               <Link to={post.fields.slug}>
                 <h2>{post.frontmatter.title}</h2>
               </Link>
@@ -36,7 +37,7 @@ export default function Blog({ data }) {
               </Tags>
 
               <p>{post.excerpt}</p>
-            </article>
+            </Article>
           ))}
         </Container>
       </Page>
