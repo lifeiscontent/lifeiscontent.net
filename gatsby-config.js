@@ -18,6 +18,14 @@ module.exports = {
     `gatsby-transformer-sharp`,
     `gatsby-plugin-sharp`,
     {
+      resolve: `gatsby-source-filesystem`,
+      options: {
+        name: `blog`,
+        path: `${__dirname}/src/blog/`,
+      },
+    },
+    `gatsby-transformer-remark`,
+    {
       resolve: `gatsby-plugin-manifest`,
       options: {
         name: `lifeiscontent.net`,
@@ -33,6 +41,6 @@ module.exports = {
     // To learn more, visit: https://gatsby.dev/offline
     `gatsby-plugin-offline`,
     `gatsby-plugin-emotion`,
-    `gatsby-plugin-eslint`
+    `gatsby-plugin-eslint`,
   ],
-}
+};

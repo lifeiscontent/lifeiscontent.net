@@ -1,4 +1,4 @@
-import PropTypes from "prop-types"
+import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 
 const Container = styled.div`
@@ -10,10 +10,10 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-`
+`;
 
 Container.propTypes = {
   children: PropTypes.node.isRequired,
-}
+};
 
-export default Container
+export default Container;

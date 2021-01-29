@@ -1,16 +1,16 @@
-import { css } from '@emotion/react'
-import PropTypes from "prop-types";
-import styled from "@emotion/styled";
-import { marginBottom, textAlign } from "../utils/styles";
+import { css } from '@emotion/react';
+import PropTypes from 'prop-types';
+import styled from '@emotion/styled';
+import { marginBottom, textAlign } from '../utils/styles';
 
-const sm = props =>
-  typeof props.sm === "number"
+const sm = (props) =>
+  typeof props.sm === 'number'
     ? css`
         @media screen and (min-width: 768px) {
           & {
-            width: ${typeof props.sm === "number"
-        ? `${props.sm * 100}%`
-        : null};
+            width: ${typeof props.sm === 'number'
+              ? `${props.sm * 100}%`
+              : null};
           }
         }
       `
@@ -27,7 +27,7 @@ const GridCell = styled.div`
 `;
 
 GridCell.propTypes = {
-  children: PropTypes.node.isRequired
+  children: PropTypes.node.isRequired,
 };
 
 export default GridCell;
