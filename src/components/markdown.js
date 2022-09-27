@@ -14,9 +14,10 @@ const Markdown = styled.div`
 
   p > code {
     background-color: rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
     color: #130033;
     padding: 3px 6px;
-    box-sizing: border-box;
+    overflow-wrap: break-word;
   }
 
   pre {
