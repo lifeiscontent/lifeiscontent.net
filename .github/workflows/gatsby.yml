@@ -75,7 +75,11 @@ jobs:
             ${{ runner.os }}-gatsby-build-
             
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: |
+          # Enable scripts to ensure sharp is properly built
+          pnpm config set enable-pre-post-scripts true
+          pnpm config set node-linker hoisted
+          pnpm install --no-frozen-lockfile
         
       - name: Build with Gatsby
         env:

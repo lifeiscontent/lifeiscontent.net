@@ -55,5 +55,17 @@
   },
   "bugs": {
     "url": "https://github.com/lifeiscontent/lifeiscontent.net/issues"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "gatsby",
+      "gatsby-cli",
+      "gatsby-telemetry",
+      "sharp"
+    ],
+    "ignoredBuiltDependencies": [
+      "core-js",
+      "es5-ext"
+    ]
   }
 }
