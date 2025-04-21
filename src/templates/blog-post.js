@@ -38,7 +38,9 @@ export default function BlogPost({ data }) {
                 <li key={tag}>{tag}</li>
               ))}
             </Tags>
-            <Markdown dangerouslySetInnerHTML={{ __html: post.html }} />
+            <Markdown>
+              <div dangerouslySetInnerHTML={{ __html: post.html }} />
+            </Markdown>
             <P>
               Hope you enjoyed the read, if you have any questions, feel free to
               reach out to me on twitter{' '}
@@ -74,7 +76,7 @@ BlogPost.propTypes = {
     markdownRemark: PropTypes.shape({
       frontmatter: PropTypes.shape({
         title: PropTypes.string.isRequired,
-        date: PropTypes.shape.isRequired,
+        date: PropTypes.string.isRequired,
         tags: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
       }).isRequired,
       html: PropTypes.string.isRequired,

@@ -17,11 +17,11 @@ const Tags = styled.ul`
     background-color: #290070;
   }
 
-  li:first-child {
+  li:first-of-type {
     margin-left: 0;
   }
 
-  li:last-child {
+  li:last-of-type {
     margin-right: 0;
   }
 `;

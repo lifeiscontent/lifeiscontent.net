@@ -27,7 +27,9 @@ exports.createPages = async ({ graphql, actions }) => {
   const { createPage } = actions;
   const result = await graphql(`
     query {
-      allMarkdownRemark {
+      allMarkdownRemark(
+        sort: { fields: [frontmatter___date], order: DESC }
+      ) {
         edges {
           node {
             fields {
@@ -52,12 +54,5 @@ exports.createPages = async ({ graphql, actions }) => {
   });
 };
 
-exports.onCreateWebpackConfig = ({ getConfig, stage }) => {
-  const config = getConfig();
-  if (stage.startsWith('develop') && config.resolve) {
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      'react-dom': '@hot-loader/react-dom',
-    };
-  }
-};
+// Hot reloading is built into Gatsby v4, so we no longer need the custom webpack config
+// for @hot-loader/react-dom
