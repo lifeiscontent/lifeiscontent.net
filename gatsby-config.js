@@ -38,9 +38,10 @@ module.exports = {
         icon: `src/images/icon.png`, // This path is relative to the root of the site.
       },
     },
-    // this (optional) plugin enables Progressive Web App + Offline functionality
-    // To learn more, visit: https://gatsby.dev/offline
-    `gatsby-plugin-offline`,
+    // This plugin safely removes the service worker from previous Gatsby versions
+    // and ensures that users will get the latest version of your site
+    // See: https://www.gatsbyjs.com/plugins/gatsby-plugin-offline/#remove
+    `gatsby-plugin-remove-serviceworker`,
     `gatsby-plugin-emotion`,
     `gatsby-plugin-eslint`,
     {
