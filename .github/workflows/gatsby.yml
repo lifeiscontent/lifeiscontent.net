@@ -80,7 +80,8 @@ jobs:
           pnpm config set enable-pre-post-scripts true
           pnpm config set node-linker hoisted
           # Skip engine check since we know we have Node.js 20
-          pnpm install --no-frozen-lockfile --ignore-engines
+          pnpm config set engine-strict false
+          pnpm install --no-frozen-lockfile
         
       - name: Build with Gatsby
         env:
