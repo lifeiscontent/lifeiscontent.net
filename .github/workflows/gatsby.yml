@@ -41,8 +41,8 @@ jobs:
       - name: Enable corepack
         run: corepack enable
         
-      - name: Install pnpm
-        run: corepack prepare pnpm@latest --activate
+      - name: Prepare pnpm
+        run: corepack prepare --activate
         
       - name: Get pnpm store directory
         shell: bash
@@ -76,6 +76,10 @@ jobs:
             
       - name: Install dependencies
         run: |
+          # Debug: Check Node and pnpm versions
+          echo "Node version: $(node --version)"
+          echo "pnpm version: $(pnpm --version)"
+          which pnpm
           # Enable scripts to ensure sharp is properly built
           pnpm config set enable-pre-post-scripts true
           pnpm config set node-linker hoisted
