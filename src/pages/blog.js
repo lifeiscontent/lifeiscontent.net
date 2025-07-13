@@ -16,7 +16,6 @@ export default function Blog({ data }) {
 
   return (
     <React.Fragment>
-      <SEO title="Blog" />
       <Global styles={globals} />
       <Nav>
         <Link to="/">Home</Link>
@@ -45,11 +44,13 @@ export default function Blog({ data }) {
   );
 }
 
+export function Head() {
+  return <SEO title="Blog" />;
+}
+
 export const pageQuery = graphql`
   query MyQuery {
-    blog: allMarkdownRemark(
-      sort: { fields: [frontmatter___date], order: DESC }
-    ) {
+    blog: allMarkdownRemark(sort: { frontmatter: { date: DESC } }) {
       posts: nodes {
         fields {
           slug
