@@ -1,114 +1,59 @@
 /**
- * SEO component that queries for data with
- *  Gatsby's useStaticQuery React hook
+ * SEO component for Gatsby sites
  *
- * See: https://www.gatsbyjs.org/docs/use-static-query/
+ * See: https://www.gatsbyjs.com/docs/reference/built-in-components/gatsby-head/
  */
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import Helmet from 'react-helmet';
 import { useStaticQuery, graphql } from 'gatsby';
 
-function SEO({ description, lang, meta, title }) {
-  const { site, image } = useStaticQuery(
-    graphql`
-      query {
-        site {
-          siteMetadata {
-            title
-            description
-            author
-            url
-          }
-        }
-        image: file(relativePath: { eq: "social.jpg" }) {
-          childImageSharp {
-            original {
-              src
-            }
-          }
+const SEO = ({ title, description, children }) => {
+  const { site } = useStaticQuery(graphql`
+    query {
+      site {
+        siteMetadata {
+          title
+          description
+          author
         }
       }
-    `
-  );
-
-  const metaDescription = description || site.siteMetadata.description;
-  const metaUrl = site.siteMetadata.url;
-  const metaImage = `${metaUrl}${image.childImageSharp.original.src}`;
+    }
+  `);
 
   return (
-    <Helmet
-      htmlAttributes={{
-        lang,
-      }}
-      title={title}
-      titleTemplate={`%s | ${site.siteMetadata.title}`}
-      meta={[
-        {
-          property: `og:url`,
-          content: metaUrl,
-        },
-        {
-          name: `description`,
-          content: metaDescription,
-        },
-        {
-          name: 'image',
-          content: metaImage,
-        },
-        {
-          property: `og:title`,
-          content: title,
-        },
-        {
-          property: `og:description`,
-          content: metaDescription,
-        },
-        {
-          property: `og:image`,
-          content: metaImage,
-        },
-        {
-          property: `og:type`,
-          content: `website`,
-        },
-        {
-          name: `twitter:card`,
-          content: `summary`,
-        },
-        {
-          name: `twitter:creator`,
-          content: site.siteMetadata.author,
-        },
-        {
-          name: `twitter:title`,
-          content: title,
-        },
-        {
-          name: `twitter:description`,
-          content: metaDescription,
-        },
-        {
-          name: `twitter:image`,
-          content: metaImage,
-        },
-      ].concat(meta)}
-    />
+    <>
+      <title>
+        {title
+          ? `${title} | ${site.siteMetadata.title}`
+          : site.siteMetadata.title}
+      </title>
+      <meta
+        name="description"
+        content={description || site.siteMetadata.description}
+      />
+      <meta property="og:title" content={title} />
+      <meta
+        property="og:description"
+        content={description || site.siteMetadata.description}
+      />
+      <meta property="og:type" content="website" />
+      <meta name="twitter:card" content="summary" />
+      <meta name="twitter:creator" content={site.siteMetadata.author} />
+      <meta name="twitter:title" content={title} />
+      <meta
+        name="twitter:description"
+        content={description || site.siteMetadata.description}
+      />
+      {children}
+    </>
   );
-}
-
-SEO.defaultProps = {
-  lang: `en`,
-  meta: [],
-  description: ``,
 };
 
 SEO.propTypes = {
+  title: PropTypes.string,
   description: PropTypes.string,
-  lang: PropTypes.string,
-  meta: PropTypes.arrayOf(PropTypes.object),
-  title: PropTypes.string.isRequired,
+  children: PropTypes.node,
 };
 
 export default SEO;

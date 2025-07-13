@@ -17,7 +17,6 @@ export default function BlogPost({ data }) {
 
   return (
     <React.Fragment>
-      <SEO title={post.frontmatter.title} />
       <Global styles={globals} />
       <Nav>
         <Link to="/">Home</Link>
@@ -58,6 +57,22 @@ export default function BlogPost({ data }) {
     </React.Fragment>
   );
 }
+export function Head({ data }) {
+  const post = data.markdownRemark;
+  return <SEO title={post.frontmatter.title} description={post.excerpt} />;
+}
+
+Head.propTypes = {
+  data: PropTypes.shape({
+    markdownRemark: PropTypes.shape({
+      excerpt: PropTypes.string,
+      frontmatter: PropTypes.shape({
+        title: PropTypes.string.isRequired,
+      }).isRequired,
+    }).isRequired,
+  }).isRequired,
+};
+
 export const query = graphql`
   query BlogQuery($slug: String!) {
     markdownRemark(fields: { slug: { eq: $slug } }) {

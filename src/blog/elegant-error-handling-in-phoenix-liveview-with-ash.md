@@ -1,8 +1,8 @@
 ---
-title: "Elegant Error Handling in Phoenix LiveView with Ash"
-date: "2025-04-09"
-author: "Aaron Reisman"
-tags: ["phoenix", "liveview", "ash", "error-handling"]
+title: 'Elegant Error Handling in Phoenix LiveView with Ash'
+date: '2025-04-09'
+author: 'Aaron Reisman'
+tags: ['phoenix', 'liveview', 'ash', 'error-handling']
 ---
 
 # Elegant Error Handling in Phoenix LiveView with Ash
@@ -95,7 +95,7 @@ Use the standard Phoenix error HTML module, embedding your custom templates:
 ```elixir
 defmodule MyAppWeb.ErrorHTML do
   use MyAppWeb, :html
-  embed_templates \"error_html/*\"
+  embed_templates "error_html/*"
 
   def render(template, _assigns) do
     Phoenix.Controller.status_message_from_template(template)
@@ -108,7 +108,7 @@ end
 Ash Framework integrates neatly by raising exceptions through its \"bang\" methods (like `Ash.read!`). These exceptions trigger Phoenix’s built-in error handling automatically:
 
 ```elixir
-def mount(%{\"id\" => id}, _session, socket) do
+def mount(%{"id" => id}, _session, socket) do
   post = MyApp.Content.get_post!(id, actor: socket.assigns.current_user)
   {:ok, assign(socket, :post, post)}
 end
@@ -123,18 +123,18 @@ For more details, check Ash's [Plug Exception implementation](https://github.com
 **Not Found (404):**
 
 ```elixir
-def handle_event(\"view_post\", %{\"id\" => id}, socket) do
+def handle_event("view_post", %{"id" => id}, socket) do
   post = MyApp.Content.get_post!(id, actor: socket.assigns.current_user)
-  {:noreply, push_navigate(socket, to: ~p\"/posts/#{post.id}\")}
+  {:noreply, push_navigate(socket, to: ~p"/posts/#{post.id}")}
 end
 ```
 
 **Forbidden (403):**
 
 ```elixir
-def handle_event(\"comment_on_post\", params, socket) do
+def handle_event("comment_on_post", params, socket) do
   MyApp.Content.create_comment!(params, actor: socket.assigns.current_user)
-  {:noreply, put_flash(socket, :info, \"Comment added!\")}
+  {:noreply, put_flash(socket, :info, "Comment added!")}
 end
 ```
 
@@ -147,7 +147,7 @@ def assign_posts(socket) do
     assign(socket, :posts, posts)
   rescue
     error ->
-      Logger.error(\"Error loading posts: #{inspect(error)}\")
+      Logger.error("Error loading posts: #{inspect(error)}")
       raise error
   end
 end

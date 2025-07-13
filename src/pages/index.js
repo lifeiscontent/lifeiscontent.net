@@ -21,7 +21,6 @@ import Article from '../components/article';
 
 const IndexPage = () => (
   <React.Fragment>
-    <SEO title="Home" />
     <Global styles={globals} />
     <Nav>
       <Link to="/blog">Blog</Link>
@@ -165,3 +164,7 @@ const IndexPage = () => (
 );
 
 export default IndexPage;
+
+export function Head() {
+  return <SEO title="Home" />;
+}
