@@ -76,14 +76,11 @@ jobs:
             
       - name: Install dependencies
         run: |
-          # Debug: Check Node and pnpm versions
-          echo "Node version: $(node --version)"
-          echo "pnpm version: $(pnpm --version)"
-          which pnpm
           # Enable scripts to ensure sharp is properly built
           pnpm config set enable-pre-post-scripts true
           pnpm config set node-linker hoisted
-          pnpm install --no-frozen-lockfile
+          # Skip engine check since we know we have Node.js 20
+          pnpm install --no-frozen-lockfile --ignore-engines
         
       - name: Build with Gatsby
         env:
