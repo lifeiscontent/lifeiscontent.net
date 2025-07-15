@@ -9,11 +9,24 @@ Building components feels deceptively simple at first. You write a function, ret
 
 After years of building and maintaining component-based applications, I've distilled a set of principles that transform component development from an art into a craft. These principles apply whether you're using React, Vue, Angular, or any component-based framework. This manifesto isn't about the latest libraries or cutting-edge patterns it's about timeless principles that make components a joy to work with.
 
+## The Manifesto
+
+I believe:
+
+1. **Every component has one job** _([↓](#principle-1-every-component-has-one-job))_
+2. **Public APIs are forever** _([↓](#principle-2-public-apis-are-forever))_
+3. **Complexity should grow naturally** _([↓](#principle-3-complexity-should-grow-naturally))_
+4. **No unnecessary abstractions** _([↓](#principle-4-no-unnecessary-abstractions))_
+5. **Names should tell stories** _([↓](#principle-5-names-tell-stories))_
+6. **Props are contracts, not configuration** _([↓](#principle-6-props-are-contracts-not-configuration))_
+
+This is my manifesto. This is how I build components that last.
+
 I'll use React for the examples, but the concepts translate directly to any modern framework. Let's embark on a journey from simple components to sophisticated architectures, building our understanding step by step.
 
 ## Part 1: Foundation Principles
 
-Before we dive into code, let's establish the core principles that guide everything else. These aren't just rules they're the philosophy that makes great components possible.
+Before we dive into code, let's establish the six core principles that guide everything else. These aren't just rules they're the complete foundation that makes great components possible.
 
 ### Principle 1: Every Component Has One Job
 
@@ -123,11 +136,125 @@ The beauty? Consumers never need to change their imports:
 import { Button } from '@/components/button';
 ```
 
-## Part 2: The Language of Components
+### Principle 4: No Unnecessary Abstractions
 
-Now that we understand the principles, let's explore how to express them through naming and organization.
+Always destructure props in the function signature. Why? Because if you don't need the `props` object, why let it exist in the first place?
 
-### Names Tell Stories
+```typescript
+// ❌ Creates unnecessary variable
+export function Button(props: ButtonProps) {
+  // Now 'props' exists in scope, tempting misuse
+  return <button onClick={props.onClick}>{props.children}</button>;
+}
+
+// ❌ Even worse - mixed access patterns
+export function Button(props: ButtonProps) {
+  const { variant, size } = props;
+  // Now you're accessing data two different ways!
+  return <button className={getStyles(variant, size)}>{props.children}</button>;
+}
+
+// ✅ Clean, explicit destructuring for components that don't forward props
+export function Badge({ variant, children }: BadgeProps) {
+  return <span className={getStyles(variant)}>{children}</span>;
+}
+
+// ✅ Intentional prop forwarding when building composite components
+export function Button({ variant, size, ...htmlProps }: ButtonProps) {
+  return <button className={getStyles(variant, size)} {...htmlProps} />;
+}
+```
+
+Destructuring in the parameter accomplishes three things:
+
+1. **Prevents inconsistent access patterns** - No mixing `props.foo` and `foo`
+2. **Makes dependencies explicit** - You see exactly what the component uses
+3. **Eliminates unnecessary abstractions** - No `props` object unless you actually need it
+
+When you _do_ need to forward props (like HTML attributes to a button), be intentional about it. Name the rest parameter clearly (`htmlProps`, `domProps`, etc.) to signal that these props are being forwarded to the underlying element.
+
+#### When to Forward Props vs When Not To
+
+The decision depends on what kind of component you're building:
+
+```typescript
+// ❌ Generic component that exposes styling escape hatches
+type BadButtonProps = {
+  variant?: 'primary' | 'secondary' | 'danger';
+} & React.ComponentProps<'button'>;
+
+export function BadButton({ className, style, variant, ...props }: BadButtonProps) {
+  return (
+    <button
+      className={`${getButtonStyles(variant)} ${className}`}
+      style={style}
+      {...props}
+    />
+  );
+}
+// Problem: Consumers can override your styles and break the design system
+
+// ✅ UI component with encapsulated styling but forwarded behavior
+type ButtonProps = {
+  variant?: 'primary' | 'secondary' | 'danger';
+  spacing?: 'small' | 'medium' | 'large';
+} & Omit<React.ComponentProps<'button'>, 'className' | 'style'>;
+
+export function Button({ variant, spacing, ...htmlProps }: ButtonProps) {
+  return (
+    <button
+      className={getButtonStyles(variant, spacing)}
+      {...htmlProps}
+    />
+  );
+}
+// Forwards all HTML attributes but keeps styling controlled through the component API
+
+// ✅ Composite component that forwards appropriate props
+type IconButtonProps = {
+  icon: string;
+  'aria-label': string; // Required for accessibility
+} & React.ComponentProps<typeof Button>;
+
+export function IconButton({
+  icon,
+  variant,
+  'aria-label': ariaLabel,
+  ...buttonProps
+}: IconButtonProps) {
+  return (
+    <Button variant={variant} aria-label={ariaLabel} {...buttonProps}>
+      <Icon name={icon} />
+    </Button>
+  );
+}
+
+function Example() {
+  return (
+    <div>
+      <Button
+        variant="primary"
+        spacing="large"
+        onClick={() => console.log('clicked')}
+        data-testid="submit-btn"
+      >
+        Submit
+      </Button>
+
+      <IconButton
+        icon="trash"
+        variant="danger"
+        aria-label="Delete item"
+        onClick={() => console.log('delete')}
+      />
+    </div>
+  );
+}
+```
+
+The principle isn't "never use prop spreading" - it's "don't create abstractions you don't need." If you're building a composite component that wraps a Button, forwarding button props makes sense. If you're building a standalone component, explicit props are usually better.
+
+### Principle 5: Names Tell Stories
 
 Component names should form a clear hierarchy that anyone can understand:
 
@@ -167,11 +294,7 @@ For example:
 - `Avatar` → Design system (works for users, teams, organizations, etc.)
 - `UserAvatar` → Application-specific (knows about user data structure)
 
-## Part 3: Designing Interfaces
-
-With our naming sorted, let's design component interfaces that are both powerful and protective.
-
-### Props Are Contracts, Not Configuration
+### Principle 6: Props Are Contracts, Not Configuration
 
 Props are your component's public API. Design them thoughtfully:
 
@@ -262,38 +385,13 @@ export function Button({ variant, size = 'medium', children }: ButtonProps) {
 
 One change. Every button in your app updates perfectly. No bugs. No hunting. No prayers needed.
 
-### Principle 4: No Unnecessary Abstractions
+## Part 2: The Language of Components
 
-Always destructure props in the function signature. Why? Because if you don't need the `props` object, why let it exist in the first place?
+Now that we understand the principles, let's explore how to express them through naming and organization.
 
-```typescript
-// ❌ Creates unnecessary variable
-export function Button(props: ButtonProps) {
-  // Now 'props' exists in scope, tempting misuse
-  return <button onClick={props.onClick}>{props.children}</button>;
-}
+## Part 3: Designing Interfaces
 
-// ❌ Even worse - mixed access patterns
-export function Button(props: ButtonProps) {
-  const { variant, size } = props;
-  // Now you're accessing data two different ways!
-  return <button className={getStyles(variant, size)}>{props.children}</button>;
-}
-
-// ✅ No props object to misuse
-export function Button({ variant, spacing, ...props }: ButtonProps) {
-  // Clean, direct access to what you need
-  return <button className={getStyles(variant, spacing)} {...props} />;
-}
-```
-
-Destructuring in the parameter accomplishes three things:
-
-1. **Prevents inconsistent access patterns** - No mixing `props.foo` and `foo`
-2. **Makes dependencies explicit** - You see exactly what the component uses
-3. **Eliminates temptation** - No `props` object means no accidental prop spreading or passing the entire object around
-
-It's the same principle as `const` vs `let` - if you don't need the flexibility, don't create it.
+With our naming sorted, let's design component interfaces that are both powerful and protective.
 
 ### The Type System: Your Safety Net
 
@@ -428,7 +526,7 @@ card/
 └── constants.ts     // Not card-constants.ts
 ```
 
-## Part 4: Advanced Patterns
+## Part 4: Patterns Should Solve Problems, Not Create Them
 
 Now for the fun part, patterns that elegantly solve complex problems while keeping your code maintainable.
 
@@ -514,7 +612,7 @@ This pattern shines when:
 - You want consistent behavior with different presentations
 - The variations truly are strategies, not completely different components
 
-### The Art of Composition
+### Data Should Drive Behavior, Not Booleans
 
 Design components that compose naturally:
 
@@ -730,18 +828,5 @@ The difference isn't just aesthetic it's architectural. The second component:
 3. **Evolve Your Style**: These aren't rigid rules they're a starting point. Adapt them to your needs. Find what works for your team.
 
 4. **Build Your Legacy**: Every component you write is part of your legacy. Make it one that future developers (including yourself) will appreciate.
-
-## The Manifesto
-
-I believe:
-
-- **Components should do one thing well**
-- **APIs should reveal intent, not implementation**
-- **Complexity should be earned, not assumed**
-- **Data should drive behavior, not booleans**
-- **Names should tell stories, not puzzles**
-- **Patterns should solve problems, not create them**
-
-This is my manifesto. This is how I build components that last.
 
 _Join me. Build components that make you proud. Your code is your craft, make it exceptional._
