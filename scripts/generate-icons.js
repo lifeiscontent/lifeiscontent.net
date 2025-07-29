@@ -154,6 +154,7 @@ async function main() {
     }
 
     console.log('✅ All PWA assets generated successfully!')
+    process.exit(0)
   } catch (error) {
     console.error('❌ Error generating assets:', error)
     process.exit(1)

@@ -60,12 +60,8 @@ jobs:
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
-        with:
-          # Automatically inject basePath in your Next.js configuration file and disable
-          # server side image optimization (https://nextjs.org/docs/api-reference/next/image#unoptimized).
-          #
-          # You may remove this line if you want to manage the configuration yourself.
-          static_site_generator: next
+        # Note: Automatic config injection is disabled since we already have proper
+        # GitHub Pages configuration in next.config.ts
 
       - name: Restore cache
         uses: actions/cache@v4
@@ -84,6 +80,9 @@ jobs:
           pnpm config set enable-pre-post-scripts true
           pnpm config set node-linker hoisted
           pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
 
       - name: Build with Next.js
         run: pnpm run build
