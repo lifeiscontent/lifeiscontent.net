@@ -10,8 +10,6 @@ const createMDX = require('@next/mdx')
 const nextConfig: NextConfig = {
   // Enable static export for GitHub Pages
   output: 'export',
-  // Handle trailing slashes for GitHub Pages
-  trailingSlash: true,
   // Disable image optimization for static export
   images: {
     unoptimized: true,
