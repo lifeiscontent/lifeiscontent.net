@@ -56,7 +56,7 @@ typings/
 
 # gatsby files
 .cache/
-public
+# Note: public directory is needed for Next.js static assets
 
 # Mac files
 .DS_Store
@@ -70,3 +70,4 @@ yarn-error.log
 
 .next/
 out/
+tsconfig.tsbuildinfo

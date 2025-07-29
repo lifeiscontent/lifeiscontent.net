@@ -44,6 +44,7 @@
     "rehype-slug": "6.0.0",
     "remark-gfm": "4.0.1",
     "serwist": "9.1.1",
+    "to-ico": "1.1.5",
     "zod": "4.0.13"
   },
   "devDependencies": {

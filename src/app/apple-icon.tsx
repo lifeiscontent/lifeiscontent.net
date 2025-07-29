@@ -20,7 +20,7 @@ export default function AppleIcon() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: '#290070',
+          background: 'white',
           borderRadius: '32px',
         }}
       >
@@ -33,7 +33,7 @@ export default function AppleIcon() {
         >
           <path
             d="M60 400V0L340 400H60ZM80 380H304L80 60V160L228 380H198L80 200V380Z"
-            fill="white"
+            fill="#2a0072"
           />
         </svg>
       </div>

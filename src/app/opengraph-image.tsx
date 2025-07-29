@@ -1,4 +1,6 @@
 import { ImageResponse } from 'next/og'
+import fs from 'fs'
+import path from 'path'
 
 export const dynamic = 'force-static'
 
@@ -12,6 +14,9 @@ export const contentType = 'image/png'
 
 // Image generation
 export default async function Image() {
+  // Load Inter font from file system
+  const interSemiBold = fs.readFileSync(path.join(process.cwd(), 'public/fonts/Inter-SemiBold.ttf'))
+  const interRegular = fs.readFileSync(path.join(process.cwd(), 'public/fonts/Inter-Regular.ttf'))
   return new ImageResponse(
     (
       <div
@@ -22,7 +27,7 @@ export default async function Image() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontFamily: 'system-ui, -apple-system, sans-serif',
+          fontFamily: 'Inter',
         }}
       >
         <div
@@ -30,20 +35,20 @@ export default async function Image() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: 60,
+            gap: 80,
           }}
         >
           {/* Large version of the icon */}
           <svg
-            width="300"
-            height="300"
+            width="280"
+            height="280"
             viewBox="0 0 400 400"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
           >
             <path
               d="M60 400V0L340 400H60ZM80 380H304L80 60V160L228 380H198L80 200V380Z"
-              fill="#290070"
+              fill="#2a0072"
             />
           </svg>
 
@@ -53,40 +58,34 @@ export default async function Image() {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'flex-start',
-              color: '#290070',
+              maxWidth: '500px',
             }}
           >
             <h1
               style={{
-                fontSize: 72,
-                fontWeight: 'bold',
+                fontSize: 56,
+                fontWeight: 600,
                 margin: 0,
                 marginBottom: 20,
                 lineHeight: 1,
+                color: 'black',
+                textTransform: 'uppercase',
+                letterSpacing: '-0.02em',
+                whiteSpace: 'nowrap',
               }}
             >
-              lifeiscontent.net
+              Life is content
             </h1>
-            <p
-              style={{
-                fontSize: 32,
-                margin: 0,
-                opacity: 0.8,
-                lineHeight: 1.2,
-              }}
-            >
-              Online Presence of Aaron Reisman
-            </p>
             <p
               style={{
                 fontSize: 24,
                 margin: 0,
-                marginTop: 20,
-                opacity: 0.6,
-                lineHeight: 1.2,
+                color: '#6b7280',
+                lineHeight: 1.4,
+                maxWidth: '450px',
               }}
             >
-              Blog • Development • Technology
+              Life is just a story and I tell stories through the content I create.
             </p>
           </div>
         </div>
@@ -94,6 +93,20 @@ export default async function Image() {
     ),
     {
       ...size,
+      fonts: [
+        {
+          name: 'Inter',
+          data: interRegular,
+          style: 'normal',
+          weight: 400,
+        },
+        {
+          name: 'Inter',
+          data: interSemiBold,
+          style: 'normal',
+          weight: 600,
+        },
+      ],
     }
   )
 }

@@ -6,19 +6,22 @@ import { spawn } from 'child_process'
 import { writeFileSync, mkdirSync } from 'fs'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
+import toIco from 'to-ico'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 const publicDir = join(__dirname, '..', 'public')
+const appDir = join(__dirname, '..', 'src', 'app')
 
-// Ensure public directory exists
+// Ensure directories exist
 try {
   mkdirSync(publicDir, { recursive: true })
+  mkdirSync(appDir, { recursive: true })
 } catch (err) {
-  // Directory already exists
+  // Directories already exist
 }
 
-const primaryColor = '#290070'
+const primaryColor = '#2a0072' // oklch(27.54% 0.16 285.85) - primary-500
 
 // SVG template for the logo icons
 const createLogoSVG = (size, backgroundColor = 'transparent', borderRadius = 0) => {
@@ -54,6 +57,30 @@ async function generateIcon(size, filename, backgroundColor = 'transparent', bor
 
   writeFileSync(join(publicDir, filename), buffer)
   console.log(`Generated: ${filename} (${size}x${size})`)
+}
+
+async function generateFavicon() {
+  // Create favicon with white background and primary-500 color logo at multiple sizes with rounded corners
+  const sizeConfigs = [
+    { size: 16, borderRadius: 3 },
+    { size: 32, borderRadius: 5 },
+    { size: 48, borderRadius: 8 },
+  ]
+  const pngBuffers = []
+
+  for (const { size, borderRadius } of sizeConfigs) {
+    const svg = createLogoSVG(size, '#ffffff', borderRadius)
+    const buffer = await sharp(Buffer.from(svg)).resize(size, size).png().toBuffer()
+    pngBuffers.push(buffer)
+  }
+
+  // Create proper ICO file from PNG buffers
+  const icoBuffer = await toIco(pngBuffers)
+
+  writeFileSync(join(appDir, 'favicon.ico'), icoBuffer)
+  console.log(
+    'Generated: favicon.ico (16x16, 32x32, 48x48) with white background and rounded corners'
+  )
 }
 
 function startServer() {
@@ -135,6 +162,9 @@ async function main() {
     await generateIcon(144, 'icon-144.png', '#ffffff', 24)
     await generateIcon(192, 'icon-192.png', '#ffffff', 32)
     await generateIcon(512, 'icon-512.png', '#ffffff', 80)
+
+    // Generate favicon
+    await generateFavicon()
 
     // Start server and take real screenshots
     console.log('Starting server for screenshots...')

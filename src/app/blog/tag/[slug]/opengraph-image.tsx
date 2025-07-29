@@ -1,20 +1,20 @@
 import { ImageResponse } from 'next/og'
-import { getPostBySlug, getAllPosts } from '@/lib/blog'
+import { getAllTags } from '@/lib/blog'
 import fs from 'fs'
 import path from 'path'
 
 export const dynamic = 'force-static'
 
-// Pre-generate static params for all blog posts
+// Pre-generate static params for all tags
 export async function generateStaticParams() {
-  const posts = await getAllPosts()
-  return posts.map((post) => ({
-    slug: post.slug,
+  const tags = await getAllTags()
+  return tags.map((tag) => ({
+    slug: tag.slug,
   }))
 }
 
 // Image metadata
-export const alt = 'Blog Post - lifeiscontent.net'
+export const alt = 'Tag - lifeiscontent.net'
 export const size = {
   width: 1200,
   height: 630,
@@ -24,14 +24,15 @@ export const contentType = 'image/png'
 // Image generation
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const post = await getPostBySlug(slug)
+  const tags = await getAllTags()
+  const tag = tags.find((t) => t.slug === slug)
 
   // Load Inter font from file system
   const interSemiBold = fs.readFileSync(path.join(process.cwd(), 'public/fonts/Inter-SemiBold.ttf'))
   const interRegular = fs.readFileSync(path.join(process.cwd(), 'public/fonts/Inter-Regular.ttf'))
 
-  if (!post) {
-    // Fallback if post not found
+  if (!tag) {
+    // Fallback if tag not found
     return new ImageResponse(
       (
         <div
@@ -85,7 +86,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
                   letterSpacing: '-0.02em',
                 }}
               >
-                Post Not Found
+                Tag Not Found
               </h1>
               <p
                 style={{
@@ -95,7 +96,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
                   lineHeight: 1.4,
                 }}
               >
-                The requested blog post could not be found.
+                The requested tag could not be found.
               </p>
             </div>
           </div>
@@ -119,14 +120,6 @@ export default async function Image({ params }: { params: Promise<{ slug: string
         ],
       }
     )
-  }
-
-  // Determine font size based on title length
-  const getFontSize = (title: string) => {
-    if (title.length > 60) return 36
-    if (title.length > 40) return 42
-    if (title.length > 30) return 48
-    return 56
   }
 
   return new ImageResponse(
@@ -164,7 +157,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
             />
           </svg>
 
-          {/* Post content */}
+          {/* Tag content */}
           <div
             style={{
               display: 'flex',
@@ -175,16 +168,17 @@ export default async function Image({ params }: { params: Promise<{ slug: string
           >
             <h1
               style={{
-                fontSize: getFontSize(post.title),
+                fontSize: 56,
                 fontWeight: 600,
                 margin: 0,
                 marginBottom: 20,
-                lineHeight: 1.1,
+                lineHeight: 1,
                 color: 'black',
+                textTransform: 'uppercase',
                 letterSpacing: '-0.02em',
               }}
             >
-              {post.title}
+              {tag.name}
             </h1>
             <p
               style={{
@@ -194,7 +188,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
                 lineHeight: 1.4,
               }}
             >
-              {post.authors[0]?.name || 'Aaron Reisman'} • lifeiscontent.net
+              {tag.count} {tag.count === 1 ? 'post' : 'posts'} tagged with &ldquo;{tag.name}&rdquo;
             </p>
           </div>
         </div>
