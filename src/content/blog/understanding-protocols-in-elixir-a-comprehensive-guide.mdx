@@ -1,5 +1,5 @@
 ---
-title: 'Understanding Protocols in Elixir: A Practical Guide'
+title: 'Understanding Protocols in Elixir: A Comprehensive Guide'
 date: 2024-11-10
 authors:
   - name: 'Aaron Reisman'
@@ -16,267 +16,383 @@ tags:
   - polymorphism
 ---
 
-# Understanding Protocols in Elixir: A Practical Guide
+# Understanding Protocols in Elixir: A Comprehensive Guide
 
-Elixir protocols provide a powerful way to implement polymorphism in a functional language. Unlike object-oriented languages that use inheritance, Elixir uses protocols to define behaviors that can be implemented by different data types. This guide will show you how to use protocols effectively in your Elixir applications.
+Polymorphism in object-oriented languages feels natural. You define a base class, implement methods, and let inheritance handle the rest. But in Elixir, we don't have classes or inheritance. We have something better: protocols.
 
-## What Are Protocols and Why Use Them?
+After some time writing Elixir code, I've come to appreciate protocols as one of the language's most elegant features. They solve real problems that every Elixir developer faces: converting data to JSON, validating input, displaying information to users. This isn't just another language feature. It's the key to writing maintainable, extensible Elixir applications.
 
-At their core, protocols are a way to implement polymorphic behavior in Elixir. They allow you to:
+## The Problem: Real-World Polymorphism Needs
 
-1. Define a consistent interface across different data types
-2. Extend functionality for types you don't control
-3. Write more generic and reusable code
-
-Protocols solve a fundamental problem: how to make functions behave differently depending on the data type they receive, without resorting to complex conditional logic.
-
-## The Problem: Type-Based Behavior Without Protocols
-
-Without protocols, you might handle different types using pattern matching and guard clauses:
+Let's start with a problem every web application faces: converting different types of data to JSON for your API. Without protocols, you might write something like this:
 
 ```elixir
-defmodule Formatter do
-  def stringify(value) when is_binary(value), do: "String: #{value}"
-  def stringify(value) when is_integer(value), do: "Integer: #{value}"
-  def stringify(value) when is_list(value), do: "List with #{length(value)} items"
-  # More clauses for other types...
+defmodule JSONEncoder do
+  def encode(data) when is_binary(data), do: "\"#{data}\""
+  def encode(data) when is_integer(data), do: Integer.to_string(data)
+  def encode(data) when is_boolean(data), do: Atom.to_string(data)
+  def encode(data) when is_list(data), do: "[#{Enum.map_join(data, ",", &encode/1)}]"
+  # More and more clauses for every possible type...
 end
 ```
 
-This approach has two major drawbacks:
+This works for simple cases, but it breaks down quickly:
 
-1. **Centralized Code**: Every time you need to support a new type, you must modify the original module
-2. **Limited Extensibility**: You can't easily add behavior for types defined in third-party libraries
+**Problem 1: The Monolithic Encoder**
+Every time you add a new data type to your application, you must modify this central module. Adding a `User` struct? Back to the JSONEncoder. Need to handle `DateTime`? Edit the JSONEncoder again.
 
-## The Solution: Protocols
+**Problem 2: Third-Party Types**
+What happens when you want to encode types from libraries you don't control? You're stuck either forking libraries or having incomplete JSON support.
 
-Here's how to solve the same problem using protocols:
+**Problem 3: Domain Knowledge Leak**
+Your JSONEncoder now needs to understand the internal structure of every type in your application. This creates tight coupling and makes the code brittle.
+
+There has to be a better way. And there is.
+
+## The Solution: Protocols for Real Problems
+
+Protocols solve this by letting each type define its own encoding behavior:
 
 ```elixir
-# 1. Define the protocol with the functions you want to implement
-defprotocol Formatter do
-  @doc "Converts the value to a formatted string"
-  def stringify(value)
+# Step 1: Define the contract
+defprotocol JSONEncodable do
+  @doc "Converts a value to its JSON string representation"
+  def to_json(value)
 end
 
-# 2. Implement the protocol for each type
-defimpl Formatter, for: BitString do
-  def stringify(value), do: "String: #{value}"
+# Step 2: Implement for basic types
+defimpl JSONEncodable, for: BitString do
+  def to_json(string), do: "\"#{String.replace(string, "\"", "\\\"")}\""
 end
 
-defimpl Formatter, for: Integer do
-  def stringify(value), do: "Integer: #{value}"
+defimpl JSONEncodable, for: Integer do
+  def to_json(integer), do: Integer.to_string(integer)
 end
 
-defimpl Formatter, for: List do
-  def stringify(value), do: "List with #{length(value)} items"
+defimpl JSONEncodable, for: Boolean do
+  def to_json(true), do: "true"
+  def to_json(false), do: "false"
+end
+
+defimpl JSONEncodable, for: List do
+  def to_json(list) do
+    items = Enum.map_join(list, ",", &JSONEncodable.to_json/1)
+    "[#{items}]"
+  end
 end
 ```
 
-Using the protocol is simple:
+Now the magic happens:
 
 ```elixir
-iex> Formatter.stringify("hello")
-"String: hello"
-iex> Formatter.stringify(42)
-"Integer: 42"
-iex> Formatter.stringify([1, 2, 3])
-"List with 3 items"
+iex> JSONEncodable.to_json("hello")
+"\"hello\""
+
+iex> JSONEncodable.to_json(42)
+"42"
+
+iex> JSONEncodable.to_json(true)
+"true"
+
+iex> JSONEncodable.to_json([1, "hello", false])
+"[1,\"hello\",false]"
 ```
 
-The key advantage: anyone can add implementations for new types without modifying the original protocol.
-
-## A Practical Example: The Size Protocol
-
-Let's create a practical example with a `Size` protocol that works consistently across different data types:
+But the real power becomes apparent when you need to extend this system:
 
 ```elixir
-defprotocol Size do
-  @doc "Returns the size of a data structure"
-  def size(data)
+# In a completely different module, even a different library:
+defimpl JSONEncodable, for: Date do
+  def to_json(date) do
+    date
+    |> Date.to_iso8601()
+    |> JSONEncodable.to_json()
+  end
 end
 
-# Implementation for strings (measures bytes)
-defimpl Size, for: BitString do
-  def size(string), do: byte_size(string)
+defimpl JSONEncodable, for: DateTime do
+  def to_json(datetime) do
+    datetime
+    |> DateTime.to_iso8601()
+    |> JSONEncodable.to_json()
+  end
 end
 
-# Implementation for maps
-defimpl Size, for: Map do
-  def size(map), do: map_size(map)
-end
-
-# Implementation for tuples
-defimpl Size, for: Tuple do
-  def size(tuple), do: tuple_size(tuple)
+defimpl JSONEncodable, for: Atom do
+  def to_json(nil), do: "null"
+  def to_json(atom) do
+    atom
+    |> Atom.to_string()
+    |> JSONEncodable.to_json()
+  end
 end
 ```
 
-Using the protocol:
+Notice the pattern: instead of manually building JSON with quotes and escaping, we convert to the appropriate type and delegate to existing implementations. This keeps our code composable and DRY.
 
 ```elixir
-iex> Size.size("hello")  # String (5 bytes)
-5
-iex> Size.size({:a, :b, :c})  # Tuple (3 elements)
-3
-iex> Size.size(%{a: 1, b: 2})  # Map (2 key-value pairs)
-2
+iex> JSONEncodable.to_json(~D[2024-11-10])
+"\"2024-11-10\""
 ```
 
-If you try to use the protocol with a type that doesn't implement it:
+No modification to the original protocol. No editing of existing code. Just pure extension.
+
+## Working with Maps: The Foundation for Structs
+
+To make our protocol truly useful, we need to handle maps, since that's what most complex data becomes:
 
 ```elixir
-iex> Size.size([1, 2, 3])
-** (Protocol.UndefinedError) protocol Size not implemented for [1, 2, 3]
+defimpl JSONEncodable, for: Map do
+  def to_json(map) when map == %{}, do: "{}"
+  def to_json(map) do
+    pairs =
+      map
+      |> Enum.map(fn {key, value} ->
+        key_json = JSONEncodable.to_json(to_string(key))
+        value_json = JSONEncodable.to_json(value)
+        "#{key_json}:#{value_json}"
+      end)
+      |> Enum.join(",")
+
+    "{#{pairs}}"
+  end
+end
 ```
 
-## Working with Structs
+Now we can encode complex nested data:
 
-Structs are where protocols become especially powerful. In Elixir, structs are their own types, so they need their own protocol implementations.
+```elixir
+iex> data = %{"name" => "Alice", "age" => 30, "active" => true}
+iex> JSONEncodable.to_json(data)
+"{\"name\":\"Alice\",\"age\":30,\"active\":true}"
+```
 
-### Creating a Custom Struct
+## Real Domain Types: Encoding Business Data
+
+Every web application has domain objects that need JSON encoding. Let's implement this for actual business entities:
 
 ```elixir
 defmodule User do
-  defstruct [:name, :email, :roles]
+  defstruct [:id, :name, :email, :role, :created_at]
 end
 
-# Implement the Size protocol for User
-defimpl Size, for: User do
-  def size(%User{roles: roles}) when is_list(roles) do
-    # Size is determined by number of roles
-    length(roles)
-  end
-
-  def size(_user), do: 1  # Default size
+defmodule Article do
+  defstruct [:id, :title, :content, :author_id, :published_at, :tags]
 end
 ```
+
+Now let's implement JSON encoding for these domain types:
+
+```elixir
+defimpl JSONEncodable, for: User do
+  def to_json(%User{id: id, name: name, email: email, role: role}) do
+    %{
+      id: id,
+      name: name,
+      email: email,
+      role: role
+    }
+    |> JSONEncodable.to_json()
+  end
+end
+
+defimpl JSONEncodable, for: Article do
+  def to_json(%Article{id: id, title: title, author_id: author_id, published_at: published_at, tags: tags}) do
+    %{
+      id: id,
+      title: title,
+      author_id: author_id,
+      published_at: published_at,
+      tags: tags
+    }
+    |> JSONEncodable.to_json()
+  end
+end
+```
+
+Notice how clean this is: instead of manually building JSON strings, we just convert our structs to maps with the fields we want, then delegate to the Map implementation. This leverages composition and keeps our code DRY.
 
 Using it:
 
 ```elixir
-iex> user = %User{name: "Alice", email: "alice@example.com", roles: ["admin", "editor"]}
-iex> Size.size(user)
-2  # Number of roles
+iex> user = %User{id: 1, name: "Alice", email: "alice@example.com", role: "admin"}
+iex> JSONEncodable.to_json(user)
+"{\"id\":1,\"name\":\"Alice\",\"email\":\"alice@example.com\",\"role\":\"admin\"}"
+
+iex> article = %Article{id: 1, title: "Protocols Guide", author_id: 1, published_at: nil, tags: ["elixir", "tutorial"]}
+iex> JSONEncodable.to_json(article)
+"{\"id\":1,\"title\":\"Protocols Guide\",\"author_id\":1,\"published_at\":null,\"tags\":[\"elixir\",\"tutorial\"]}"
 ```
 
-### Working with Existing Structs
+## The Power of Composition: Data Validation
 
-You can implement protocols for structs from libraries too:
+Protocols truly shine when you need to build composable, reusable systems. Let's look at validation:
+
+Every application needs to validate data. Here's a practical validation protocol:
 
 ```elixir
-# Implement Size for MapSet
-defimpl Size, for: MapSet do
-  def size(set), do: MapSet.size(set)
+defprotocol Validatable do
+  @doc "Returns {:ok, value} if valid, {:error, errors} if invalid"
+  def validate(value)
 end
 
-iex> set = MapSet.new([1, 2, 3, 4])
-iex> Size.size(set)
-4
-```
+defimpl Validatable, for: User do
+  def validate(%User{name: name, email: email} = user) do
+    []
+    |> validate_name(name)
+    |> validate_email(email)
+    |> case do
+      [] -> {:ok, user}
+      errors -> {:error, Enum.reverse(errors)}
+    end
+  end
 
-## Default Implementations with `Any`
+  defp validate_name(errors, name) do
+    if valid_name?(name), do: errors, else: [{:name, "Name must be 2-50 characters"} | errors]
+  end
 
-Implementing a protocol for every possible type can be tedious. Elixir offers two ways to provide default implementations:
+  defp validate_email(errors, email) do
+    if valid_email?(email), do: errors, else: [{:email, "Email must be valid"} | errors]
+  end
 
-### 1. Using `@fallback_to_any`
+  defp valid_name?(name) when is_binary(name) do
+    String.length(name) >= 2 and String.length(name) <= 50
+  end
+  defp valid_name?(_), do: false
 
-You can make your protocol fall back to a default implementation when a specific one isn't available:
-
-```elixir
-defprotocol Size do
-  @fallback_to_any true  # Enable fallback
-  def size(data)
+  defp valid_email?(email) when is_binary(email) do
+    String.contains?(email, "@") and String.length(email) > 5
+  end
+  defp valid_email?(_), do: false
 end
 
-# Default implementation for any type
-defimpl Size, for: Any do
-  def size(_), do: 1  # Default size is 1
+defimpl Validatable, for: Article do
+  def validate(%Article{title: title, content: content} = article) do
+    []
+    |> validate_title(title)
+    |> validate_content(content)
+    |> case do
+      [] -> {:ok, article}
+      errors -> {:error, Enum.reverse(errors)}
+    end
+  end
+
+  defp validate_title(errors, title) do
+    if valid_title?(title), do: errors, else: [{:title, "Title must be 5-200 characters"} | errors]
+  end
+
+  defp validate_content(errors, content) do
+    if valid_content?(content), do: errors, else: [{:content, "Content must be at least 50 characters"} | errors]
+  end
+
+  defp valid_title?(title) when is_binary(title) do
+    len = String.length(title)
+    len >= 5 and len <= 200
+  end
+  defp valid_title?(_), do: false
+
+  defp valid_content?(content) when is_binary(content) do
+    String.length(content) >= 50
+  end
+  defp valid_content?(_), do: false
 end
 ```
 
-Now any type without a specific implementation will return 1.
+Notice the functional composition: we start with an empty errors list and pipe it through validation functions, each adding field-specific errors as `{:field, "message"}` tuples. This creates a keyword list that's much more useful than plain strings.
 
-### 2. Using `@derive`
-
-For your own structs, you can derive the implementation from Any:
+Using the validation protocol:
 
 ```elixir
-defmodule Product do
-  @derive [Size]  # Use the Any implementation
-  defstruct [:name, :price]
+iex> user = %User{name: "Alice", email: "alice@example.com", role: "admin"}
+iex> Validatable.validate(user)
+{:ok, %User{name: "Alice", email: "alice@example.com", role: "admin"}}
+
+iex> bad_user = %User{name: "A", email: "bad-email"}
+iex> Validatable.validate(bad_user)
+{:error, [name: "Name must be 2-50 characters", email: "Email must be valid"]}
+
+# Now you can easily check specific field errors:
+iex> {:error, errors} = Validatable.validate(bad_user)
+iex> Keyword.get(errors, :name)
+"Name must be 2-50 characters"
+iex> Keyword.has_key?(errors, :email)
+true
+```
+
+The keyword list format makes validation errors much more **practical for real applications**:
+
+- **🎯 Field-specific access**: `Keyword.get(errors, :email)`
+- **🔍 Conditional logic**: `if Keyword.has_key?(errors, :name), do: ...`
+- **🌐 UI error mapping**: Display errors next to specific form fields
+- **📊 Error analytics**: Count errors by field type
+- **🔄 Partial fixes**: Re-validate only fields that had errors
+
+For complex validations with nested data or conditional rules, you can extend this pattern:
+
+```elixir
+# Complex validation with nested errors
+def validate_nested_data(data) do
+  []
+  |> validate_user_info(data.user)
+  |> validate_preferences(data.preferences)
+  |> validate_billing(data.billing)
+  |> format_errors()
 end
 
-iex> product = %Product{name: "Widget", price: 19.99}
-iex> Size.size(product)
-1  # Uses the Any implementation
+# Group errors by section
+defp format_errors([]), do: {:ok, data}
+defp format_errors(errors) do
+  grouped = Keyword.group_by(errors, &elem(&1, 0), &elem(&1, 1))
+  {:error, grouped}
+end
 ```
 
-This approach keeps your code cleaner by avoiding repetitive implementations.
-
-## Built-in Protocols in Elixir
-
-Elixir includes several important protocols that you'll use regularly:
-
-### 1. `String.Chars` - String Conversion
-
-This protocol powers the `to_string/1` function and string interpolation:
+Now you can build complex data structures and encode them seamlessly:
 
 ```elixir
-iex> to_string(42)
-"42"
-
-iex> name = "Alice"
-iex> "Hello, #{name}!"
-"Hello, Alice!"
+iex> complex_data = %{
+...>   "user" => %User{id: 1, name: "Alice", email: "alice@example.com", role: "admin"},
+...>   "metadata" => %{"timestamp" => ~U[2024-11-10 14:30:00Z], "version" => 1}
+...> }
+iex> JSONEncodable.to_json(complex_data)
+# Returns complete JSON with proper nesting and type conversion
 ```
 
-Not all types implement this protocol:
+## Standing on Giants: Built-in Protocols
 
-```elixir
-iex> to_string({:a, :b})
-** (Protocol.UndefinedError) protocol String.Chars not implemented for {:a, :b}
-```
+Elixir's design already embraces protocols everywhere:
 
-### 2. `Inspect` - Debug Representation
+- **`String.Chars`** powers `to_string/1` and `"#{interpolation}"`
+- **`Inspect`** enables universal debugging with `inspect/1`
+- **`Enumerable`** lets `Enum` work with lists, maps, ranges, and more
 
-The `inspect/1` function uses this protocol to create string representations for debugging:
+These aren't just library functions: they're extensible protocols. You can implement them for your own types, making your data work seamlessly with Elixir's ecosystem.
 
-```elixir
-iex> inspect({:a, :b})
-"{:a, :b}"
+## Know When to Stop
 
-# Works with any data type
-iex> "Debug: #{inspect(%{complex: [:data, {:structure}]})}"
-"Debug: %{complex: [:data, {:structure}]}"
-```
+Protocols aren't always the answer:
 
-### 3. `Enumerable` - Collection Operations
+- **Internal transformations** - Simple pattern matching is often clearer
+- **One-off needs** - Don't create protocols for single-use cases
+- **Same behavior everywhere** - If all types do the same thing, use a function
 
-This protocol enables the `Enum` module functions to work with different collection types:
+## The Protocol Design Principles
 
-```elixir
-# Works with lists
-iex> Enum.map([1, 2, 3], fn x -> x * 2 end)
-[2, 4, 6]
+After building many protocol-based systems, these principles matter:
 
-# Works with maps
-iex> Enum.map(%{a: 1, b: 2}, fn {k, v} -> {k, v * 2} end)
-[a: 2, b: 4]
+- **🎯 Solve real problems** - Don't create protocols for abstract concepts
+- **📋 Clear contracts** - Document what functions return and when they fail
+- **🔧 Single responsibility** - One protocol, one concern
+- **📝 Meaningful errors** - Write documentation that explains the purpose
 
-# Works with ranges
-iex> Enum.sum(1..10)
-55
-```
+## The Elixir Way Forward
 
-## Conclusion
+Protocols aren't just a language feature. They're a philosophy: **extension over modification**, **composition over complexity**.
 
-Protocols are a powerful feature in Elixir that enable:
+Every monolithic module in your codebase is a protocol waiting to happen. Every scattered validation function is begging for unified behavior. Every time you catch yourself adding "just one more case" to a growing conditional, protocols offer a better path.
 
-1. **Polymorphism** - Write functions that work with multiple data types
-2. **Extensibility** - Add behavior to types without modifying their original code
-3. **Clean interfaces** - Define clear contracts for how types should behave
+The magic isn't in the syntax, it's in the mindset. When you think in protocols, you build systems that grow gracefully. You write code that future developers (including yourself) can extend without fear.
 
-When designing your Elixir applications, consider using protocols when you need behavior that varies by type or when you want to create extensible interfaces.
+**Start today.** Find one function in your codebase that's doing too much. Break it into a protocol. Watch how it changes not just that code, but how you think about the next problem.
 
-By mastering protocols, you'll write more flexible, maintainable Elixir code that follows the language's functional design principles.
+This is how you build software that lasts. This is the Elixir way.
