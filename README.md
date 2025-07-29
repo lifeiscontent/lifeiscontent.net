@@ -210,3 +210,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [Tailwind CSS](https://tailwindcss.com/) for the utility-first CSS framework
 - [Vercel](https://vercel.com/) for hosting and deployment platform
 # Force new deployment
+# Force deployment for static asset fix
