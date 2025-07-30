@@ -1,20 +1,19 @@
 import Link from 'next/link'
-import { getBadgeStyles, type BadgeStyleProps } from './badge-styles'
+import { getBadgeStyles } from './styles'
+import type { BadgeStyleProps } from './styles'
 
-export type BadgeLinkProps = {
-  href: string
-  children: React.ReactNode
-} & BadgeStyleProps
+export type BadgeLinkProps = BadgeStyleProps &
+  Omit<React.ComponentProps<typeof Link>, 'style' | 'className'>
 
 export function BadgeLink({
   href,
   children,
-  variant = 'white-bg',
-  text = 'xs',
-  selected = false,
+  variant = 'default',
+  size = 'xs',
+  ...linkProps
 }: BadgeLinkProps) {
   return (
-    <Link href={href} className={getBadgeStyles({ variant, text, selected })}>
+    <Link href={href} className={getBadgeStyles({ variant, size })} {...linkProps}>
       {children}
     </Link>
   )

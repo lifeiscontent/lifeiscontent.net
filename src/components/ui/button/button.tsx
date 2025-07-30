@@ -1,12 +1,9 @@
-import { forwardRef } from 'react'
-import { getButtonStyles, type ButtonStyleProps } from './button-styles'
+import { getButtonStyles } from './styles'
+import type { ButtonStyleProps } from './styles'
 
-export type ButtonProps = ButtonStyleProps & React.ComponentProps<'button'>
+export type ButtonProps = ButtonStyleProps &
+  Omit<React.ComponentProps<'button'>, 'style' | 'className'>
 
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant, spacing, ...htmlProps }, ref) => {
-    return <button ref={ref} className={getButtonStyles({ variant, spacing })} {...htmlProps} />
-  }
-)
-
-Button.displayName = 'Button'
+export function Button({ variant, size, ...htmlProps }: ButtonProps) {
+  return <button className={getButtonStyles({ variant, size })} {...htmlProps} />
+}

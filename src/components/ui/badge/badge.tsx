@@ -1,11 +1,8 @@
-import { getBadgeStyles, type BadgeStyleProps } from './badge-styles'
+import { getBadgeStyles } from './styles'
+import type { BadgeStyleProps } from './styles'
 
-export type BadgeProps = BadgeStyleProps & React.ComponentProps<'span'>
+export type BadgeProps = BadgeStyleProps & Omit<React.ComponentProps<'span'>, 'style' | 'className'>
 
-export function Badge({ variant = 'white-bg', text = 'xs', selected, ...htmlProps }: BadgeProps) {
-  // Check for legacy aria-selected prop for backward compatibility
-  const isSelected =
-    selected ?? (htmlProps['aria-selected'] === true || htmlProps['aria-selected'] === 'true')
-
-  return <span className={getBadgeStyles({ variant, text, selected: isSelected })} {...htmlProps} />
+export function Badge({ variant = 'default', size = 'xs', ...htmlProps }: BadgeProps) {
+  return <span className={getBadgeStyles({ variant, size })} {...htmlProps} />
 }

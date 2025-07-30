@@ -3,9 +3,11 @@ import Link from 'next/link'
 import { getRecentPosts } from '@/lib/blog'
 import { ButtonLink } from '@/components/ui/button'
 import { BadgeLink } from '@/components/ui/badge'
+import { PostCard } from '@/components/post-card'
 
+// Client logos with natural SVG dimensions
 const clients = [
-  { name: 'AMGEN', src: '/images/logos/amgen.svg', width: 84, height: 54 },
+  { name: 'AMGEN', src: '/images/logos/amgen.svg', width: 80, height: 21 },
   { name: 'Genentech', src: '/images/logos/genentech.svg', width: 84, height: 54 },
   {
     name: 'Johnson & Johnson',
@@ -100,43 +102,11 @@ export default async function HomePage() {
             </div>
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
               {recentPosts.map((post) => (
-                <article
-                  key={post.slug}
-                  className="flex flex-col gap-2 rounded-lg bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
-                >
-                  <div className="flex items-center gap-x-4 text-xs">
-                    <time dateTime={post.date} className="text-gray-500">
-                      {new Date(post.date).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                      })}
-                    </time>
-                    <span className="text-gray-500">{post.readingTime.text}</span>
-                  </div>
-                  <div className="group relative flex flex-col gap-2">
-                    <h3 className="text-lg leading-6 font-semibold text-gray-900 group-hover:text-gray-600">
-                      <Link href={`/blog/${post.slug}`}>
-                        <span className="absolute inset-0" />
-                        {post.title}
-                      </Link>
-                    </h3>
-                    <p className="line-clamp-3 text-sm leading-6 text-gray-600">
-                      {post.description}
-                    </p>
-                  </div>
-                  <div className="mt-auto flex flex-wrap gap-2">
-                    {post.tags.slice(0, 3).map((tag) => (
-                      <BadgeLink key={tag} href={`/blog/tag/${tag}`}>
-                        {tag}
-                      </BadgeLink>
-                    ))}
-                  </div>
-                </article>
+                <PostCard key={post.slug} post={post} />
               ))}
             </div>
             <div className="mt-12 text-center">
-              <ButtonLink href="/blog" variant="primary" spacing="lg">
+              <ButtonLink href="/blog" variant="primary" size="lg">
                 View All Posts
               </ButtonLink>
             </div>
@@ -153,17 +123,15 @@ export default async function HomePage() {
               Here&apos;s some of the clients I&apos;ve done work for in the past.
             </p>
           </div>
-          <div className="grid grid-cols-2 gap-8 md:grid-cols-3 lg:grid-cols-6">
+          <div className="grid grid-cols-2 place-items-center gap-8 md:grid-cols-3 lg:grid-cols-6">
             {clients.map((client) => (
-              <div key={client.name} className="flex items-center justify-center">
-                <Image
-                  src={client.src}
-                  alt={client.name}
-                  width={client.width}
-                  height={client.height}
-                  className="max-h-12 w-auto object-contain"
-                />
-              </div>
+              <Image
+                key={client.name}
+                src={client.src}
+                alt={client.name}
+                width={client.width}
+                height={client.height}
+              />
             ))}
           </div>
         </div>

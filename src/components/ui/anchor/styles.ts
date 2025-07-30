@@ -22,4 +22,4 @@ export function getAnchorStyles({
   underline = 'hover',
 }: AnchorStyleProps): string {
   return `text-base transition-colors ${variantStyles[variant]} ${underlineStyles[underline]}`.trim()
-}
+} 

@@ -5,7 +5,7 @@ import matter from 'gray-matter'
 import { compileMDX } from 'next-mdx-remote/rsc'
 import readingTime from 'reading-time'
 import { z } from 'zod'
-import { isValidElement, type ReactElement } from 'react'
+import { isValidElement } from 'react'
 import { cache } from 'react'
 import 'server-only'
 import { mdxComponents } from '@/components/mdx'
@@ -19,7 +19,7 @@ const SocialLinksSchema = z.object({
   website: z.url('Website URL must be valid'),
 })
 
-const AuthorSchema = z.object({
+export const AuthorSchema = z.object({
   name: z.string().min(1, 'Author name is required'),
   email: z.email('Author email must be a valid email address'),
   bio: z.string().min(1, 'Author bio is required'),
@@ -55,7 +55,7 @@ const SEODataSchema = z.object({
   twitter: TwitterDataSchema.optional(),
 })
 
-const BlogPostFrontmatterSchema = z.object({
+export const BlogPostFrontmatterSchema = z.object({
   title: z.string().min(1, 'Title is required and cannot be empty'),
   description: z.string().min(1, 'Description is required and cannot be empty').optional(),
   date: z
@@ -85,7 +85,7 @@ const BlogPostFrontmatterSchema = z.object({
 })
 
 // BlogPost schema that includes the compiled content and computed fields
-const BlogPostSchema = z.object({
+export const BlogPostSchema = z.object({
   slug: z.string(),
   title: z.string(),
   description: z.string(),
@@ -103,9 +103,9 @@ const BlogPostSchema = z.object({
   seo: SEODataSchema.optional(),
 })
 
-const BlogPostMetaSchema = BlogPostSchema.omit({ content: true, seo: true })
+export const PostSchema = BlogPostSchema.omit({ content: true, seo: true })
 
-const TagDataSchema = z.object({
+export const TagDataSchema = z.object({
   name: z.string(),
   count: z.number(),
   slug: z.string(),
@@ -120,17 +120,8 @@ export type OpenGraphData = z.infer<typeof OpenGraphDataSchema>
 export type TwitterData = z.infer<typeof TwitterDataSchema>
 export type BlogPostFrontmatter = z.infer<typeof BlogPostFrontmatterSchema>
 export type BlogPost = z.infer<typeof BlogPostSchema>
-export type BlogPostMeta = z.infer<typeof BlogPostMetaSchema>
+export type Post = z.infer<typeof PostSchema>
 export type TagData = z.infer<typeof TagDataSchema>
-
-// Export schemas for validation
-export {
-  AuthorSchema,
-  BlogPostFrontmatterSchema,
-  BlogPostSchema,
-  BlogPostMetaSchema,
-  TagDataSchema,
-}
 
 /**
  * Generate avatar URL for an author with Gravatar fallback
@@ -270,9 +261,9 @@ export const getPostBySlug = cache(async (slug: string): Promise<BlogPost | null
  * Get all blog posts metadata
  * Cached to avoid repeatedly processing all posts
  */
-export const getAllPosts = cache(async (): Promise<BlogPostMeta[]> => {
+export const getAllPosts = cache(async (): Promise<Post[]> => {
   const slugs = getAllPostSlugs()
-  const posts: BlogPostMeta[] = []
+  const posts: Post[] = []
 
   for (const slug of slugs) {
     const post = await getPostBySlug(slug)
@@ -300,7 +291,7 @@ export const getAllPosts = cache(async (): Promise<BlogPostMeta[]> => {
 /**
  * Get featured blog posts
  */
-export async function getFeaturedPosts(limit = 3): Promise<BlogPostMeta[]> {
+export async function getFeaturedPosts(limit = 3): Promise<Post[]> {
   const allPosts = await getAllPosts()
   return allPosts.filter((post) => post.featured).slice(0, limit)
 }
@@ -308,7 +299,7 @@ export async function getFeaturedPosts(limit = 3): Promise<BlogPostMeta[]> {
 /**
  * Get recent blog posts
  */
-export async function getRecentPosts(limit = 5): Promise<BlogPostMeta[]> {
+export async function getRecentPosts(limit = 5): Promise<Post[]> {
   const allPosts = await getAllPosts()
   return allPosts.slice(0, limit)
 }
@@ -316,7 +307,7 @@ export async function getRecentPosts(limit = 5): Promise<BlogPostMeta[]> {
 /**
  * Get posts by tag
  */
-export async function getPostsByTag(tag: string): Promise<BlogPostMeta[]> {
+export async function getPostsByTag(tag: string): Promise<Post[]> {
   const allPosts = await getAllPosts()
   return allPosts.filter((post) =>
     post.tags.some((postTag) => postTag.toLowerCase() === tag.toLowerCase())
@@ -355,7 +346,7 @@ export async function getRelatedPosts(
   currentSlug: string,
   currentTags: string[],
   limit = 3
-): Promise<BlogPostMeta[]> {
+): Promise<Post[]> {
   const allPosts = await getAllPosts()
 
   const relatedPosts = allPosts
@@ -375,8 +366,8 @@ export async function getRelatedPosts(
  * Get previous and next posts
  */
 export async function getAdjacentPosts(currentSlug: string): Promise<{
-  previousPost: BlogPostMeta | null
-  nextPost: BlogPostMeta | null
+  previousPost: Post | null
+  nextPost: Post | null
 }> {
   const allPosts = await getAllPosts()
   const currentIndex = allPosts.findIndex((post) => post.slug === currentSlug)
@@ -390,7 +381,7 @@ export async function getAdjacentPosts(currentSlug: string): Promise<{
 /**
  * Search posts by title, description, or content
  */
-export async function searchPosts(query: string): Promise<BlogPostMeta[]> {
+export async function searchPosts(query: string): Promise<Post[]> {
   const allPosts = await getAllPosts()
   const searchTerm = query.toLowerCase().trim()
 
@@ -412,11 +403,11 @@ export async function getPostsArchive(): Promise<
   Array<{
     year: number
     month: number
-    posts: BlogPostMeta[]
+    posts: Post[]
   }>
 > {
   const allPosts = await getAllPosts()
-  const archive = new Map<string, BlogPostMeta[]>()
+  const archive = new Map<string, Post[]>()
 
   allPosts.forEach((post) => {
     const date = new Date(post.date)

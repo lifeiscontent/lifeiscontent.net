@@ -11,6 +11,7 @@ import {
 } from '@/lib/blog'
 
 import { BadgeLink } from '@/components/ui/badge'
+import { PostCard } from '@/components/post-card'
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>
@@ -191,7 +192,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           {post.tags.length > 0 && (
             <div className="mt-6 flex flex-wrap gap-1.5 sm:mt-8 sm:gap-2">
               {post.tags.map((tag) => (
-                <BadgeLink key={tag} href={`/blog/tag/${tag}`}>
+                <BadgeLink key={tag} href={`/blog/tag/${tag}`} size="xs">
                   {tag}
                 </BadgeLink>
               ))}
@@ -281,39 +282,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             </h2>
             <div className="grid gap-4 sm:gap-6 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
               {relatedPosts.map((relatedPost) => (
-                <article
-                  key={relatedPost.slug}
-                  className="group relative rounded-lg bg-gray-50 p-4 transition-colors hover:bg-gray-100 sm:p-6"
-                >
-                  <div className="mb-3 flex flex-col gap-1 text-xs sm:mb-4 sm:flex-row sm:items-center sm:gap-x-4">
-                    <time dateTime={relatedPost.date} className="text-gray-500">
-                      {new Date(relatedPost.date).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                      })}
-                    </time>
-                    <span className="text-gray-500">{relatedPost.readingTime.text}</span>
-                  </div>
-                  <div className="group relative">
-                    <h3 className="group-hover:text-primary-600 text-base leading-6 font-semibold text-gray-900 sm:text-lg">
-                      <Link href={`/blog/${relatedPost.slug}`}>
-                        <span className="absolute inset-0" />
-                        {relatedPost.title}
-                      </Link>
-                    </h3>
-                    <p className="mt-3 line-clamp-3 text-xs leading-5 text-gray-600 sm:mt-4 sm:text-sm sm:leading-6">
-                      {relatedPost.description}
-                    </p>
-                  </div>
-                  <div className="mt-3 flex flex-wrap gap-1.5 sm:mt-4 sm:gap-2">
-                    {relatedPost.tags.slice(0, 2).map((tag) => (
-                      <BadgeLink key={tag} href={`/blog/tag/${tag}`}>
-                        {tag}
-                      </BadgeLink>
-                    ))}
-                  </div>
-                </article>
+                <PostCard key={relatedPost.slug} post={relatedPost} variant="compact" />
               ))}
             </div>
           </section>

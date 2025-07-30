@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import { getAllPosts, getAllTags } from '@/lib/blog'
-import { Badge, BadgeLink } from '@/components/ui/badge'
+import { BadgeLink } from '@/components/ui/badge'
+import { PostCard } from '@/components/post-card'
 
 export const metadata: Metadata = {
   title: 'Blog',
@@ -53,49 +53,7 @@ export default async function BlogPage() {
                 </h2>
                 <div className="grid gap-8 md:grid-cols-2">
                   {featuredPosts.map((post) => (
-                    <article
-                      key={post.slug}
-                      className="group relative overflow-hidden rounded-lg bg-white shadow-sm transition-shadow hover:shadow-md"
-                    >
-                      <div className="p-6">
-                        <div className="mb-4 flex items-center gap-x-4 text-xs">
-                          <time dateTime={post.date} className="text-gray-500">
-                            {new Date(post.date).toLocaleDateString('en-US', {
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric',
-                            })}
-                          </time>
-                          <span className="text-gray-500">{post.readingTime.text}</span>
-                          <Badge variant="white-bg" text="xs" aria-selected={true}>
-                            Featured
-                          </Badge>
-                        </div>
-                        <div className="group relative">
-                          <h3 className="text-xl leading-6 font-semibold text-gray-900 group-hover:text-gray-600">
-                            <Link href={`/blog/${post.slug}`}>
-                              <span className="absolute inset-0" />
-                              {post.title}
-                            </Link>
-                          </h3>
-                          <p className="mt-4 line-clamp-3 text-sm leading-6 text-gray-600">
-                            {post.description}
-                          </p>
-                        </div>
-                        <div className="mt-6 flex flex-wrap gap-2">
-                          {post.tags.slice(0, 3).map((tag) => (
-                            <BadgeLink
-                              key={tag}
-                              href={`/blog/tag/${tag}`}
-                              variant="white-bg"
-                              text="xs"
-                            >
-                              {tag}
-                            </BadgeLink>
-                          ))}
-                        </div>
-                      </div>
-                    </article>
+                    <PostCard key={post.slug} post={post} variant="featured" />
                   ))}
                 </div>
               </section>
@@ -108,37 +66,7 @@ export default async function BlogPage() {
               </h2>
               <div className="space-y-8">
                 {regularPosts.map((post) => (
-                  <article
-                    key={post.slug}
-                    className="group relative rounded-lg border border-gray-200 bg-white p-6 transition-shadow hover:shadow-md"
-                  >
-                    <div className="mb-4 flex items-center gap-x-4 text-xs">
-                      <time dateTime={post.date} className="text-gray-500">
-                        {new Date(post.date).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                        })}
-                      </time>
-                      <span className="text-gray-500">{post.readingTime.text}</span>
-                    </div>
-                    <div className="group relative">
-                      <h3 className="text-xl leading-6 font-semibold text-gray-900 group-hover:text-gray-600">
-                        <Link href={`/blog/${post.slug}`}>
-                          <span className="absolute inset-0" />
-                          {post.title}
-                        </Link>
-                      </h3>
-                      <p className="mt-4 text-base leading-6 text-gray-600">{post.description}</p>
-                    </div>
-                    <div className="mt-6 flex flex-wrap gap-2">
-                      {post.tags.map((tag) => (
-                        <BadgeLink key={tag} href={`/blog/tag/${tag}`} variant="white-bg" text="xs">
-                          {tag}
-                        </BadgeLink>
-                      ))}
-                    </div>
-                  </article>
+                  <PostCard key={post.slug} post={post} />
                 ))}
               </div>
 
@@ -162,8 +90,8 @@ export default async function BlogPage() {
                       <BadgeLink
                         key={tag.slug}
                         href={`/blog/tag/${tag.slug}`}
-                        variant="gray-bg"
-                        text="sm"
+                        variant="subtle"
+                        size="sm"
                       >
                         {tag.name}
                         <span className="ml-1 text-xs text-gray-400">({tag.count})</span>

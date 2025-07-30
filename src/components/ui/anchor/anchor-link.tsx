@@ -1,14 +1,13 @@
 import Link from 'next/link'
-import { getAnchorStyles, type AnchorStyleProps } from './anchor-styles'
+import { getAnchorStyles } from './styles'
+import type { AnchorStyleProps } from './styles'
 
-export type AnchorLinkProps = {
-  href: string
-  children: React.ReactNode
-} & AnchorStyleProps
+export type AnchorLinkProps = AnchorStyleProps &
+  Omit<React.ComponentProps<typeof Link>, 'style' | 'className'>
 
-export function AnchorLink({ href, variant, underline, children }: AnchorLinkProps) {
+export function AnchorLink({ variant, underline, href, children, ...linkProps }: AnchorLinkProps) {
   return (
-    <Link href={href} className={getAnchorStyles({ variant, underline })}>
+    <Link href={href} className={getAnchorStyles({ variant, underline })} {...linkProps}>
       {children}
     </Link>
   )
