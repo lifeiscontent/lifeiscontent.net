@@ -1,0 +1,16 @@
+---
+import type { HTMLAttributes } from 'astro/types'
+import Anchor from '@components/ui/anchor.astro'
+
+type Props = HTMLAttributes<'a'>
+
+const { href, ...props }: Props = Astro.props
+const hrefValue = href?.toString()
+const isInternal = hrefValue?.startsWith('/') ?? false
+const target = isInternal ? undefined : '_blank'
+const rel = isInternal ? undefined : 'noopener noreferrer'
+---
+
+<Anchor href={href} target={target} rel={rel} variant="article" weight="medium" {...props}>
+  <slot />
+</Anchor>

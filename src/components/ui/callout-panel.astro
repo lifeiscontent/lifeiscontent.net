@@ -1,0 +1,28 @@
+---
+import type { HTMLAttributes } from 'astro/types'
+
+type MaxWidth = '2xl' | '3xl' | '4xl'
+
+type Props = Omit<HTMLAttributes<'div'>, 'class' | 'style'> & {
+  maxWidth?: MaxWidth
+}
+
+const maxWidthClasses: Record<MaxWidth, string> = {
+  '2xl': 'max-w-2xl',
+  '3xl': 'max-w-3xl',
+  '4xl': 'max-w-4xl',
+}
+
+const { maxWidth = '4xl', ...htmlProps }: Props = Astro.props
+
+const className = [
+  'w-full rounded-3xl bg-primary-50/80 px-6 py-10 shadow-lg shadow-primary-500/10 dark:bg-primary-900/25 sm:px-10 sm:py-12',
+  maxWidthClasses[maxWidth],
+]
+  .filter(Boolean)
+  .join(' ')
+---
+
+<div class={className} {...htmlProps}>
+  <slot />
+</div>

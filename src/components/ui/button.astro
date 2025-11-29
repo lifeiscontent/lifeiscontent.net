@@ -1,0 +1,39 @@
+---
+import type { HTMLAttributes } from 'astro/types'
+
+type ButtonVariant = 'primary' | 'secondary' | 'contrast' | 'on-dark'
+type ButtonSize = 'md' | 'lg' | 'xl'
+
+interface Props extends Omit<HTMLAttributes<'button'>, 'style' | 'class'> {
+  variant?: ButtonVariant
+  size?: ButtonSize
+}
+
+const { variant = 'primary', size = 'md', ...htmlProps } = Astro.props
+
+const variantStyles: Record<ButtonVariant, string> = {
+  primary:
+    'bg-primary-500 text-inverse shadow-none transition-colors hover:bg-primary-600 active:bg-primary-700 dark:bg-primary-400 dark:hover:bg-primary-300',
+  secondary:
+    'bg-primary-50 text-primary-700 shadow-sm shadow-primary-500/5 transition-colors hover:bg-primary-100/80 active:bg-primary-100 focus-visible:ring-primary-200 dark:bg-white/5 dark:text-white dark:hover:bg-white/10 dark:active:bg-white/15 dark:focus-visible:ring-white/30',
+  contrast:
+    'bg-background-color-page text-default shadow-sm shadow-black/5 transition-colors hover:bg-background-color-surface-card dark:bg-background-color-surface-card dark:text-default dark:hover:bg-background-color-surface-elevated',
+  'on-dark':
+    'bg-white/10 text-white hover:bg-white/15 focus-visible:ring-white/60 dark:bg-white/5 dark:text-white dark:hover:bg-white/10',
+}
+
+const sizeStyles: Record<ButtonSize, string> = {
+  md: 'px-5 py-2.5 text-sm',
+  lg: 'px-6 py-3 text-base',
+  xl: 'px-8 py-3.5 text-base',
+}
+
+const baseStyles =
+  'inline-flex items-center justify-center font-semibold rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 ring-offset-white dark:ring-offset-black disabled:opacity-50 disabled:cursor-not-allowed'
+
+const classes = `${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]}`
+---
+
+<button class={classes} {...htmlProps}>
+  <slot />
+</button>

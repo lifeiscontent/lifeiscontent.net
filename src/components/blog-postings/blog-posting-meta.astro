@@ -1,0 +1,49 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import readingTime from 'reading-time'
+import Stack from '@components/layouts/stack.astro'
+import Text from '@components/ui/text.astro'
+
+interface Props {
+  blogPosting: CollectionEntry<'blog-postings'>
+  layout?: 'default' | 'compact'
+}
+
+const { blogPosting, layout = 'default' } = Astro.props
+
+const gap = layout === 'compact' ? 'xs' : 'sm'
+const directionProps =
+  layout === 'compact'
+    ? ({ direction: 'column', directionAtSm: 'row' } as const)
+    : ({ direction: 'row' } as const)
+
+const publishedDate = blogPosting.data.datePublished.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+})
+---
+
+<Stack
+  as="div"
+  direction={directionProps.direction}
+  directionAtSm={directionProps.directionAtSm}
+  gap={gap}
+  gapX="md"
+  wrap={layout === 'default'}
+  align={layout === 'compact' ? 'start' : 'center'}
+>
+  <Text
+    as="time"
+    size="xs"
+    tone="subtle"
+    weight="medium"
+    datetime={blogPosting.data.datePublished.toISOString()}
+  >
+    {publishedDate}
+  </Text>
+  <Text as="span" size="xs" tone="subtle">
+    {readingTime(blogPosting.body ?? '').text}
+  </Text>
+  <slot />
+</Stack>

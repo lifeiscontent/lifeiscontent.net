@@ -1,0 +1,28 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import { Image } from 'astro:assets'
+import { createHash } from 'crypto'
+
+interface Props {
+  person: CollectionEntry<'persons'>
+  size?: number
+}
+
+const { person, size = 16 } = Astro.props
+
+const emailHash = createHash('md5').update(person.data.email.toLowerCase().trim()).digest('hex')
+const avatarUrl = `https://www.gravatar.com/avatar/${emailHash}?d=identicon&s=${size * 4}`
+---
+
+<div class="flex items-center gap-1.5">
+  <Image
+    src={avatarUrl}
+    alt={person.data.name}
+    width={size}
+    height={size}
+    class="rounded-full object-cover"
+    loading="lazy"
+    decoding="async"
+  />
+  <span>{person.data.name}</span>
+</div>

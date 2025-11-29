@@ -1,0 +1,30 @@
+---
+import type { HTMLAttributes } from 'astro/types'
+
+type ProseSize = 'sm' | 'base'
+
+type SizeClasses = Record<ProseSize, string>
+
+const sizeClasses: SizeClasses = {
+  sm: 'prose-sm sm:prose-lg',
+  base: 'prose-base sm:prose-lg',
+}
+
+interface Props extends Omit<HTMLAttributes<'div'>, 'class' | 'style'> {
+  as?: keyof HTMLElementTagNameMap
+  size?: ProseSize
+}
+
+const { as: Component = 'div', size = 'sm', ...htmlProps }: Props = Astro.props
+
+const className = [
+  'prose prose-slate dark:prose-invert prose-a:text-primary-600 dark:prose-a:text-primary-300 max-w-none',
+  sizeClasses[size],
+]
+  .filter(Boolean)
+  .join(' ')
+---
+
+<Component class={className} {...htmlProps}>
+  <slot />
+</Component>

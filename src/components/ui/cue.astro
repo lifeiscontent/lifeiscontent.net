@@ -1,0 +1,37 @@
+---
+import type { HTMLAttributes } from 'astro/types'
+
+type CueTone = 'default' | 'muted' | 'subtle'
+type CueSize = 'xs' | 'sm' | 'md'
+
+const toneClasses: Record<CueTone, string> = {
+  default: 'text-default',
+  muted: 'text-muted',
+  subtle: 'text-subtle',
+}
+
+const sizeClasses: Record<CueSize, string> = {
+  xs: 'h-3 w-3',
+  sm: 'h-4 w-4',
+  md: 'h-5 w-5',
+}
+
+interface Props extends Omit<HTMLAttributes<'span'>, 'class' | 'style'> {
+  tone?: CueTone
+  size?: CueSize
+}
+
+const { tone = 'default', size = 'sm', ...htmlProps }: Props = Astro.props
+
+const className = [
+  'inline-flex items-center justify-center shrink-0',
+  toneClasses[tone],
+  sizeClasses[size],
+]
+  .filter(Boolean)
+  .join(' ')
+---
+
+<span class={className} aria-hidden="true" {...htmlProps}>
+  <slot />
+</span>

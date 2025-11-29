@@ -1,0 +1,18 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import Text from '@components/ui/text.astro'
+
+interface Props {
+  blogPosting: CollectionEntry<'blog-postings'>
+  variant?: 'default' | 'compact'
+}
+
+const { blogPosting, variant = 'default' } = Astro.props
+
+const size = variant === 'compact' ? 'sm' : 'base'
+const clamp: 3 | undefined = variant === 'compact' ? 3 : undefined
+---
+
+<Text tone="muted" size={size} clamp={clamp}>
+  {blogPosting.data.description || blogPosting.data.abstract}
+</Text>

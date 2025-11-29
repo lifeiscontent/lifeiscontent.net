@@ -1,0 +1,5 @@
+{
+  "@type": "DefinedTerm",
+  "name": "React",
+  "description": "React component architecture, patterns, and ergonomics."
+}

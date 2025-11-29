@@ -1,0 +1,82 @@
+---
+import BlogPostingList from '@components/blog-postings/blog-posting-list.astro'
+import KeywordList from '@components/blog-postings/keywords/keyword-list.astro'
+import Section from '@components/layouts/section.astro'
+import Stack from '@components/layouts/stack.astro'
+import Heading from '@components/ui/heading.astro'
+import Text from '@components/ui/text.astro'
+import Anchor from '@components/ui/anchor.astro'
+import type { BlogPostingEntry, DefinedTermEntry } from '@lib/content'
+
+interface Props {
+  keyword: DefinedTermEntry
+  keywordUsageCount: number
+  blogPostings: BlogPostingEntry[]
+  allKeywords: DefinedTermEntry[]
+  keywordsByUsage: Record<string, number>
+  browseAllHref?: string
+  blogPostingKeywordMap?: Record<string, DefinedTermEntry[]> | undefined
+}
+
+const {
+  keyword,
+  keywordUsageCount,
+  blogPostings,
+  allKeywords,
+  keywordsByUsage,
+  browseAllHref = '/blog-postings',
+  blogPostingKeywordMap,
+}: Props = Astro.props
+
+const keywordLabel = keywordUsageCount === 1 ? 'blog posting' : 'blog postings'
+---
+
+<div>
+  <Section paddingX="sm" paddingY="xl" paddingYAtSm="2xl">
+    <Stack direction="row" justify="center" width="full">
+      <Stack direction="column" width="full" maxWidth="3xl" gap="md">
+        <Text
+          as="p"
+          size="xs"
+          tone="subtle"
+          weight="semibold"
+          tracking="wide"
+          transform="uppercase"
+          leading="snug"
+        >
+          Keyword
+        </Text>
+        <Heading level={1} size="2xl" sizeAtSm="3xl" weight="semibold">
+          {keyword.data.name}
+        </Heading>
+        <Text tone="muted" size="base" sizeAtSm="lg">
+          {keywordUsageCount}
+          {keywordLabel} referencing “{keyword.data.name}”.
+        </Text>
+      </Stack>
+    </Stack>
+  </Section>
+
+  <Section paddingX="sm" paddingY="lg" paddingYAtSm="2xl">
+    <Stack direction="row" justify="center" width="full">
+      <Stack direction="column" width="full" maxWidth="4xl" gap="2xl">
+        <BlogPostingList
+          blogPostings={blogPostings}
+          emptyMessage="No posts found for this keyword."
+          keywordMap={blogPostingKeywordMap}
+        >
+          <Anchor slot="empty-action" href={browseAllHref} size="sm" weight="semibold">
+            Browse all posts
+          </Anchor>
+        </BlogPostingList>
+
+        <KeywordList
+          keywords={allKeywords}
+          title="All Keywords"
+          usageCounts={keywordsByUsage}
+          currentKeywordId={keyword.id}
+        />
+      </Stack>
+    </Stack>
+  </Section>
+</div>

@@ -1,0 +1,69 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import { Image } from 'astro:assets'
+import { createHash } from 'crypto'
+
+interface Props {
+  person: CollectionEntry<'persons'>
+  size?: number
+}
+
+const { person, size = 80 } = Astro.props
+
+const emailHash = createHash('md5').update(person.data.email.toLowerCase().trim()).digest('hex')
+const avatarUrl = `https://www.gravatar.com/avatar/${emailHash}?d=identicon&s=${size * 4}`
+
+const socialLinks = buildSocialLinks(person.data)
+
+function buildSocialLinks(personData: CollectionEntry<'persons'>['data']) {
+  const links: { label: string; href: string }[] = []
+  if (personData.url) {
+    links.push({ label: 'Website', href: personData.url })
+  }
+  for (const href of personData.sameAs || []) {
+    links.push({ label: labelForUrl(href), href })
+  }
+  return links
+}
+
+function labelForUrl(href: string) {
+  try {
+    const host = new URL(href).hostname.replace(/^www\./, '')
+    if (host.includes('github.com')) return 'GitHub'
+    if (host.includes('x.com') || host.includes('twitter.com')) return 'X'
+    if (host.includes('linkedin.com')) return 'LinkedIn'
+    return host
+  } catch {
+    return href
+  }
+}
+---
+
+<div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-6">
+  <div class="shrink-0">
+    <Image
+      src={avatarUrl}
+      alt={person.data.name}
+      width={size}
+      height={size}
+      class="rounded-full object-cover"
+      loading="lazy"
+      decoding="async"
+    />
+  </div>
+  <div class="flex flex-1 flex-col gap-2">
+    <h4 class="text-default text-lg font-medium">{person.data.name}</h4>
+    <p class="text-muted text-sm leading-relaxed">{person.data.description}</p>
+    {
+      socialLinks.length > 0 && (
+        <div class="text-primary-600 dark:text-primary-300 flex flex-wrap gap-4">
+          {socialLinks.map((link) => (
+            <a href={link.href} target="_blank" rel="noopener noreferrer">
+              {link.label}
+            </a>
+          ))}
+        </div>
+      )
+    }
+  </div>
+</div>

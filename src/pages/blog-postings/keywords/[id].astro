@@ -1,0 +1,120 @@
+---
+import { getCollection, getEntries, getEntry } from 'astro:content'
+import Layout from '@layouts/layout.astro'
+import BlogPostingList from '@components/blog-postings/blog-posting-list.astro'
+import KeywordList from '@components/blog-postings/keywords/keyword-list.astro'
+import Section from '@components/layouts/section.astro'
+import Stack from '@components/layouts/stack.astro'
+import Heading from '@components/ui/heading.astro'
+import Text from '@components/ui/text.astro'
+import Anchor from '@components/ui/anchor.astro'
+import type { BlogPostingEntry, DefinedTermEntry } from '@lib/content'
+import { aggregateKeywordUsages, createPublishedFilter } from '@lib/content'
+
+export async function getStaticPaths() {
+  const now = Date.now()
+  const entries = await getCollection('blog-postings', createPublishedFilter(now))
+  const keywordGroups = await Promise.all(entries.map((entry) => getEntries(entry.data.keywords)))
+  const keywordIds = new Set(keywordGroups.flat().map((keyword) => keyword.id))
+
+  return Array.from(keywordIds).map((keywordId) => ({
+    params: { id: keywordId },
+  }))
+}
+
+const { id } = Astro.params
+
+if (!id) {
+  throw new Error('Keyword id is required')
+}
+
+const now = Date.now()
+const publishedFilter = createPublishedFilter(now)
+const keywordEntry = await getEntry('defined-terms', id)
+
+if (!keywordEntry) {
+  throw new Error(`Keyword not found for id: ${id}`)
+}
+
+const currentKeyword: DefinedTermEntry = keywordEntry
+const allKeywords = await getCollection('defined-terms')
+const publishedEntries = await getCollection('blog-postings', publishedFilter)
+const keywordsById = new Map(allKeywords.map((keyword) => [keyword.id, keyword]))
+const keywordUsageCounts = Object.fromEntries(
+  aggregateKeywordUsages(
+    publishedEntries.map((entry) =>
+      entry.data.keywords
+        .map((keywordRef) => keywordsById.get(keywordRef.id))
+        .filter((keyword): keyword is DefinedTermEntry => Boolean(keyword))
+    )
+  ).map(({ keyword, usageCount }) => [keyword.id, usageCount] as const)
+)
+
+const blogPostings: BlogPostingEntry[] = publishedEntries.filter((entry) =>
+  entry.data.keywords.some((kw) => kw.id === currentKeyword.id)
+)
+const keywordUsageCount = keywordUsageCounts[currentKeyword.id] ?? 0
+const blogPostingKeywordMap = Object.fromEntries(
+  blogPostings.map((entry) => [
+    entry.id,
+    entry.data.keywords
+      .map((keywordRef) => keywordsById.get(keywordRef.id))
+      .filter((keyword): keyword is DefinedTermEntry => Boolean(keyword)),
+  ])
+)
+
+const pageTitle = `${currentKeyword.data.name} - Blog Postings`
+const pageDescription = `All blog postings with keyword "${currentKeyword.data.name}"`
+const keywordLabel = keywordUsageCount === 1 ? 'blog posting' : 'blog postings'
+const browseAllHref = '/blog-postings'
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+  <Section paddingX="sm" paddingY="xl" paddingYAtSm="2xl">
+    <Stack direction="row" justify="center" width="full">
+      <Stack direction="column" width="full" maxWidth="4xl" gap="md">
+        <Text
+          as="p"
+          size="xs"
+          tone="subtle"
+          weight="semibold"
+          tracking="wide"
+          transform="uppercase"
+          leading="snug"
+        >
+          Keyword
+        </Text>
+        <Heading level={1} size="2xl" sizeAtSm="3xl" weight="semibold">
+          {currentKeyword.data.name}
+        </Heading>
+        <Text tone="muted" size="base" sizeAtSm="lg">
+          {keywordUsageCount}
+          {keywordLabel} referencing “{currentKeyword.data.name}”.
+        </Text>
+      </Stack>
+    </Stack>
+  </Section>
+
+  <Section paddingX="sm" paddingY="lg" paddingYAtSm="2xl">
+    <Stack direction="row" justify="center" width="full">
+      <Stack direction="column" width="full" maxWidth="4xl" gap="2xl">
+        <BlogPostingList
+          blogPostings={blogPostings}
+          emptyMessage="No posts found for this keyword."
+          keywordMap={blogPostingKeywordMap}
+        >
+          <Anchor slot="empty-action" href={browseAllHref} size="sm" weight="semibold">
+            Browse all posts
+          </Anchor>
+        </BlogPostingList>
+
+        <KeywordList
+          keywords={allKeywords}
+          title="All Keywords"
+          usageCounts={keywordUsageCounts}
+          currentKeywordId={currentKeyword.id}
+        />
+      </Stack>
+    </Stack>
+  </Section>
+</Layout>

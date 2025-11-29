@@ -1,0 +1,124 @@
+---
+import type { HTMLAttributes } from 'astro/types'
+
+type Columns = 1 | 2 | 3 | 4
+type Gap = 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl'
+type Breakpoint = 'sm' | 'md' | 'lg'
+type PlaceItems = 'start' | 'center' | 'end' | 'stretch'
+type GapAxis = Exclude<Gap, 'none'>
+
+const columnClasses: Record<Columns, string> = {
+  1: 'grid-cols-1',
+  2: 'grid-cols-2',
+  3: 'grid-cols-3',
+  4: 'grid-cols-4',
+}
+
+const gapClasses: Record<Gap, string> = {
+  none: 'gap-0',
+  xs: 'gap-1.5',
+  sm: 'gap-2',
+  md: 'gap-4',
+  lg: 'gap-6',
+  xl: 'gap-8',
+  '2xl': 'gap-12',
+  '3xl': 'gap-24',
+}
+
+const gapXClasses: Record<GapAxis, string> = {
+  xs: 'gap-x-1.5',
+  sm: 'gap-x-2',
+  md: 'gap-x-4',
+  lg: 'gap-x-6',
+  xl: 'gap-x-8',
+  '2xl': 'gap-x-12',
+  '3xl': 'gap-x-24',
+}
+
+const gapYClasses: Record<GapAxis, string> = {
+  xs: 'gap-y-1.5',
+  sm: 'gap-y-2',
+  md: 'gap-y-4',
+  lg: 'gap-y-6',
+  xl: 'gap-y-8',
+  '2xl': 'gap-y-12',
+  '3xl': 'gap-y-24',
+}
+
+const placeItemsClasses: Record<PlaceItems, string> = {
+  start: 'place-items-start',
+  center: 'place-items-center',
+  end: 'place-items-end',
+  stretch: 'place-items-stretch',
+}
+
+const responsiveColumnClassMap: Record<Breakpoint, Record<Columns, string>> = {
+  sm: {
+    1: 'sm:grid-cols-1',
+    2: 'sm:grid-cols-2',
+    3: 'sm:grid-cols-3',
+    4: 'sm:grid-cols-4',
+  },
+  md: {
+    1: 'md:grid-cols-1',
+    2: 'md:grid-cols-2',
+    3: 'md:grid-cols-3',
+    4: 'md:grid-cols-4',
+  },
+  lg: {
+    1: 'lg:grid-cols-1',
+    2: 'lg:grid-cols-2',
+    3: 'lg:grid-cols-3',
+    4: 'lg:grid-cols-4',
+  },
+}
+
+interface Props extends Omit<HTMLAttributes<'div'>, 'class' | 'style'> {
+  as?: keyof HTMLElementTagNameMap
+  columns?: Columns
+  columnsAtSm?: Columns | undefined
+  columnsAtMd?: Columns | undefined
+  columnsAtLg?: Columns | undefined
+  gap?: Gap
+  gapX?: GapAxis | undefined
+  gapY?: GapAxis | undefined
+  placeItems?: PlaceItems
+}
+
+const {
+  as: Component = 'div',
+  columns,
+  columnsAtSm,
+  columnsAtMd,
+  columnsAtLg,
+  gap,
+  gapX,
+  gapY,
+  placeItems,
+  ...htmlProps
+}: Props = Astro.props
+
+const responsiveColumnClasses = (['sm', 'md', 'lg'] as const)
+  .map((breakpoint) => {
+    const value =
+      breakpoint === 'sm' ? columnsAtSm : breakpoint === 'md' ? columnsAtMd : columnsAtLg
+    return value ? responsiveColumnClassMap[breakpoint][value] : ''
+  })
+  .filter(Boolean)
+
+const className = [
+  'grid w-full',
+  gap ? gapClasses[gap] : '',
+  gapX ? gapXClasses[gapX] : '',
+  gapY ? gapYClasses[gapY] : '',
+  columns ? columnClasses[columns] : '',
+  placeItems ? placeItemsClasses[placeItems] : '',
+  ...responsiveColumnClasses,
+]
+  .filter(Boolean)
+  .join(' ')
+---
+
+<Component class={className} {...htmlProps}>
+  <slot />
+</Component>

@@ -1,0 +1,32 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import KeywordBadge from './keyword-badge.astro'
+import Stack from '@components/layouts/stack.astro'
+import Heading from '@components/ui/heading.astro'
+
+interface Props {
+  keywords: CollectionEntry<'defined-terms'>[]
+  title?: string
+  usageCounts?: Record<string, number>
+  currentKeywordId?: string
+}
+
+const { keywords, title = 'Keywords', usageCounts = {}, currentKeywordId }: Props = Astro.props
+---
+
+<Stack as="section" direction="column" gap="md">
+  <Heading level={3} size="md" weight="semibold">
+    {title}
+  </Heading>
+  <Stack as="div" direction="row" gap="sm" wrap>
+    {
+      keywords.map((keyword) => (
+        <KeywordBadge
+          keyword={keyword}
+          usageCount={usageCounts[keyword.id] ?? 0}
+          isCurrent={currentKeywordId ? keyword.id === currentKeywordId : false}
+        />
+      ))
+    }
+  </Stack>
+</Stack>

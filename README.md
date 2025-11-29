@@ -1,213 +1,129 @@
 # lifeiscontent.net
 
-A modern, offline-first blog built with Next.js, TypeScript, and Tailwind CSS.
+An Astro-powered narrative studio site pairing long-form writing with a purposeful component system. Everything is static-first, accessible, and tuned for GitHub Pages.
 
-## 🚀 Features
+## Highlights
 
-- **Modern Stack**: Built with Next.js 14, TypeScript, and Tailwind CSS v4
-- **Offline-First**: Progressive Web App (PWA) with service worker caching
-- **Markdown Blog**: Blog posts written in Markdown with frontmatter
-- **SEO Optimized**: Built-in SEO with sitemap, robots.txt, and Open Graph support
-- **Responsive Design**: Mobile-first design with Tailwind CSS
-- **Performance**: Optimized images, lazy loading, and static generation
-- **Type Safe**: Full TypeScript support with strict type checking
-- **Modern Tooling**: ESLint, Prettier, and automated formatting
+- Astro 5 static output with islands only when interaction is required
+- Typed content collections + MDX for structured blog postings, definitions, and authors
+- Tailwind CSS v4 design system shared across components, layouts, and prose
+- RSS feed, sitemap, and canonical metadata for every page
+- GitHub Pages workflow with pnpm caching and artifact deployments
 
-## 🛠️ Tech Stack
+## Tech Stack
 
-- **Framework**: [Next.js 14](https://nextjs.org/) with App Router
-- **Language**: [TypeScript](https://www.typescriptlang.org/)
-- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
-- **Content**: Markdown with [gray-matter](https://github.com/jonschlinkert/gray-matter)
-- **Markdown Processing**: [remark](https://remark.js.org/) with syntax highlighting
-- **PWA**: [next-pwa](https://github.com/shadowwalker/next-pwa)
-- **Package Manager**: [pnpm](https://pnpm.io/)
+| Concern   | Tooling                                                 |
+| --------- | ------------------------------------------------------- |
+| Framework | Astro 5 + TypeScript                                    |
+| Styling   | Tailwind CSS v4 via `@tailwindcss/vite`                 |
+| Content   | Astro Content Collections, MDX, structured data helpers |
+| Tooling   | pnpm, ESLint, Prettier, Vitest, Astro Check             |
+| Hosting   | GitHub Pages (static `dist/`)                           |
 
-## 📦 Installation
+## Getting Started
 
-1. **Clone the repository**:
-
-   ```bash
-   git clone https://github.com/lifeiscontent/lifeiscontent.net.git
-   cd lifeiscontent.net
-   ```
-
-2. **Install dependencies**:
-
-   ```bash
-   pnpm install
-   ```
-
-3. **Start the development server**:
-
-   ```bash
-   pnpm dev
-   ```
-
-4. **Open your browser** and navigate to `http://localhost:3000`
-
-## 🧰 Available Scripts
-
-- `pnpm dev` - Start the development server
-- `pnpm build` - Build the application for production
-- `pnpm start` - Start the production server
-- `pnpm lint` - Run ESLint
-- `pnpm type-check` - Run TypeScript type checking
-- `pnpm format` - Format code with Prettier
-- `pnpm format:check` - Check code formatting
-- `pnpm clean` - Clean build artifacts
-
-## 📝 Writing Blog Posts
-
-Blog posts are stored in `src/content/blog/` as Markdown files with frontmatter:
-
-```markdown
----
-title: 'Your Post Title'
-description: 'A brief description of your post'
-date: '2024-01-15'
-tags: ['javascript', 'react', 'nextjs']
-featured: true
-draft: false
----
-
-Your blog content goes here...
+```bash
+git clone https://github.com/lifeiscontent/lifeiscontent.net.git
+cd lifeiscontent.net
+pnpm install
+pnpm dev
 ```
 
-### Frontmatter Options
+Visit `http://localhost:4321` during development.
 
-- `title` (required): The post title
-- `description` (required): A brief description for SEO
-- `date` (required): Publication date in YYYY-MM-DD format
-- `tags` (optional): Array of tags
-- `featured` (optional): Whether the post is featured on the homepage
-- `draft` (optional): Whether the post is a draft (won't be published)
-- `lastModified` (optional): Last modification date
+## Scripts
 
-## 🎨 Styling
+| Command             | Purpose                                             |
+| ------------------- | --------------------------------------------------- |
+| `pnpm dev`          | Run the Astro dev server                            |
+| `pnpm build`        | Create the production site in `dist/`               |
+| `pnpm preview`      | Preview `dist/` locally                             |
+| `pnpm test`         | Execute Vitest (Happy DOM)                          |
+| `pnpm check`        | Run all `check:*` scripts in parallel               |
+| `pnpm check:astro`  | Execute `astro check` for content + template safety |
+| `pnpm check:lint`   | Run ESLint (no fixes)                               |
+| `pnpm check:format` | Verify formatting via Prettier `--check`            |
+| `pnpm fix`          | Run every `fix:*` script in parallel                |
+| `pnpm fix:lint`     | Apply ESLint fixes                                  |
+| `pnpm fix:format`   | Format files with Prettier                          |
+| `pnpm clean`        | Remove `.astro/` artifacts and `dist/`              |
 
-This project uses Tailwind CSS v4 with a CSS-first configuration approach. Custom styles and theme configuration are defined in `src/app/globals.css`.
+## Writing Content
 
-### Custom Colors
+Blog postings live in `src/content/blog-postings/` as MDX. Each entry follows the schema defined in `src/content/config.ts` and is validated at build time.
 
-The primary color palette is based on purple shades:
+```mdx
+---
+'@type': 'BlogPosting'
+headline: 'Purposeful Stories for Thoughtful Builders'
+description: 'How I blend engineering, design, and content systems.'
+abstract: 'Treat interfaces as narratives.'
+datePublished: '2025-01-15'
+dateModified: '2025-01-20'
+keywords:
+  - astro
+  - systems
+  - design
+---
 
-- Primary: `#7c3aed` (purple-600)
-- Primary hover: `#6d28d9` (purple-700)
-
-### Dark Mode
-
-The site automatically respects the user's system theme preference and includes proper dark mode styles.
-
-## 🔧 Configuration
-
-### Environment Variables
-
-Create a `.env.local` file for local development:
-
-```env
-# Optional: Google Analytics tracking ID
-NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
-
-# Optional: Site URL for sitemap generation
-NEXT_PUBLIC_SITE_URL=https://lifeiscontent.net
+Your MDX goes here.
 ```
 
-### PWA Configuration
+Other collections (authors, defined terms, sites) follow the same pattern. Invalid entries cause `pnpm check` or `pnpm build` to fail, ensuring content stays consistent.
 
-PWA settings are configured in `next.config.ts`. The app includes:
+## Layout & Components
 
-- Service worker for offline functionality
-- Web app manifest for install prompts
-- Caching strategies for different resource types
+- `src/components/ui/`: Card, badge, button, prose helpers, etc.
+- `src/components/layouts/`: Header, footer, grid, stack, and section wrappers.
+- `src/components/mdx/`: Overrides for MDX elements like links and code blocks.
+- `src/styles/globals.css`: Base typography, tokens, and Tailwind layers.
 
-## 📁 Project Structure
+## Configuration Touchpoints
+
+- `astro.config.mjs`: Integrations (Tailwind, sitemap, mdx), redirects, site metadata.
+- `src/content/config.ts`: Content schemas and collection types.
+- `public/`: CNAME, manifest, favicons, static exports for select posts.
+
+## Project Structure
 
 ```
 src/
-├── app/                    # Next.js App Router pages
-│   ├── blog/              # Blog-related pages
-│   ├── globals.css        # Global styles and Tailwind config
-│   ├── layout.tsx         # Root layout component
-│   ├── page.tsx           # Homepage
-│   ├── not-found.tsx      # 404 page
-│   └── sitemap.ts         # Dynamic sitemap generation
+├── components/
 ├── content/
-│   └── blog/              # Markdown blog posts
+├── layouts/
 ├── lib/
-│   ├── blog.ts            # Blog utility functions
-│   └── utils.ts           # General utility functions
+├── pages/
+├── styles/
 └── types/
-    └── blog.ts            # TypeScript type definitions
+public/
+├── CNAME
+├── manifest.webmanifest
+└── *.html    # legacy exports
 ```
 
-## 🚀 Deployment
+## Deployment
 
-### Vercel (Recommended)
+GitHub Actions (`.github/workflows/deploy.yml`) handles CI/CD:
 
-1. Push your code to GitHub
-2. Connect your repository to [Vercel](https://vercel.com/)
-3. Deploy automatically on every push to main
+1.  `pnpm install` with pnpm store caching
+2.  `pnpm build` to produce `dist/`
+3.  Upload `dist/` as the GitHub Pages artifact
+4.  Deploy via `actions/deploy-pages`
 
-### Other Platforms
+To deploy manually, run `pnpm build` and host the resulting `dist/` directory on any static host.
 
-The app can be deployed to any platform that supports Node.js:
+## Testing & Quality
 
-1. Run `pnpm build` to create a production build
-2. Upload the `.next` folder and other necessary files
-3. Run `pnpm start` to start the production server
+- `pnpm test`: Vitest + Happy DOM (configured in `test/setup.ts`)
+- `pnpm check:lint`: ESLint with TypeScript + Astro rules
+- `pnpm check`: Runs the full parallel suite (Astro check + lint + formatting)
 
-## 📊 Performance
-
-This site is optimized for performance with:
-
-- Static site generation (SSG) for blog posts
-- Image optimization with Next.js Image component
-- Automatic code splitting
-- Service worker caching
-- Minimal JavaScript bundle
-
-## 🔍 SEO Features
-
-- Automatic sitemap generation
-- Open Graph meta tags
-- Twitter Card support
-- Structured data for blog posts
-- Robots.txt configuration
-- Canonical URLs
-
-## 🧪 Testing
-
-Add your testing setup here when implemented. Recommended tools:
-
-- [Jest](https://jestjs.io/) for unit testing
-- [Playwright](https://playwright.dev/) for E2E testing
-- [Testing Library](https://testing-library.com/) for component testing
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Commit your changes: `git commit -m 'Add amazing feature'`
-4. Push to the branch: `git push origin feature/amazing-feature`
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 👤 Author
-
-**Aaron Reisman** - [@lifeiscontent](https://github.com/lifeiscontent)
+## Author
 
 - Website: [lifeiscontent.net](https://lifeiscontent.net)
-- Twitter: [@lifeiscontent](https://twitter.com/lifeiscontent)
-- Email: aaron@lifeiscontent.net
+- GitHub: [@lifeiscontent](https://github.com/lifeiscontent)
+- Email: [aaron@lifeiscontent.net](mailto:aaron@lifeiscontent.net)
 
-## 🙏 Acknowledgments
+## License
 
-- [Next.js](https://nextjs.org/) team for the amazing framework
-- [Tailwind CSS](https://tailwindcss.com/) for the utility-first CSS framework
-- [Vercel](https://vercel.com/) for hosting and deployment platform
-# Force new deployment
-# Force deployment for static asset fix
+MIT © Aaron Reisman. See `LICENSE` for details.

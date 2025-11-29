@@ -1,0 +1,28 @@
+---
+import BadgeLink from '@components/ui/badge-link.astro'
+import Text from '@components/ui/text.astro'
+import type { CollectionEntry } from 'astro:content'
+
+interface Props {
+  keyword: CollectionEntry<'defined-terms'>
+  isCurrent?: boolean
+  usageCount?: number
+}
+
+const { keyword, isCurrent = false, usageCount = 0 }: Props = Astro.props
+const keywordSlug = encodeURIComponent(keyword.id)
+---
+
+<BadgeLink
+  href={`/blog-postings/keywords/${keywordSlug}`}
+  variant="subtle"
+  size="sm"
+  aria-current={isCurrent ? 'page' : undefined}
+>
+  <Text as="span" size="sm" weight="medium" leading="snug">
+    {keyword.data.name}
+  </Text>
+  <Text as="span" size="xs" tone="subtle" leading="snug">
+    ({usageCount})
+  </Text>
+</BadgeLink>

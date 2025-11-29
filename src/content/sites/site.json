@@ -1,0 +1,20 @@
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": "https://lifeiscontent.net/#website",
+  "url": "https://lifeiscontent.net",
+  "name": "lifeiscontent.net",
+  "alternateName": "lifeiscontent",
+  "description": "Narrative systems, experience strategy, and engineering notes from Aaron Reisman.",
+  "inLanguage": "en-US",
+  "publisher": "lifeiscontent",
+  "sameAs": ["https://github.com/lifeiscontent", "https://x.com/lifeiscontent"],
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": "https://lifeiscontent.net/blog-postings/keywords/{keyword}"
+    },
+    "query-input": "required name=keyword"
+  }
+}

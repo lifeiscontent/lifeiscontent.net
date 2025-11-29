@@ -1,0 +1,20 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import Heading from '@components/ui/heading.astro'
+import Anchor from '@components/ui/anchor.astro'
+
+interface Props {
+  blogPosting: CollectionEntry<'blog-postings'>
+  variant?: 'default' | 'compact'
+}
+
+const { blogPosting, variant = 'default' } = Astro.props
+
+const headingSize = variant === 'compact' ? 'md' : 'lg'
+---
+
+<Heading level={3} size={headingSize} weight="semibold">
+  <Anchor href={`/blog-postings/${blogPosting.id}`} underline="none">
+    {blogPosting.data.headline}
+  </Anchor>
+</Heading>

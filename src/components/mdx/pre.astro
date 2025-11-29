@@ -1,0 +1,15 @@
+---
+import type { HTMLAttributes } from 'astro/types'
+
+type Props = HTMLAttributes<'pre'>
+
+const { class: className = '', ...rest }: Props = Astro.props
+
+const baseClasses =
+  'not-prose flex box-border overflow-x-auto overscroll-x-contain rounded-3xl [&>code]:grow [&>code]:w-0 [&_.line]:inline-flex [&_.line]:min-w-max'
+const combinedClasses = [baseClasses, className].filter(Boolean).join(' ')
+---
+
+<pre class={combinedClasses} {...rest}>
+  <slot />
+</pre>

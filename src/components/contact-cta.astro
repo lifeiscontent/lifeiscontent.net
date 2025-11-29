@@ -1,0 +1,35 @@
+---
+import ButtonLink from '@components/ui/button-link.astro'
+---
+
+<section class="px-4 py-16 sm:py-20">
+  <div class="grid w-full place-items-center">
+    <div
+      class="bg-primary-50/80 shadow-primary-500/10 dark:bg-primary-900/25 w-full max-w-3xl rounded-3xl px-6 py-10 shadow-lg sm:px-10 sm:py-12"
+    >
+      <div class="flex flex-col gap-4">
+        <p class="text-subtle text-xs font-semibold tracking-[0.4em] uppercase">Collaboration</p>
+        <h2 class="text-default text-3xl leading-tight font-semibold text-balance sm:text-4xl">
+          Let's design the next chapter together.
+        </h2>
+        <p class="text-muted text-base leading-relaxed sm:text-lg">
+          Product strategy, editorial systems, or experience architecture? I help teams translate
+          ambiguity into narrative clarity.
+        </p>
+        <div class="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+          <ButtonLink
+            href="mailto:aaron@lifeiscontent.net"
+            variant="primary"
+            size="lg"
+            width="responsive"
+          >
+            Start a conversation
+          </ButtonLink>
+          <ButtonLink href="/blog-postings" variant="secondary" size="lg" width="responsive">
+            See recent blog postings
+          </ButtonLink>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
