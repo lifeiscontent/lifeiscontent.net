@@ -1,0 +1,46 @@
+---
+import ButtonLink from '@components/ui/button-link.astro'
+import Section from '@components/layouts/section.astro'
+import Stack from '@components/layouts/stack.astro'
+import Anchor from '@components/ui/anchor.astro'
+import Eyebrow from '@components/ui/eyebrow.astro'
+---
+
+<header class="no-print">
+  <Section as="div" paddingX="sm" paddingY="sm">
+    <Stack direction="row" justify="center" width="full">
+      <Stack as="nav" direction="column" width="full" maxWidth="4xl" gap="sm">
+        <Stack
+          direction="column"
+          directionAtSm="row"
+          align="start"
+          alignAtSm="center"
+          justify="start"
+          justifyAtSm="between"
+          gap="sm"
+          width="full"
+        >
+          <Anchor href="/" underline="none" variant="article" weight="semibold">
+            <Eyebrow as="span" tone="default">lifeiscontent</Eyebrow>
+          </Anchor>
+          <Stack
+            direction="row"
+            gap="md"
+            wrap
+            align="center"
+            justify="start"
+            justifyAtSm="end"
+            width="full"
+          >
+            <Anchor href="/blog-postings" variant="article" size="sm" weight="medium">
+              Blog Postings
+            </Anchor>
+            <ButtonLink href="mailto:aaron@lifeiscontent.net" variant="secondary" size="md">
+              Contact
+            </ButtonLink>
+          </Stack>
+        </Stack>
+      </Stack>
+    </Stack>
+  </Section>
+</header>

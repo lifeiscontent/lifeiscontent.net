@@ -1,0 +1,64 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import BlogPostingKeywords from './blog-posting-keywords.astro'
+import Card from '@components/ui/card.astro'
+import Stack from '@components/layouts/stack.astro'
+import Text from '@components/ui/text.astro'
+import Heading from '@components/ui/heading.astro'
+import Anchor from '@components/ui/anchor.astro'
+import readingTime from 'reading-time'
+
+interface Props {
+  blogPosting: CollectionEntry<'blog-postings'>
+  keywords?: CollectionEntry<'defined-terms'>[] | undefined
+  variant?: 'default' | 'compact'
+}
+
+const { blogPosting, keywords = [], variant = 'default' }: Props = Astro.props
+
+const metaGap = variant === 'compact' ? 'xs' : 'sm'
+const metaDirection = variant === 'compact' ? 'column' : 'row'
+const metaDirectionAtSm = variant === 'compact' ? 'row' : undefined
+
+const headingSize = variant === 'compact' ? 'md' : 'lg'
+const descriptionSize = variant === 'compact' ? 'sm' : 'base'
+const descriptionClamp: 3 | undefined = variant === 'compact' ? 3 : undefined
+
+const publishedDateDisplay = blogPosting.data.datePublished.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+})
+const publishedDateIso = blogPosting.data.datePublished.toISOString()
+const readingTimeText = readingTime(blogPosting.body ?? '').text
+---
+
+<Card gap={variant === 'compact' ? 'sm' : 'md'}>
+  <Stack
+    as="div"
+    direction={metaDirection}
+    directionAtSm={metaDirectionAtSm}
+    gap={metaGap}
+    gapX="md"
+    wrap={variant !== 'compact'}
+    align={variant === 'compact' ? 'start' : 'center'}
+  >
+    <Text as="time" size="xs" tone="subtle" weight="medium" datetime={publishedDateIso}>
+      {publishedDateDisplay}
+    </Text>
+    <Text as="span" size="xs" tone="subtle">
+      {readingTimeText}
+    </Text>
+  </Stack>
+  <Stack direction="column" gap={variant === 'compact' ? 'xs' : 'sm'}>
+    <Heading level={3} size={headingSize} weight="semibold">
+      <Anchor href={`/blog-postings/${blogPosting.id}`} underline="none">
+        {blogPosting.data.headline}
+      </Anchor>
+    </Heading>
+    <Text tone="muted" size={descriptionSize} clamp={descriptionClamp}>
+      {blogPosting.data.description || blogPosting.data.abstract}
+    </Text>
+  </Stack>
+  {keywords.length > 0 && <BlogPostingKeywords keywords={keywords} variant={variant} />}
+</Card>

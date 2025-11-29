@@ -1,0 +1,294 @@
+---
+import { getCollection, getEntries, getEntry, render } from 'astro:content'
+import readingTime from 'reading-time'
+import Layout from '@layouts/layout.astro'
+import BlogPostingCard from '@components/blog-postings/blog-posting-card.astro'
+import BlogPostingKeywords from '@components/blog-postings/blog-posting-keywords.astro'
+import PersonInline from '@components/persons/person-inline.astro'
+import PersonBio from '@components/persons/person-bio.astro'
+import { mdxComponents } from '@components/mdx'
+import Section from '@components/layouts/section.astro'
+import Stack from '@components/layouts/stack.astro'
+import Grid from '@components/layouts/grid.astro'
+import Heading from '@components/ui/heading.astro'
+import Text from '@components/ui/text.astro'
+import Anchor from '@components/ui/anchor.astro'
+import Cue from '@components/ui/cue.astro'
+import Prose from '@components/ui/prose.astro'
+import type { BlogPostingEntry } from '@lib/content'
+import {
+  buildBlogPostingJsonLd,
+  computeRelatedEntries,
+  createPublishedFilter,
+  findAdjacentEntries,
+  sortBlogPostingsByDate,
+} from '@lib/content'
+
+export async function getStaticPaths() {
+  const now = Date.now()
+  const entries = await getCollection('blog-postings', createPublishedFilter(now))
+  return entries.map((entry) => ({
+    params: { id: entry.id },
+  }))
+}
+
+const { id } = Astro.params
+
+if (!id) {
+  throw new Error('Missing blog posting id')
+}
+
+const entry = await getEntry('blog-postings', id)
+
+if (!entry) {
+  throw new Error(`Blog posting not found for id: ${id}`)
+}
+
+const { Content } = await render(entry)
+const authorEntries = await getEntries(entry.data.author)
+const keywords = await getEntries(entry.data.keywords)
+const now = Date.now()
+const publishedEntries = await getCollection('blog-postings', createPublishedFilter(now))
+const sortedEntries = sortBlogPostingsByDate(publishedEntries)
+const { previous, next } = findAdjacentEntries(entry, sortedEntries)
+const relatedBlogPostings = computeRelatedEntries(entry, publishedEntries)
+const relatedKeywordPairs = await Promise.all(
+  relatedBlogPostings.map(
+    async (relatedEntry) => [relatedEntry.id, await getEntries(relatedEntry.data.keywords)] as const
+  )
+)
+const relatedKeywordMap = Object.fromEntries(relatedKeywordPairs)
+const jsonLd = buildBlogPostingJsonLd(entry, authorEntries, keywords)
+const publishedDate = entry.data.datePublished
+const lastModifiedDate = entry.data.dateModified ?? null
+const previousBlogPosting = previous
+const nextBlogPosting = next
+const authorLabel = authorEntries.length > 1 ? 'Authors' : 'Author'
+
+const readingTimeText = readingTime(entry.body ?? '').text
+// Removed local helper functions as they are imported from @lib/content
+---
+
+<Layout title={entry.data.headline} description={entry.data.description}>
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
+
+  <Section as="nav" paddingX="sm" paddingY="sm">
+    <Stack direction="row" justify="center" width="full">
+      <Stack direction="column" width="full" maxWidth="4xl">
+        <Stack direction="row" gap="xs" wrap align="center">
+          <Text as="span" size="xs" sizeAtSm="sm" tone="subtle" weight="medium">
+            <Anchor href="/" size="inherit" weight="inherit" underline="none" variant="secondary">
+              Home
+            </Anchor>
+          </Text>
+          <Text as="span" size="xs" sizeAtSm="sm" tone="subtle"> / </Text>
+          <Text as="span" size="xs" sizeAtSm="sm" tone="subtle" weight="medium">
+            <Anchor
+              href="/blog-postings"
+              size="inherit"
+              weight="inherit"
+              underline="none"
+              variant="secondary"
+            >
+              Blog Postings
+            </Anchor>
+          </Text>
+          <Text as="span" size="xs" sizeAtSm="sm" tone="subtle"> / </Text>
+          <Text as="span" size="xs" sizeAtSm="sm" tone="default" weight="semibold">
+            {entry.data.headline}
+          </Text>
+        </Stack>
+      </Stack>
+    </Stack>
+  </Section>
+
+  <Section paddingX="sm" paddingY="lg" paddingYAtSm="2xl">
+    <Stack direction="row" justify="center" width="full">
+      <Stack as="article" direction="column" width="full" maxWidth="4xl" gap="2xl">
+        <Stack as="header" direction="column" gap="lg">
+          <Stack direction="column" gap="sm">
+            <Stack direction="row" wrap gap="sm" align="center">
+              <Stack direction="row" gap="xs" align="center">
+                <Cue tone="subtle" size="xs">
+                  <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5a2.25 2.25 0 0 0 2.25-2.25m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5a2.25 2.25 0 0 1 2.25 2.25v7.5"
+                    ></path>
+                  </svg>
+                </Cue>
+                <Text
+                  as="time"
+                  size="xs"
+                  sizeAtSm="sm"
+                  tone="subtle"
+                  datetime={publishedDate.toISOString()}
+                >
+                  {
+                    publishedDate.toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })
+                  }
+                </Text>
+              </Stack>
+              <Stack direction="row" gap="xs" align="center">
+                <Cue tone="subtle" size="xs">
+                  <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path>
+                  </svg>
+                </Cue>
+                <Text as="span" size="xs" sizeAtSm="sm" tone="subtle">
+                  {readingTimeText}
+                </Text>
+              </Stack>
+              {
+                authorEntries.length > 0 && (
+                  <Stack direction="row" wrap gap="xs" align="center">
+                    {authorEntries.map((authorEntry) => (
+                      <PersonInline person={authorEntry} />
+                    ))}
+                  </Stack>
+                )
+              }
+            </Stack>
+          </Stack>
+
+          <Stack direction="column" gap="sm">
+            <Heading level={1} size="2xl" sizeAtSm="3xl" weight="bold">
+              {entry.data.headline}
+            </Heading>
+            {
+              entry.data.description && (
+                <Text tone="muted" sizeAtSm="lg">
+                  {entry.data.description}
+                </Text>
+              )
+            }
+          </Stack>
+
+          {
+            lastModifiedDate && (
+              <Stack direction="row" gap="xs" align="center">
+                <Cue tone="subtle" size="xs">
+                  <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+                    />
+                  </svg>
+                </Cue>
+                <Text as="span" size="xs" sizeAtSm="sm" tone="subtle">
+                  Last updated{' '}
+                  <Text
+                    as="time"
+                    size="xs"
+                    sizeAtSm="sm"
+                    tone="subtle"
+                    datetime={lastModifiedDate.toISOString()}
+                  >
+                    {lastModifiedDate.toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
+                  </Text>
+                </Text>
+              </Stack>
+            )
+          }
+
+          {keywords.length > 0 && <BlogPostingKeywords keywords={keywords} />}
+        </Stack>
+
+        <Prose>
+          <Content components={mdxComponents} />
+        </Prose>
+
+        <Stack direction="column" gap="md">
+          <Heading level={3} size="md" weight="semibold">
+            About the {authorLabel}
+          </Heading>
+          <Stack direction="column" gap="lg">
+            {authorEntries.map((authorEntry) => <PersonBio person={authorEntry} />)}
+          </Stack>
+        </Stack>
+
+        {
+          (previousBlogPosting || nextBlogPosting) && (
+            <Stack as="nav" direction="column" gap="md">
+              <Grid columns={1} columnsAtMd={2} gap="md">
+                {previousBlogPosting && (
+                  <div class="flex h-full flex-col gap-1.5">
+                    <Text as="span" size="xs" sizeAtSm="sm" tone="subtle" weight="medium">
+                      Previous Post
+                    </Text>
+                    <Anchor
+                      href={`/blog-postings/${previousBlogPosting.id}`}
+                      variant="article"
+                      size="base"
+                      weight="semibold"
+                    >
+                      {previousBlogPosting.data.headline}
+                    </Anchor>
+                    <div class="mt-auto">
+                      <Text tone="muted" size="xs" sizeAtSm="sm" clamp={2}>
+                        {previousBlogPosting.data.description}
+                      </Text>
+                    </div>
+                  </div>
+                )}
+
+                {nextBlogPosting && (
+                  <div class="flex h-full flex-col gap-1.5 md:col-start-2">
+                    <Text as="span" size="xs" sizeAtSm="sm" tone="subtle" weight="medium">
+                      Next Post
+                    </Text>
+                    <Anchor
+                      href={`/blog-postings/${nextBlogPosting.id}`}
+                      variant="article"
+                      size="base"
+                      weight="semibold"
+                    >
+                      {nextBlogPosting.data.headline}
+                    </Anchor>
+                    <div class="mt-auto">
+                      <Text tone="muted" size="xs" sizeAtSm="sm" clamp={2}>
+                        {nextBlogPosting.data.description}
+                      </Text>
+                    </div>
+                  </div>
+                )}
+              </Grid>
+            </Stack>
+          )
+        }
+
+        {
+          relatedBlogPostings.length > 0 && (
+            <Stack as="section" direction="column" gap="md">
+              <Heading level={2} size="lg" weight="semibold">
+                Related BlogPostings
+              </Heading>
+              <Grid columns={1} columnsAtMd={2} columnsAtLg={3} gap="lg">
+                {relatedBlogPostings.map((related: BlogPostingEntry) => (
+                  <BlogPostingCard
+                    blogPosting={related}
+                    variant="compact"
+                    keywords={relatedKeywordMap[related.id] ?? []}
+                  />
+                ))}
+              </Grid>
+            </Stack>
+          )
+        }
+      </Stack>
+    </Stack>
+  </Section>
+</Layout>

@@ -1,0 +1,73 @@
+---
+import type { HTMLAttributes } from 'astro/types'
+
+type PaddingX = 'none' | 'sm' | 'md' | 'lg'
+type PaddingY = 'none' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
+type Breakpoint = 'sm' | 'md'
+
+const paddingXClasses: Record<PaddingX, string> = {
+  none: '',
+  sm: 'px-4',
+  md: 'px-6',
+  lg: 'px-8',
+}
+
+const paddingYClasses: Record<PaddingY, string> = {
+  none: '',
+  sm: 'py-8',
+  md: 'py-10',
+  lg: 'py-12',
+  xl: 'py-14',
+  '2xl': 'py-16',
+}
+
+const responsivePaddingYClasses: Record<Breakpoint, Record<PaddingY, string>> = {
+  sm: {
+    none: 'sm:py-0',
+    sm: 'sm:py-8',
+    md: 'sm:py-10',
+    lg: 'sm:py-12',
+    xl: 'sm:py-14',
+    '2xl': 'sm:py-16',
+  },
+  md: {
+    none: 'md:py-0',
+    sm: 'md:py-8',
+    md: 'md:py-10',
+    lg: 'md:py-12',
+    xl: 'md:py-14',
+    '2xl': 'md:py-16',
+  },
+}
+
+interface Props extends Omit<HTMLAttributes<'section'>, 'class' | 'style'> {
+  as?: keyof HTMLElementTagNameMap
+  paddingX?: PaddingX
+  paddingY?: PaddingY
+  paddingYAtSm?: PaddingY
+  paddingYAtMd?: PaddingY
+}
+
+const {
+  as: Component = 'section',
+  paddingX = 'sm',
+  paddingY = 'sm',
+  paddingYAtSm,
+  paddingYAtMd,
+  ...htmlProps
+}: Props = Astro.props
+
+const className = [
+  'w-full',
+  paddingXClasses[paddingX],
+  paddingYClasses[paddingY],
+  paddingYAtSm ? responsivePaddingYClasses.sm[paddingYAtSm] : '',
+  paddingYAtMd ? responsivePaddingYClasses.md[paddingYAtMd] : '',
+]
+  .filter(Boolean)
+  .join(' ')
+---
+
+<Component class={className} {...htmlProps}>
+  <slot />
+</Component>

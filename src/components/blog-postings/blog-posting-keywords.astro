@@ -1,0 +1,32 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import BadgeLink from '@components/ui/badge-link.astro'
+import Stack from '@components/layouts/stack.astro'
+
+interface Props {
+  keywords: CollectionEntry<'defined-terms'>[]
+  variant?: 'default' | 'compact'
+}
+
+const { keywords, variant = 'default' }: Props = Astro.props
+
+const maxKeywords = variant === 'compact' ? 2 : keywords.length
+const gap = variant === 'compact' ? 'xs' : 'sm'
+const gapAtSm = variant === 'compact' ? 'sm' : undefined
+---
+
+{
+  keywords.length > 0 && (
+    <Stack as="div" direction="row" gap={gap} gapAtSm={gapAtSm} wrap>
+      {keywords.slice(0, maxKeywords).map((keyword) => (
+        <BadgeLink
+          href={`/blog-postings/keywords/${encodeURIComponent(keyword.id)}`}
+          variant="default"
+          size="xs"
+        >
+          {keyword.data.name}
+        </BadgeLink>
+      ))}
+    </Stack>
+  )
+}

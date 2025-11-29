@@ -1,0 +1,196 @@
+---
+'@type': 'BlogPosting'
+'@id': 'https://lifeiscontent.net/blog-postings/elegant-error-handling-in-phoenix-liveview-with-ash'
+url: 'https://lifeiscontent.net/blog-postings/elegant-error-handling-in-phoenix-liveview-with-ash'
+mainEntityOfPage:
+  '@type': 'WebPage'
+  '@id': 'https://lifeiscontent.net/blog-postings/elegant-error-handling-in-phoenix-liveview-with-ash'
+isPartOf:
+  '@type': 'Blog'
+  '@id': 'https://lifeiscontent.net/blog-postings'
+  name: 'lifeiscontent.net Blog'
+headline: 'Elegant Error Handling in Phoenix LiveView with Ash'
+description: 'A systems-first approach to crafting purposeful 404/403/500 experiences in Phoenix LiveView, blending Ash exceptions, Phoenix conventions, and brand-conscious storytelling.'
+abstract: 'Treat error states as part of the product narrative by orchestrating Phoenix and Ash primitives into calm, reliable responses.'
+datePublished: '2025-04-09'
+dateModified: '2025-11-30'
+inLanguage: 'en-US'
+author:
+  - lifeiscontent
+keywords:
+  - phoenix
+  - liveview
+  - elixir
+  - ash
+  - ux
+---
+
+# Designing Graceful Failure States in Phoenix LiveView with Ash
+
+Great products choreograph even their failure states. A blank 500 page or the dreaded `no view was found for the format: 'html'` error snaps people out of the story. Thoughtful builders treat those moments as narrative beats: calm copy, clear guidance, and the quiet confidence that the system still knows what it’s doing.
+
+This walkthrough shows how I design 404, 403, and 500 experiences inside a Phoenix LiveView project that leans on Ash. It’s equal parts engineering discipline and brand stewardship, because reliability is a feeling as much as a status code.
+
+## Why failure states deserve design time
+
+- They’re trust touchpoints: the way you recover signals how you build everything else.
+- They’re systems maps: one mistake can jump across Phoenix, LiveView, and Ash boundaries unless you clarify ownership.
+- They’re storytelling moments: language, layout, and interaction should offer the same care as your happy paths.
+
+## A quick systems sketch
+
+1. **Phoenix Endpoint** decides which renderer to call.
+2. **Error layout + templates** set tone and guidance.
+3. **Ash exceptions** raise intent-rich signals (`404`, `403`, `500`) when bang functions fail.
+4. **LiveView surfaces** inherit all of the above without bespoke plumbing.
+
+Once those pieces click, the rest becomes tidy configuration.
+
+## 1. Set the conductor: Endpoint config
+
+Anchor the rendering contract inside `config/config.exs` so Phoenix knows which HTML/JSON modules to lean on:
+
+```elixir
+config :my_app, MyAppWeb.Endpoint,
+  render_errors: [
+    formats: [html: MyAppWeb.ErrorHTML, json: MyAppWeb.ErrorJSON],
+    layout: {MyAppWeb.Layouts, :error}
+  ]
+```
+
+This keeps the response format stable and gives your error pages their own layout, typography, and rhythm.
+
+## 2. Score the layout
+
+I like treating the error layout as a minimal stage: no distracting chrome, just a quiet place to reorient. Build it in `lib/my_app_web/components/layouts/error.html.heex`:
+
+```heex
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{Phoenix.Controller.status_message_from_template("#{@status}.html")} · MyApp</title>
+</head>
+<body>
+  <main>
+    {@inner_content}
+  </main>
+</body>
+</html>
+```
+
+The dynamic title keeps search snippets tidy and respects accessibility tooling.
+
+## 3. Write purposeful microcopy
+
+Map each status to the emotion you want people to feel. I aim for calm directness plus a next action.
+
+**404 (`lib/my_app_web/controllers/error_html/404.html.heex`):**
+
+```heex
+<section>
+  <h1>{@status}</h1>
+  <p>{Phoenix.Controller.status_message_from_template("#{@status}.html")}</p>
+  <p>Sorry, the page you're looking for doesn't exist or has moved.</p>
+  <.link href="/">Return to Home</.link>
+</section>
+```
+
+**500:**
+
+```heex
+<section>
+  <p>{Phoenix.Controller.status_message_from_template("#{@status}.html")}</p>
+  <p>Something went wrong on our end. We're on it!</p>
+</section>
+```
+
+**403:**
+
+```heex
+<section>
+  <p>{Phoenix.Controller.status_message_from_template("#{@status}.html")}</p>
+  <p>You don't have permission to access this resource.</p>
+</section>
+```
+
+## 4. Keep rendering boring on purpose
+
+The `ErrorHTML` module is intentionally unremarkable. Let Phoenix wire templates while you focus on copy:
+
+```elixir
+defmodule MyAppWeb.ErrorHTML do
+  use MyAppWeb, :html
+  embed_templates "error_html/*"
+
+  def render(template, _assigns) do
+    Phoenix.Controller.status_message_from_template(template)
+  end
+end
+```
+
+## Ash as the truth-teller
+
+Ash’s bang functions (`read!`, `create!`, `update!`) encode both data integrity and authorization. When something goes sideways, they raise a typed exception that Phoenix can translate into the correct HTTP status. No glue code, no conditional forests.
+
+Use them inside LiveViews the same way you would on the server:
+
+```elixir
+def mount(%{"id" => id}, _session, socket) do
+  post = MyApp.Content.get_post!(id, actor: socket.assigns.current_user)
+  {:ok, assign(socket, :post, post)}
+end
+```
+
+Missing resources? Forbidden transitions? Ash narrates the failure, Phoenix carries it through the templates you just authored. For reference, here’s the [Plug Exception implementation](https://github.com/ash-project/ash_phoenix/blob/main/lib/ash_phoenix/plug/exception.ex) that does the translation.
+
+## Field guide: 404 / 403 / 500 flows
+
+**Not Found (404):**
+
+```elixir
+def handle_event("view_post", %{"id" => id}, socket) do
+  post = MyApp.Content.get_post!(id, actor: socket.assigns.current_user)
+  {:noreply, push_navigate(socket, to: ~p"/posts/#{post.id}")}
+end
+```
+
+**Forbidden (403):**
+
+```elixir
+def handle_event("comment_on_post", params, socket) do
+  MyApp.Content.create_comment!(params, actor: socket.assigns.current_user)
+  {:noreply, put_flash(socket, :info, "Comment added!")}
+end
+```
+
+**Server Error (500):**
+
+```elixir
+def assign_posts(socket) do
+  try do
+    posts = MyApp.Content.list_posts!(actor: socket.assigns.current_user)
+    assign(socket, :posts, posts)
+  rescue
+    error ->
+      Logger.error("Error loading posts: #{inspect(error)}")
+      raise error
+  end
+end
+```
+
+## Operational rituals that keep things steady
+
+- **Microcopy rehearsals:** Revisit the wording quarterly so it still sounds like the rest of your product.
+- **Observability hooks:** Log the underlying error with enough context to debug without exposing internals to users.
+- **One source of truth:** Keep rendering definitions centralized so new surfaces (emails, APIs) inherit the same tone.
+- **Visual continuity:** Audit typography, spacing, and buttons to ensure error views feel like they belong to the same system.
+
+## Why this approach keeps resonating
+
+- **Protocols over patches:** Plug + Ash exceptions give you composable failure semantics.
+- **Format aware:** Phoenix automatically returns JSON or HTML using the same definitions, so nothing gets forked.
+- **Narrative-reinforced:** Templates, layout, and copy speak with one voice, even when the system apologizes.
+
+Designing for the messy edges is what separates thoughtful builders from the rest. When a LiveView hits turbulence, it should still feel inevitable: clear copy, useful action, no drama. That’s the kind of reliability people remember.

@@ -1,0 +1,33 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import BlogPostingCard from './blog-posting-card.astro'
+import Stack from '@components/layouts/stack.astro'
+import Text from '@components/ui/text.astro'
+
+interface Props {
+  blogPostings: CollectionEntry<'blog-postings'>[]
+  emptyMessage?: string
+  keywordMap?: Record<string, CollectionEntry<'defined-terms'>[]> | undefined
+}
+
+const { blogPostings, emptyMessage = 'No blog postings found.', keywordMap }: Props = Astro.props
+---
+
+<Stack as="section" direction="column" gap="lg">
+  <Stack as="div" direction="column" gap="xl">
+    {
+      blogPostings.map((blogPosting) => (
+        <BlogPostingCard blogPosting={blogPosting} keywords={keywordMap?.[blogPosting.id] ?? []} />
+      ))
+    }
+  </Stack>
+
+  {
+    blogPostings.length === 0 && (
+      <Stack as="div" direction="column" gap="sm">
+        <Text tone="muted">{emptyMessage}</Text>
+        <slot name="empty-action" />
+      </Stack>
+    )
+  }
+</Stack>

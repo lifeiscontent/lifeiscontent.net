@@ -1,0 +1,53 @@
+---
+import { Image } from 'astro:assets'
+import amgenLogo from '@assets/images/logos/amgen.svg'
+import genentechLogo from '@assets/images/logos/genentech.svg'
+import johnsonLogo from '@assets/images/logos/johnson-and-johnson.svg'
+import mccormickLogo from '@assets/images/logos/mccormick.svg'
+import nikeLogo from '@assets/images/logos/nike.svg'
+import novartisLogo from '@assets/images/logos/novartis.svg'
+
+const clients = [
+  { name: 'AMGEN', src: amgenLogo, width: 80, height: 21 },
+  { name: 'Genentech', src: genentechLogo, width: 84, height: 54 },
+  {
+    name: 'Johnson & Johnson',
+    src: johnsonLogo,
+    width: 84,
+    height: 54,
+  },
+  { name: 'McCormick', src: mccormickLogo, width: 84, height: 54 },
+  { name: 'NIKE', src: nikeLogo, width: 84, height: 54 },
+  { name: 'Novartis', src: novartisLogo, width: 84, height: 54 },
+]
+---
+
+<section class="px-4 py-16 sm:py-20">
+  <div class="grid w-full place-items-center">
+    <div class="flex w-full max-w-4xl flex-col gap-12">
+      <div class="flex flex-col gap-3">
+        <p class="text-subtle text-xs font-semibold tracking-[0.4em] uppercase">Collaboration</p>
+        <h2 class="text-default text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
+          Trusted by teams shaping the future.
+        </h2>
+        <p class="text-muted text-base leading-relaxed sm:text-lg">
+          Product orgs, from Fortune 50 to boundary-pushing startups, use my systems thinking to
+          ship work that resonates.
+        </p>
+      </div>
+      <div class="grid grid-cols-2 place-items-center gap-8 sm:grid-cols-3">
+        {
+          clients.map((client) => (
+            <Image
+              src={client.src}
+              alt={client.name}
+              width={client.width}
+              height={client.height}
+              class="opacity-70 saturate-0 transition hover:opacity-100 hover:saturate-100 dark:invert dark:hover:invert-0"
+            />
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>

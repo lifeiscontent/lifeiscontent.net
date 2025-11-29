@@ -1,0 +1,5 @@
+{
+  "@type": "DefinedTerm",
+  "name": "Polymorphism",
+  "description": "Concepts for sharing behavior across data types without inheritance."
+}

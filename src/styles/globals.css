@@ -1,0 +1,152 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --color-primary-50: oklch(92.47% 0.039 291.98);
+  --color-primary-100: oklch(85.84% 0.076 292.23);
+  --color-primary-200: oklch(71.18% 0.163 290.54);
+  --color-primary-300: oklch(57.86% 0.247 288.25);
+  --color-primary-400: oklch(43.98% 0.255 285.98);
+  --color-primary-500: oklch(27.54% 0.16 285.85);
+  --color-primary-600: oklch(25.21% 0.147 285.6);
+  --color-primary-700: oklch(22.42% 0.13 286.46);
+  --color-primary-800: oklch(19.16% 0.111 285.95);
+  --color-primary-900: oklch(16.17% 0.094 285.36);
+  --color-primary-950: oklch(11.23% 0.065 286.04);
+
+  --font-family-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-family-mono: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+
+  --spacing-18: 4.5rem;
+  --spacing-88: 22rem;
+  --spacing-128: 32rem;
+
+  --max-width-8xl: 88rem;
+  --max-width-9xl: 96rem;
+
+  --background-color-page: #ffffff;
+  --background-color-muted: oklch(96% 0.01 260);
+  --background-color-surface-card: color-mix(in oklch, #ffffff 92%, #000000 8%);
+  --background-color-surface-elevated: color-mix(in oklch, #ffffff 86%, #000000 14%);
+  --background-color-surface-glass: color-mix(in oklch, #ffffff 90%, transparent 10%);
+  --border-color-soft: color-mix(in oklch, oklch(25% 0.01 262) 18%, transparent);
+  --border-color-strong: color-mix(in oklch, oklch(20% 0.02 262) 26%, transparent);
+  --text-color-default: oklch(21% 0.02 258);
+  --text-color-muted: oklch(32% 0.015 258);
+  --text-color-subtle: oklch(40% 0.01 258);
+  --text-color-inverse: oklch(97% 0.01 258);
+  --selection-bg: var(--color-primary-100);
+  --selection-fg: var(--color-primary-900);
+  --ring-offset-color: var(--background-color-page);
+  --shadow-card-soft: 0 35px 80px rgba(15, 23, 42, 0.08);
+
+  --animate-fade-in: fadeIn 0.5s ease-in-out;
+  --animate-slide-in-up: slideInUp 0.5s ease-out;
+  --animate-slide-in-down: slideInDown 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInUp {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInDown {
+  0% {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background-color-page: #050505;
+    --background-color-muted: oklch(22% 0.01 262);
+    --background-color-surface-card: color-mix(in oklch, #050505 85%, #ffffff 15%);
+    --background-color-surface-elevated: color-mix(in oklch, #050505 78%, #ffffff 22%);
+    --background-color-surface-glass: color-mix(in oklch, #050505 70%, transparent 30%);
+    --border-color-soft: color-mix(in oklch, oklch(85% 0.04 262) 24%, transparent);
+    --border-color-strong: color-mix(in oklch, oklch(90% 0.04 262) 35%, transparent);
+    --text-color-default: oklch(92% 0.02 262);
+    --text-color-muted: oklch(82% 0.02 262);
+    --text-color-subtle: oklch(74% 0.015 262);
+    --text-color-inverse: oklch(8% 0.02 262);
+    --selection-bg: var(--color-primary-800);
+    --selection-fg: var(--color-primary-50);
+    --ring-offset-color: var(--background-color-page);
+    --astro-code-background: oklch(16% 0.02 262);
+    --astro-code-foreground: oklch(92% 0.015 262);
+    --astro-code-token-comment: oklch(78% 0.012 250);
+    --astro-code-token-keyword: oklch(78% 0.2 305);
+    --astro-code-token-function: oklch(85% 0.06 268);
+    --astro-code-token-string: oklch(82% 0.12 155);
+    --astro-code-token-string-expression: oklch(82% 0.12 155);
+    --astro-code-token-constant: oklch(80% 0.19 40);
+    --astro-code-token-punctuation: oklch(82% 0.01 260);
+    --astro-code-token-parameter: oklch(86% 0.02 260);
+    --astro-code-highlight: color-mix(in oklch, var(--astro-code-background) 55%, var(--color-primary-500) 45%);
+  }
+}
+
+/* Global styles */
+@layer base {
+  :root {
+    color-scheme: light;
+    accent-color: var(--color-primary-500);
+    --astro-code-foreground: oklch(30% 0.03 258);
+    --astro-code-background: oklch(99% 0.01 260);
+    --astro-code-token-comment: oklch(47% 0.015 240);
+    --astro-code-token-keyword: oklch(46% 0.23 305);
+    --astro-code-token-function: oklch(38% 0.06 268);
+    --astro-code-token-string: oklch(60% 0.13 155);
+    --astro-code-token-string-expression: oklch(60% 0.13 155);
+    --astro-code-token-constant: oklch(55% 0.19 35);
+    --astro-code-token-punctuation: oklch(40% 0.02 260);
+    --astro-code-token-link: var(--color-primary-500);
+    --astro-code-token-parameter: oklch(45% 0.025 260);
+    --astro-code-highlight: color-mix(in oklch, var(--astro-code-background) 70%, var(--color-primary-50) 30%);
+  }
+
+  html {
+    @apply scroll-smooth min-w-[320px];
+    color-scheme: light dark;
+  }
+
+  body {
+    @apply font-sans text-default bg-page min-h-full m-0 leading-normal antialiased tracking-[-0.01em];
+  }
+
+  /* Selection styles */
+  ::selection {
+    background-color: var(--selection-bg);
+    color: var(--selection-fg);
+  }
+
+}
+
+@layer utilities {
+  .no-print {
+    @media print {
+      display: none !important;
+    }
+  }
+}
+

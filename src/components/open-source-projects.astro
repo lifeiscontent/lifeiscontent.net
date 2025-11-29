@@ -1,0 +1,80 @@
+---
+const projects = [
+  {
+    name: 'Storybook',
+    href: 'https://storybook.js.org/',
+    description:
+      'Storybook is a frontend workshop for building UI components and pages in isolation. It helps developers build robust UIs and streamlines the development workflow by providing a dedicated environment for component development.',
+  },
+  {
+    name: 'Ash',
+    href: 'https://www.ash-hq.org/',
+    description:
+      'Ash is a declarative, resource-oriented application development framework for Elixir. It provides a powerful way to model your domain and build applications with automatic API generation, authorization, and more.',
+  },
+  {
+    name: 'Redux',
+    href: 'https://github.com/reactjs/redux',
+    description:
+      'Redux is a predictable state container for JavaScript apps. It helps you write applications that behave consistently, run in different environments (client, server, and native), and are easy to test.',
+  },
+  {
+    name: 'React on Rails',
+    href: 'https://github.com/shakacode/react_on_rails',
+    description:
+      'React on Rails integrates React with Rails. It provides server-side rendering of React components, better performance, and a seamless developer experience for building modern web applications with Rails.',
+  },
+  {
+    name: 'AngularJS',
+    href: 'https://angularjs.org/',
+    description:
+      'AngularJS is a structural framework for dynamic web apps. It lets you use HTML as your template language and lets you extend HTML syntax to express your application components clearly and succinctly.',
+  },
+  {
+    name: 'Backbone',
+    href: 'https://backbonejs.org/',
+    description:
+      'Backbone.js gives structure to web applications by providing models with key-value binding and custom events, collections with a rich API of enumerable functions, views with declarative event handling, and connects it all to your existing API over a RESTful JSON interface.',
+  },
+]
+---
+
+<section class="px-4 py-16 sm:py-20">
+  <div class="grid w-full place-items-center">
+    <div class="flex w-full max-w-4xl flex-col gap-12">
+      <div class="flex flex-col gap-3">
+        <p class="text-subtle text-xs font-semibold tracking-[0.4em] uppercase">Open source</p>
+        <h2 class="text-default text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
+          Keeping hands in the work.
+        </h2>
+        <p class="text-muted text-base leading-relaxed sm:text-lg">
+          Shipping contributions and shepherding initiatives across the projects that defined modern
+          product development.
+        </p>
+      </div>
+      <div class="flex flex-col gap-8">
+        {
+          projects.map((project) => (
+            <article class="flex flex-col gap-2">
+              <h3 class="text-default text-xl font-semibold">
+                <a
+                  href={project.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-primary-600 hover:text-primary-500 dark:text-primary-300 dark:hover:text-primary-200 inline-flex items-center gap-2 transition-colors"
+                >
+                  {project.name}
+                  <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M12.5 3h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V4.707l-9.146 9.147a.5.5 0 0 1-.708-.708L15.293 4H12.5a.5.5 0 0 1 0-1Z" />
+                    <path d="M5.5 5H9a.5.5 0 0 1 0 1H6v8.5A1.5 1.5 0 0 0 7.5 16h8a1.5 1.5 0 0 0 1.5-1.5V11a.5.5 0 0 1 1 0v3.5A2.5 2.5 0 0 1 15.5 17h-8A2.5 2.5 0 0 1 5 14.5V5.5a.5.5 0 0 1 .5-.5Z" />
+                  </svg>
+                </a>
+              </h3>
+              <p class="text-muted leading-relaxed">{project.description}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>

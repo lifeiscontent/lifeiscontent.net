@@ -1,0 +1,36 @@
+---
+import { Image } from 'astro:assets'
+import iconSvg from '@assets/images/icon.svg'
+import ButtonLink from '@components/ui/button-link.astro'
+---
+
+<section class="px-4 py-16 sm:py-20">
+  <div class="flex w-full justify-center">
+    <div class="flex w-full max-w-2xl flex-col gap-6">
+      <div class="h-14 w-14">
+        <Image src={iconSvg} alt="lifeiscontent logomark" width={56} height={56} />
+      </div>
+      <span class="text-subtle text-xs tracking-[0.4em] uppercase"> Narrative systems </span>
+      <h1 class="text-default text-4xl leading-tight font-semibold text-balance sm:text-5xl">
+        Life is content.
+      </h1>
+      <p class="text-muted text-base leading-relaxed sm:text-lg">
+        I help teams design experiences that feel inevitable, where engineering, content, and brand
+        move together without seams.
+      </p>
+      <div class="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+        <ButtonLink
+          href="mailto:aaron@lifeiscontent.net"
+          variant="primary"
+          size="lg"
+          width="responsive"
+        >
+          Start a project
+        </ButtonLink>
+        <ButtonLink href="/blog-postings" variant="secondary" size="lg" width="responsive">
+          Read the blog
+        </ButtonLink>
+      </div>
+    </div>
+  </div>
+</section>

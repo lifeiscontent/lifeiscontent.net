@@ -1,0 +1,303 @@
+---
+import { getCollection, getEntries, getEntry } from 'astro:content'
+import iconSvg from '@assets/images/icon.svg'
+import amgenLogo from '@assets/images/logos/amgen.svg'
+import genentechLogo from '@assets/images/logos/genentech.svg'
+import johnsonLogo from '@assets/images/logos/johnson-and-johnson.svg'
+import mccormickLogo from '@assets/images/logos/mccormick.svg'
+import nikeLogo from '@assets/images/logos/nike.svg'
+import novartisLogo from '@assets/images/logos/novartis.svg'
+import Layout from '@layouts/layout.astro'
+import Stack from '@components/layouts/stack.astro'
+import Section from '@components/layouts/section.astro'
+import Grid from '@components/layouts/grid.astro'
+import BlogPostingCard from '@components/blog-postings/blog-posting-card.astro'
+import ButtonLink from '@components/ui/button-link.astro'
+import Heading from '@components/ui/heading.astro'
+import Text from '@components/ui/text.astro'
+import Eyebrow from '@components/ui/eyebrow.astro'
+import Anchor from '@components/ui/anchor.astro'
+import Cue from '@components/ui/cue.astro'
+import LogoMark from '@components/ui/logo-mark.astro'
+import ClientLogo from '@components/ui/client-logo.astro'
+import CalloutPanel from '@components/ui/callout-panel.astro'
+import { createPublishedFilter, sortBlogPostingsByDate } from '@lib/content'
+
+const clients = [
+  { name: 'AMGEN', src: amgenLogo, width: 80, height: 21 },
+  { name: 'Genentech', src: genentechLogo, width: 84, height: 54 },
+  { name: 'Johnson & Johnson', src: johnsonLogo, width: 84, height: 54 },
+  { name: 'McCormick', src: mccormickLogo, width: 84, height: 54 },
+  { name: 'NIKE', src: nikeLogo, width: 84, height: 54 },
+  { name: 'Novartis', src: novartisLogo, width: 84, height: 54 },
+]
+
+const openSourceProjects = [
+  {
+    name: 'Storybook',
+    href: 'https://storybook.js.org/',
+    description:
+      'Storybook is a frontend workshop for building UI components and pages in isolation. It helps developers build robust UIs and streamlines the development workflow by providing a dedicated environment for component development.',
+  },
+  {
+    name: 'Ash',
+    href: 'https://www.ash-hq.org/',
+    description:
+      'Ash is a declarative, resource-oriented application development framework for Elixir. It provides a powerful way to model your domain and build applications with automatic API generation, authorization, and more.',
+  },
+  {
+    name: 'Redux',
+    href: 'https://github.com/reactjs/redux',
+    description:
+      'Redux is a predictable state container for JavaScript apps. It helps you write applications that behave consistently, run in different environments (client, server, and native), and are easy to test.',
+  },
+  {
+    name: 'React on Rails',
+    href: 'https://github.com/shakacode/react_on_rails',
+    description:
+      'React on Rails integrates React with Rails. It provides server-side rendering of React components, better performance, and a seamless developer experience for building modern web applications with Rails.',
+  },
+  {
+    name: 'AngularJS',
+    href: 'https://angularjs.org/',
+    description:
+      'AngularJS is a structural framework for dynamic web apps. It lets you use HTML as your template language and lets you extend HTML syntax to express your application components clearly and succinctly.',
+  },
+  {
+    name: 'Backbone',
+    href: 'https://backbonejs.org/',
+    description:
+      'Backbone.js gives structure to web applications by providing models with key-value binding and custom events, collections with a rich API of enumerable functions, views with declarative event handling, and connects it all to your existing API over a RESTful JSON interface.',
+  },
+]
+
+const now = Date.now()
+const recentBlogPostings = sortBlogPostingsByDate(
+  await getCollection('blog-postings', createPublishedFilter(now))
+).slice(0, 3)
+const recentBlogPostingKeywordPairs = await Promise.all(
+  recentBlogPostings.map(
+    async (posting) => [posting.id, await getEntries(posting.data.keywords)] as const
+  )
+)
+const recentBlogPostingKeywordMap = Object.fromEntries(recentBlogPostingKeywordPairs)
+const siteEntry = await getEntry('sites', 'site')
+
+if (!siteEntry) {
+  throw new Error('Site content entry not found')
+}
+
+const publisherEntry = await getEntry(siteEntry.data.publisher)
+const { publisher: _publisherRef, ...siteFields } = siteEntry.data
+const publisherData = publisherEntry?.data ?? null
+
+const siteMetadata = {
+  site: siteFields,
+  publisher: publisherData,
+  title: siteFields.name,
+  description: siteFields.description,
+  jsonLd: {
+    ...siteFields,
+    publisher: publisherData,
+  },
+}
+---
+
+<Layout title={siteMetadata.title} description={siteMetadata.description}>
+  {
+    siteMetadata.jsonLd && (
+      <script type="application/ld+json" is:inline set:html={JSON.stringify(siteMetadata.jsonLd)} />
+    )
+  }
+  <Stack direction="column" gap="2xl">
+    <Section paddingX="sm" paddingY="xl" paddingYAtSm="2xl">
+      <Stack direction="row" justify="center" width="full">
+        <Stack direction="column" width="full" maxWidth="4xl" gap="2xl">
+          <LogoMark src={iconSvg} alt="lifeiscontent logomark" />
+          <Eyebrow>Narrative systems</Eyebrow>
+          <Heading level={1} size="2xl" sizeAtSm="3xl" weight="bold"> Life is content. </Heading>
+          <Text as="p" tone="muted" size="base" sizeAtSm="lg">
+            I help teams design experiences that feel inevitable, where engineering, content, and
+            brand move together without seams.
+          </Text>
+          <Stack
+            direction="column"
+            directionAtSm="row"
+            gap="sm"
+            gapAtSm="md"
+            align="start"
+            wrap
+            width="full"
+            widthAtSm="auto"
+          >
+            <ButtonLink
+              href="mailto:aaron@lifeiscontent.net"
+              variant="primary"
+              size="lg"
+              width="responsive"
+            >
+              Start a project
+            </ButtonLink>
+            <ButtonLink href="/blog-postings" variant="secondary" size="lg" width="responsive">
+              Read the blog
+            </ButtonLink>
+          </Stack>
+        </Stack>
+      </Stack>
+    </Section>
+
+    {
+      recentBlogPostings.length > 0 && (
+        <Section paddingX="sm" paddingY="lg" paddingYAtSm="2xl">
+          <Stack direction="row" justify="center" width="full">
+            <Stack direction="column" width="full" maxWidth="4xl" gap="2xl">
+              <Stack direction="column" gap="sm">
+                <Eyebrow>Latest writing</Eyebrow>
+                <Heading level={2} size="2xl" sizeAtSm="3xl" weight="semibold">
+                  Field notes from the craft.
+                </Heading>
+                <Text tone="muted" size="base" sizeAtSm="lg">
+                  Essays on engineering leadership, design systems, and durable story-driven
+                  products.
+                </Text>
+              </Stack>
+
+              <Stack direction="column" gap="lg">
+                {recentBlogPostings.map((blogPosting) => (
+                  <BlogPostingCard
+                    blogPosting={blogPosting}
+                    keywords={recentBlogPostingKeywordMap[blogPosting.id] ?? []}
+                  />
+                ))}
+              </Stack>
+
+              <Stack direction="row">
+                <ButtonLink href="/blog-postings" variant="secondary" size="lg">
+                  Read the archive
+                </ButtonLink>
+              </Stack>
+            </Stack>
+          </Stack>
+        </Section>
+      )
+    }
+
+    <Section paddingX="sm" paddingY="lg" paddingYAtSm="2xl">
+      <Stack direction="row" justify="center" width="full">
+        <Stack direction="column" width="full" maxWidth="4xl" gap="2xl">
+          <Stack direction="column" gap="sm">
+            <Eyebrow>Collaboration</Eyebrow>
+            <Heading level={2} size="2xl" sizeAtSm="3xl" weight="semibold">
+              Trusted by teams shaping the future.
+            </Heading>
+            <Text tone="muted" size="base" sizeAtSm="lg">
+              Product orgs, from Fortune 50 to boundary-pushing startups, use my systems thinking to
+              ship work that resonates.
+            </Text>
+          </Stack>
+
+          <Grid columns={2} columnsAtSm={3} gapX="3xl" gapY="xl" placeItems="center">
+            {
+              clients.map((client) => (
+                <ClientLogo
+                  src={client.src}
+                  alt={client.name}
+                  width={client.width}
+                  height={client.height}
+                />
+              ))
+            }
+          </Grid>
+        </Stack>
+      </Stack>
+    </Section>
+
+    <Section paddingX="sm" paddingY="lg" paddingYAtSm="2xl">
+      <Stack direction="row" justify="center" width="full">
+        <Stack direction="column" width="full" maxWidth="4xl" gap="xl">
+          <Stack direction="column" gap="sm">
+            <Eyebrow>Open source</Eyebrow>
+            <Heading level={2} size="2xl" sizeAtSm="3xl" weight="semibold">
+              Keeping hands in the work.
+            </Heading>
+            <Text tone="muted" size="base" sizeAtSm="lg">
+              Shipping contributions and shepherding initiatives across the projects that defined
+              modern product development.
+            </Text>
+          </Stack>
+
+          <Grid columns={1} columnsAtSm={2} columnsAtLg={3} gap="lg">
+            {
+              openSourceProjects.map((project) => (
+                <Stack as="article" direction="column" gap="xs">
+                  <Anchor
+                    href={project.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    variant="article"
+                    size="base"
+                    weight="semibold"
+                  >
+                    <Heading level={3} size="xl" weight="semibold" tone="inherit">
+                      <Stack direction="row" gap="xs" align="center">
+                        {project.name}
+                        <Cue tone="default" size="sm">
+                          <svg viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M12.5 3h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V4.707l-9.146 9.147a.5.5 0 0 1-.708-.708L15.293 4H12.5a.5.5 0 0 1 0-1Z" />
+                            <path d="M5.5 5H9a.5.5 0 0 1 0 1H6v8.5A1.5 1.5 0 0 0 7.5 16h8a1.5 1.5 0 0 0 1.5-1.5V11a.5.5 0 0 1 1 0v3.5A2.5 2.5 0 0 1 15.5 17h-8A2.5 2.5 0 0 1 5 14.5V5.5a.5.5 0 0 1 .5-.5Z" />
+                          </svg>
+                        </Cue>
+                      </Stack>
+                    </Heading>
+                  </Anchor>
+                  <Text tone="muted" leading="relaxed">
+                    {project.description}
+                  </Text>
+                </Stack>
+              ))
+            }
+          </Grid>
+        </Stack>
+      </Stack>
+    </Section>
+
+    <Section paddingX="sm" paddingY="lg" paddingYAtSm="2xl">
+      <Stack direction="row" justify="center" width="full">
+        <CalloutPanel>
+          <Stack direction="column" gap="md">
+            <Eyebrow>Collaboration</Eyebrow>
+            <Heading level={2} size="2xl" sizeAtSm="3xl" weight="semibold">
+              Let's design the next chapter together.
+            </Heading>
+            <Text tone="muted" size="base" sizeAtSm="lg">
+              Product strategy, editorial systems, or experience architecture? I help teams
+              translate ambiguity into narrative clarity.
+            </Text>
+            <Stack
+              direction="column"
+              directionAtSm="row"
+              gap="sm"
+              gapAtSm="md"
+              align="start"
+              wrap
+              width="full"
+              widthAtSm="auto"
+            >
+              <ButtonLink
+                href="mailto:aaron@lifeiscontent.net"
+                variant="primary"
+                size="lg"
+                width="responsive"
+              >
+                Start a conversation
+              </ButtonLink>
+              <ButtonLink href="/blog-postings" variant="secondary" size="lg" width="responsive">
+                See recent blog postings
+              </ButtonLink>
+            </Stack>
+          </Stack>
+        </CalloutPanel>
+      </Stack>
+    </Section>
+  </Stack>
+</Layout>

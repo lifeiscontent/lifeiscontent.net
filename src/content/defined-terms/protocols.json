@@ -1,0 +1,5 @@
+{
+  "@type": "DefinedTerm",
+  "name": "Protocols",
+  "description": "Protocol-oriented design, polymorphism, and contracts."
+}

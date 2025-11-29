@@ -1,0 +1,304 @@
+---
+import type { HTMLAttributes } from 'astro/types'
+
+type Direction = 'column' | 'row'
+type Gap = 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl'
+type Align = 'start' | 'center' | 'end' | 'stretch'
+type Justify = 'start' | 'center' | 'end' | 'between'
+type Width = 'auto' | 'full'
+type MaxWidth = 'none' | '2xl' | '3xl' | '4xl'
+type TextAlign = 'left' | 'center' | 'right'
+type Breakpoint = 'sm' | 'md' | 'lg'
+
+type GapMap = Record<Exclude<Gap, 'none'>, string>
+const directionClasses: Record<Direction, string> = {
+  column: 'flex-col',
+  row: 'flex-row',
+}
+
+const gapClasses: Partial<Record<Gap, string>> = {
+  none: 'gap-0',
+  xs: 'gap-1.5',
+  sm: 'gap-2',
+  md: 'gap-4',
+  lg: 'gap-6',
+  xl: 'gap-8',
+  '2xl': 'gap-12',
+  '3xl': 'gap-24',
+}
+
+const gapXClasses: GapMap = {
+  xs: 'gap-x-1.5',
+  sm: 'gap-x-2',
+  md: 'gap-x-4',
+  lg: 'gap-x-6',
+  xl: 'gap-x-8',
+  '2xl': 'gap-x-12',
+  '3xl': 'gap-x-24',
+}
+
+const gapYClasses: GapMap = {
+  xs: 'gap-y-1.5',
+  sm: 'gap-y-2',
+  md: 'gap-y-4',
+  lg: 'gap-y-6',
+  xl: 'gap-y-8',
+  '2xl': 'gap-y-12',
+  '3xl': 'gap-y-24',
+}
+
+const alignClasses: Record<Align, string> = {
+  start: 'items-start',
+  center: 'items-center',
+  end: 'items-end',
+  stretch: 'items-stretch',
+}
+
+const justifyClasses: Record<Justify, string> = {
+  start: 'justify-start',
+  center: 'justify-center',
+  end: 'justify-end',
+  between: 'justify-between',
+}
+
+const widthClasses: Record<Width, string> = {
+  auto: '',
+  full: 'w-full',
+}
+
+const maxWidthClasses: Record<MaxWidth, string> = {
+  none: '',
+  '2xl': 'max-w-2xl',
+  '3xl': 'max-w-3xl',
+  '4xl': 'max-w-4xl',
+}
+
+const textAlignClasses: Record<TextAlign, string> = {
+  left: 'text-left',
+  center: 'text-center',
+  right: 'text-right',
+}
+
+interface Props extends Omit<HTMLAttributes<'div'>, 'class' | 'style'> {
+  as?: keyof HTMLElementTagNameMap
+  direction?: Direction
+  directionAtSm?: Direction | undefined
+  directionAtMd?: Direction | undefined
+  directionAtLg?: Direction | undefined
+  gap?: Gap
+  gapX?: Exclude<Gap, 'none'> | undefined
+  gapY?: Exclude<Gap, 'none'> | undefined
+  gapAtSm?: Exclude<Gap, 'none'> | undefined
+  gapAtMd?: Exclude<Gap, 'none'> | undefined
+  gapAtLg?: Exclude<Gap, 'none'> | undefined
+  align?: Align
+  alignAtSm?: Align | undefined
+  alignAtMd?: Align | undefined
+  alignAtLg?: Align | undefined
+  justify?: Justify
+  justifyAtSm?: Justify | undefined
+  justifyAtMd?: Justify | undefined
+  justifyAtLg?: Justify | undefined
+  wrap?: boolean
+  width?: Width
+  widthAtSm?: Width | undefined
+  widthAtMd?: Width | undefined
+  widthAtLg?: Width | undefined
+  maxWidth?: MaxWidth
+  textAlign?: TextAlign
+}
+
+const {
+  as: Component = 'div',
+  direction,
+  directionAtSm,
+  directionAtMd,
+  directionAtLg,
+  gap,
+  gapX,
+  gapY,
+  gapAtSm,
+  gapAtMd,
+  gapAtLg,
+  align,
+  alignAtSm,
+  alignAtMd,
+  alignAtLg,
+  justify,
+  justifyAtSm,
+  justifyAtMd,
+  justifyAtLg,
+  wrap,
+  width,
+  widthAtSm,
+  widthAtMd,
+  widthAtLg,
+  maxWidth,
+  textAlign,
+  ...htmlProps
+}: Props = Astro.props
+
+const responsiveDirectionClassMap: Record<Breakpoint, Record<Direction, string>> = {
+  sm: {
+    column: 'sm:flex-col',
+    row: 'sm:flex-row',
+  },
+  md: {
+    column: 'md:flex-col',
+    row: 'md:flex-row',
+  },
+  lg: {
+    column: 'lg:flex-col',
+    row: 'lg:flex-row',
+  },
+}
+
+const responsiveGapClassMap: Record<Breakpoint, Record<Exclude<Gap, 'none'>, string>> = {
+  sm: {
+    xs: 'sm:gap-1.5',
+    sm: 'sm:gap-2',
+    md: 'sm:gap-4',
+    lg: 'sm:gap-6',
+    xl: 'sm:gap-8',
+    '2xl': 'sm:gap-12',
+    '3xl': 'sm:gap-24',
+  },
+  md: {
+    xs: 'md:gap-1.5',
+    sm: 'md:gap-2',
+    md: 'md:gap-4',
+    lg: 'md:gap-6',
+    xl: 'md:gap-8',
+    '2xl': 'md:gap-12',
+    '3xl': 'md:gap-24',
+  },
+  lg: {
+    xs: 'lg:gap-1.5',
+    sm: 'lg:gap-2',
+    md: 'lg:gap-4',
+    lg: 'lg:gap-6',
+    xl: 'lg:gap-8',
+    '2xl': 'lg:gap-12',
+    '3xl': 'lg:gap-24',
+  },
+}
+
+const responsiveAlignClassMap: Record<Breakpoint, Record<Align, string>> = {
+  sm: {
+    start: 'sm:items-start',
+    center: 'sm:items-center',
+    end: 'sm:items-end',
+    stretch: 'sm:items-stretch',
+  },
+  md: {
+    start: 'md:items-start',
+    center: 'md:items-center',
+    end: 'md:items-end',
+    stretch: 'md:items-stretch',
+  },
+  lg: {
+    start: 'lg:items-start',
+    center: 'lg:items-center',
+    end: 'lg:items-end',
+    stretch: 'lg:items-stretch',
+  },
+}
+
+const responsiveJustifyClassMap: Record<Breakpoint, Record<Justify, string>> = {
+  sm: {
+    start: 'sm:justify-start',
+    center: 'sm:justify-center',
+    end: 'sm:justify-end',
+    between: 'sm:justify-between',
+  },
+  md: {
+    start: 'md:justify-start',
+    center: 'md:justify-center',
+    end: 'md:justify-end',
+    between: 'md:justify-between',
+  },
+  lg: {
+    start: 'lg:justify-start',
+    center: 'lg:justify-center',
+    end: 'lg:justify-end',
+    between: 'lg:justify-between',
+  },
+}
+
+const responsiveWidthClassMap: Record<Breakpoint, Record<Width, string>> = {
+  sm: {
+    auto: 'sm:w-auto',
+    full: 'sm:w-full',
+  },
+  md: {
+    auto: 'md:w-auto',
+    full: 'md:w-full',
+  },
+  lg: {
+    auto: 'lg:w-auto',
+    full: 'lg:w-full',
+  },
+}
+
+const responsiveDirectionClasses = (['sm', 'md', 'lg'] as const)
+  .map((breakpoint) => {
+    const value =
+      breakpoint === 'sm' ? directionAtSm : breakpoint === 'md' ? directionAtMd : directionAtLg
+    return value ? responsiveDirectionClassMap[breakpoint][value] : ''
+  })
+  .filter(Boolean)
+
+const responsiveGapClasses = (['sm', 'md', 'lg'] as const)
+  .map((breakpoint) => {
+    const value = breakpoint === 'sm' ? gapAtSm : breakpoint === 'md' ? gapAtMd : gapAtLg
+    return value ? responsiveGapClassMap[breakpoint][value] : ''
+  })
+  .filter(Boolean)
+
+const responsiveAlignClasses = (['sm', 'md', 'lg'] as const)
+  .map((breakpoint) => {
+    const value = breakpoint === 'sm' ? alignAtSm : breakpoint === 'md' ? alignAtMd : alignAtLg
+    return value ? responsiveAlignClassMap[breakpoint][value] : ''
+  })
+  .filter(Boolean)
+
+const responsiveJustifyClasses = (['sm', 'md', 'lg'] as const)
+  .map((breakpoint) => {
+    const value =
+      breakpoint === 'sm' ? justifyAtSm : breakpoint === 'md' ? justifyAtMd : justifyAtLg
+    return value ? responsiveJustifyClassMap[breakpoint][value] : ''
+  })
+  .filter(Boolean)
+
+const responsiveWidthClasses = (['sm', 'md', 'lg'] as const)
+  .map((breakpoint) => {
+    const value = breakpoint === 'sm' ? widthAtSm : breakpoint === 'md' ? widthAtMd : widthAtLg
+    return value ? responsiveWidthClassMap[breakpoint][value] : ''
+  })
+  .filter(Boolean)
+
+const classNames = [
+  'flex',
+  direction ? directionClasses[direction] : '',
+  ...responsiveDirectionClasses,
+  gap && gapClasses[gap],
+  gapX && gapXClasses[gapX],
+  gapY && gapYClasses[gapY],
+  ...responsiveGapClasses,
+  align ? alignClasses[align] : '',
+  ...responsiveAlignClasses,
+  justify ? justifyClasses[justify] : '',
+  ...responsiveJustifyClasses,
+  wrap ? 'flex-wrap' : '',
+  width ? widthClasses[width] : '',
+  ...responsiveWidthClasses,
+  maxWidth ? maxWidthClasses[maxWidth] : '',
+  textAlign ? textAlignClasses[textAlign] : '',
+]
+  .filter(Boolean)
+  .join(' ')
+---
+
+<Component class={classNames} {...htmlProps}>
+  <slot />
+</Component>
