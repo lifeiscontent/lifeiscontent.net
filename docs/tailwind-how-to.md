@@ -1,74 +1,68 @@
-## Tailwind v4 How-To (Working Notes)
+## Tailwind v4 How-To
 
-These notes snapshot the current rules for building inside the refreshed Tailwind v4 setup. Keep them nearby so every new component feels like it shipped with the same system DNA.
+This doc reflects the current Tailwind v4 + Astro setup. Everything below assumes the tokens, utilities, and bespoke CSS that ship in `src/styles/globals.css`.
 
-### 1. Token-first everything
+### 1. Ground rules
 
-- Tailwind only outputs utilities when a corresponding token exists inside `@theme`. If you need a new color, size, or shadow, define it as a semantic token (`--text-color-default`, `--background-color-surface-card`, `--shadow-card-soft`, etc.) and let Tailwind emit the utility.
-- Token names describe intent, not hue (`-page`, `-muted`, `-surface-card`, `-inverse`). Consistent suffixes keep classes readable.
-- Never hand-roll helpers like `.text-default`. Use the generated classes (`text-default`, `bg-background-color-page`, `shadow-card-soft`). If you feel tempted to write custom CSS for spacing or color, you probably need another token.
+1. **Token-first** – Tailwind only emits utilities for tokens declared in `@theme`. If you reach for a color, spacing value, or type scale that does not exist, add the token first. Literal hex values are noise for the compiler and break light/dark parity.
+2. **No custom spacing classes** – spacing lives in flex/grid `gap-*` utilities or the canonical section shell. Avoid `m-*`, `space-*`, `divide-*`, or bespoke border tricks to create rhythm.
+3. **Reuse primitives** – Section, Stack, Grid, Heading, Text, Anchor, etc. expose the exact props we use in the site. If a new pattern requires more, add it once inside the component rather than sprinkling conditional CSS everywhere else.
+4. **Accessibility first** – Our tokens already back accessible contrast. When creating new combinations, check both color schemes and keyboard focus states before shipping.
 
-### 2. Light/dark parity
+### 2. Global layer & celestial system
 
-- Stick with standard media queries because Tailwind v4’s compiler still expects them:
+`src/styles/globals.css` does most of the heavy lifting:
 
-  ```css
-  @theme {
-    /* light tokens */
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --background-color-page: #050505;
-      --text-color-default: oklch(92% 0.02 262);
-      /* … */
-    }
-  }
-  ```
-
-- Token names must match between schemes so utilities flip automatically.
-- When writing bespoke CSS (e.g., in `globals.css`), include fallbacks (`var(--background-color-page, #ffffff)`) to prevent flashes before JS/hydration kicks in.
+- **Root tokens** – `@layer base { :root { … } }` declares all code-theme variables plus the celestial palette used for the background gradients. Every new custom property must have a dark variant inside `@variant dark { … }` at the same selector depth.
+- **Custom property plumbing** – The scroll animation rides on `@property --celestial-progress` and the `celestial-track` keyframes applied to `body`. Extend or remix the animation by reading that property instead of inventing a second scroll timeline.
+- **Background composition** – `html`, `body`, and their pseudo-elements stack multiple gradients, grain overlays, and conic/radial fills. Modifications should tweak tokens (`--celestial-halo`, `--celestial-ring`, etc.) rather than overriding `background-*` directly. That keeps dark mode, reduced motion, and the blend modes aligned.
+- **Reduced motion** – The `@media (prefers-reduced-motion: reduce)` block locks the animation and sets a sensible fallback `--celestial-progress`. Any new motion-driven effect must respect the same guard.
+- **Utility namespace** – The `@utility no-print { … }` example is the template for future global utilities. Declare them here so Tailwind’s analyzer picks them up and dedupes output.
 
 ### 3. Layout grammar
 
-- **Mobile first:** the viewport meta includes `initial-scale=1` and both `html` + `body` enforce a `min-width: 360px`. Design for that width first, then layer on `sm:` and upward.
-- **Section shell pattern:**
-  1. `section` adds page padding + rhythm (`px-4 py-16 sm:py-20`).
-  2. Inner wrapper: `div.grid.w-full.place-items-center`.
-  3. Content stack: `div.flex.w-full.max-w-4xl.flex-col.gap-*`.
-- **Spacing discipline:** no `m*`, `space-*`, `divide-*`, or ornamental borders. Whitespace comes from `gap-*` inside flex/grid parents plus the section padding. Use whitespace to show unrelated content, not to “style” a component.
-- **Borders & lines:** avoid them. Lean on fills, depth (`shadow-card-soft`), or layout shifts. Focus states can still use semantic border/ring tokens when required for accessibility.
+1. **Section shell** – Outer wrapper handles page padding (`px-4 py-16 sm:py-20`). Inside that, center content with `grid w-full place-items-center`, then stack real content in a `Stack` component limited to `max-w-4xl` (or `max-w-3xl` depending on the layout). Every page follows this spine.
+2. **Stacks everywhere** – Instead of manual `flex` markup, use `Stack` for direction, gap, wrap, and width controls. Props already reflect the responsive combos we actually use, so no extra `class` juggling is necessary.
+3. **Grids for collections** – Grid exposes the column counts we support. If a new breakpoint is needed, add it once in the component; do not inline `grid-cols-*` values across pages.
+4. **Whitespace as structure** – We avoid ornamental borders and rely on whitespace + tone shifts. If you feel compelled to add `border`/`divide`, consider whether a lighter/darker Section tone or additional `gap` communicates separation more cohesively.
 
-### 4. Component nuances
+### 4. Component usage notes
 
-- Buttons and badges already consume semantic tokens (`text-inverse`, `bg-background-color-page`, etc.). When adding a variant, only compose existing tokens; never inject literal colors.
-- Card, hero, and CTA blocks use the same flex stack. If you need new micro-patterns (e.g., a new list style), extract a component so spacing stays centralized.
-- Logo grids: keep them inside responsive grids (`grid grid-cols-2 gap-8 sm:grid-cols-3 place-items-center`). This removes the temptation to sprinkle ad-hoc margins.
+- **Heading/Text** – Sizes and tones are trimmed to the combos actually used. If you need a new tone, add usage first (e.g., on a page) then wire the component, so dead branches don’t return.
+- **Anchor** – Supports `size="inherit" | "sm" | "base"` plus `variant="primary" | "secondary"` and `underline="none" | "hover"`. Reuse those combos instead of adding extra typography wrappers.
+- **CalloutPanel / Card** – Max width is baked into the component (always `max-w-4xl`), and Card only exposes `gap="sm|md"`. Respect that contract so future audits can keep trimming safely.
+- **Blog primitives** – Blog posting cards, lists, keyword badges, etc. already encapsulate the responsive logic and prop sets we still use; no need for extra wrappers.
 
 ### 5. Authoring with `@variant`
 
-- Tailwind rewrites `@variant` blocks into their registered selectors, so you can compose interactions without bloated class lists:
-  ```css
-  .card {
-    @variant hover {
-      background: var(--background-color-surface-card-hover);
-    }
-    @variant @md {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+`globals.css` demonstrates the preferred hierarchy:
+
+```css
+html {
+  /* default visuals */
+  @variant dark {
+    /* dark-mode overrides at the same selector */
   }
-  ```
-- Descendant helpers: `@variant *` (direct children) and `@variant **` (any depth) go last inside the block.
-- Functional variants cover `aria-*`, `data-*`, nth-child helpers, `supports-[...]`, etc. Prefer these over bolting extra wrapper classes into the DOM.
-- `docs/tailwind.md` documents every namespace + fallback chain. Reference it before inventing new tokens.
+}
+
+body {
+  animation-name: celestial-track;
+  @variant dark {
+    /* dark-specific gradients */
+  }
+}
+```
+
+- `@variant hover`, `@variant focus-visible`, `@variant md`, etc., replace the old `:hover`/media queries so Tailwind can statically analyze the block.
+- `@variant *` and `@variant **` stand in for `>` and descendant selectors. Keep them at the bottom of the block to match Tailwind’s expansion order.
+- Functional variants (e.g., `@variant aria-pressed`) are preferred over custom attribute selectors. They read better and integrate with Tailwind’s deduper.
 
 ### 6. Working checklist
 
-1. Define or reuse the needed tokens in `@theme`. No tokens = no utilities.
-2. Build the layout with the standard section shell + stack. Add `gap-*` for rhythm; avoid margins.
-3. Reach for existing UI primitives (button, badge, card). If a net-new pattern emerges, extract it once, not per-page.
-4. Test both color schemes (`prefers-color-scheme: dark`) and small viewports (360 px). Sections should remain centered without horizontal scrolling.
-5. Run `pnpm run build` after theme changes. It validates `@variant`, catches `@dark` misuse, and regenerates the `_astro` CSS bundle.
-6. Update this doc when the system rules shift so every future change starts from the same baseline.
+1. **Add/verify tokens** – Update `@theme` (and `@variant dark` blocks) before writing markup.
+2. **Compose with primitives** – Reach for Section/Stack/Grid/Text/Heading/Anchor/Banners first. If a change needs a new prop, add it and document the usage.
+3. **Guard light/dark & motion** – Test in both schemes and with reduced-motion enabled. Custom properties should retain sensible defaults even before JS hydrates.
+4. **Run the suite** – `pnpm check:lint`, `pnpm check:astro`, and `pnpm run build` should stay green. Lint now covers `.astro` files, and `astro check` is our oracle for type safety across components/content.
+5. **Update docs** – Any structural change (new tokens, layout deviation, component prop add/remove) gets called out here so the next pass has full context.
 
-Sticking to these conventions keeps the site token-driven, mobile-first, and “borderless,” which preserves the seamless narrative experience we’re aiming for.
+Following these rules keeps the system cohesive: tokens drive Tailwind output, globals.css handles the immersive backdrop, and components remain narrowly scoped to the props we actually use.

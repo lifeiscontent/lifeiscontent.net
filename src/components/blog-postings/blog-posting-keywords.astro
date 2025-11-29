@@ -8,7 +8,7 @@ interface Props {
   variant?: 'default' | 'compact'
 }
 
-const { keywords, variant = 'default' }: Props = Astro.props
+const { keywords, variant = 'default' } = Astro.props
 
 const maxKeywords = variant === 'compact' ? 2 : keywords.length
 const gap = variant === 'compact' ? 'xs' : 'sm'
@@ -21,7 +21,7 @@ const gapAtSm = variant === 'compact' ? 'sm' : undefined
       {keywords.slice(0, maxKeywords).map((keyword) => (
         <BadgeLink
           href={`/blog-postings/keywords/${encodeURIComponent(keyword.id)}`}
-          variant="default"
+          variant="primary"
           size="xs"
         >
           {keyword.data.name}

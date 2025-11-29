@@ -1,4 +1,5 @@
 ---
+import clsx from 'clsx'
 import type { HTMLAttributes } from 'astro/types'
 
 type TextSize = 'xs' | 'sm' | 'base' | 'lg'
@@ -6,72 +7,8 @@ type TextTone = 'default' | 'muted' | 'subtle'
 type TextWeight = 'regular' | 'medium' | 'semibold'
 type Tracking = 'normal' | 'wide'
 type Transform = 'none' | 'uppercase'
-type Clamp = 1 | 2 | 3 | 4 | 5
-type Breakpoint = 'sm' | 'md' | 'lg'
+type Clamp = 2 | 3
 type Leading = 'relaxed' | 'snug'
-
-const sizeClasses: Record<TextSize, string> = {
-  xs: 'text-xs',
-  sm: 'text-sm',
-  base: 'text-base',
-  lg: 'text-lg',
-}
-
-const responsiveSizeClassMap: Record<Breakpoint, Record<TextSize, string>> = {
-  sm: {
-    xs: 'sm:text-xs',
-    sm: 'sm:text-sm',
-    base: 'sm:text-base',
-    lg: 'sm:text-lg',
-  },
-  md: {
-    xs: 'md:text-xs',
-    sm: 'md:text-sm',
-    base: 'md:text-base',
-    lg: 'md:text-lg',
-  },
-  lg: {
-    xs: 'lg:text-xs',
-    sm: 'lg:text-sm',
-    base: 'lg:text-base',
-    lg: 'lg:text-lg',
-  },
-}
-
-const toneClasses: Record<TextTone, string> = {
-  default: 'text-default',
-  muted: 'text-muted',
-  subtle: 'text-subtle',
-}
-
-const weightClasses: Record<TextWeight, string> = {
-  regular: 'font-normal',
-  medium: 'font-medium',
-  semibold: 'font-semibold',
-}
-
-const trackingClasses: Record<Tracking, string> = {
-  normal: 'tracking-normal',
-  wide: 'tracking-[0.4em]',
-}
-
-const transformClasses: Record<Transform, string> = {
-  none: '',
-  uppercase: 'uppercase',
-}
-
-const leadingClasses: Record<Leading, string> = {
-  relaxed: 'leading-relaxed',
-  snug: 'leading-snug',
-}
-
-const clampClasses: Record<Clamp, string> = {
-  1: 'line-clamp-1',
-  2: 'line-clamp-2',
-  3: 'line-clamp-3',
-  4: 'line-clamp-4',
-  5: 'line-clamp-5',
-}
 
 type TextAttributes = HTMLAttributes<'p'> &
   HTMLAttributes<'span'> &
@@ -82,8 +19,6 @@ interface Props extends Omit<TextAttributes, 'class' | 'style'> {
   as?: keyof HTMLElementTagNameMap
   size?: TextSize
   sizeAtSm?: TextSize
-  sizeAtMd?: TextSize
-  sizeAtLg?: TextSize
   tone?: TextTone
   weight?: TextWeight
   tracking?: Tracking
@@ -96,8 +31,6 @@ const {
   as: tag = 'p',
   size = 'base',
   sizeAtSm,
-  sizeAtMd,
-  sizeAtLg,
   tone = 'default',
   weight = 'regular',
   tracking = 'normal',
@@ -105,29 +38,49 @@ const {
   leading = 'relaxed',
   clamp,
   ...htmlProps
-}: Props = Astro.props
+} = Astro.props
 
 const Component = tag
 
-const responsiveSizeClasses = (['sm', 'md', 'lg'] as const)
-  .map((breakpoint) => {
-    const value = breakpoint === 'sm' ? sizeAtSm : breakpoint === 'md' ? sizeAtMd : sizeAtLg
-    return value ? responsiveSizeClassMap[breakpoint][value] : ''
-  })
-  .filter(Boolean)
-
-const className = [
-  sizeClasses[size],
-  ...responsiveSizeClasses,
-  toneClasses[tone],
-  weightClasses[weight],
-  trackingClasses[tracking],
-  transformClasses[transform],
-  clamp ? clampClasses[clamp] : '',
-  leadingClasses[leading],
-]
-  .filter(Boolean)
-  .join(' ')
+const className = clsx(
+  {
+    'text-xs': size === 'xs',
+    'text-sm': size === 'sm',
+    'text-base': size === 'base',
+    'text-lg': size === 'lg',
+  },
+  {
+    'sm:text-xs': sizeAtSm === 'xs',
+    'sm:text-sm': sizeAtSm === 'sm',
+    'sm:text-base': sizeAtSm === 'base',
+    'sm:text-lg': sizeAtSm === 'lg',
+  },
+  {
+    'text-neutral-900 dark:text-neutral-100': tone === 'default',
+    'text-neutral-600 dark:text-neutral-300': tone === 'muted',
+    'text-neutral-500 dark:text-neutral-400': tone === 'subtle',
+  },
+  {
+    'font-normal': weight === 'regular',
+    'font-medium': weight === 'medium',
+    'font-semibold': weight === 'semibold',
+  },
+  {
+    'tracking-normal': tracking === 'normal',
+    'tracking-[0.4em]': tracking === 'wide',
+  },
+  {
+    uppercase: transform === 'uppercase',
+  },
+  {
+    'line-clamp-2': clamp === 2,
+    'line-clamp-3': clamp === 3,
+  },
+  {
+    'leading-relaxed': leading === 'relaxed',
+    'leading-snug': leading === 'snug',
+  }
+)
 ---
 
 <Component class={className} {...htmlProps}>

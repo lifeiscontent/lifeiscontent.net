@@ -1,7 +1,7 @@
 ---
+import clsx from 'clsx'
 import type { HTMLAttributes } from 'astro/types'
-
-type ButtonVariant = 'primary' | 'secondary' | 'contrast' | 'on-dark'
+type ButtonVariant = 'primary' | 'secondary'
 type ButtonSize = 'md' | 'lg' | 'xl'
 type ButtonWidth = 'auto' | 'full' | 'responsive'
 
@@ -11,39 +11,30 @@ interface Props extends Omit<HTMLAttributes<'a'>, 'style' | 'class'> {
   width?: ButtonWidth
 }
 
-const { variant = 'primary', size = 'md', width = 'auto', ...linkProps }: Props = Astro.props
+const { variant = 'primary', size = 'md', width = 'auto', ...linkProps } = Astro.props
 
-const variantStyles: Record<ButtonVariant, string> = {
-  primary:
-    'bg-primary-500 text-inverse shadow-none transition-colors hover:bg-primary-600 active:bg-primary-700 dark:bg-primary-400 dark:hover:bg-primary-300',
-  secondary:
-    'bg-transparent text-primary-600 shadow-none transition-colors hover:bg-primary-50/70 active:bg-primary-100/40 focus-visible:ring-primary-200 dark:text-white dark:hover:bg-white/10 dark:active:bg-white/15 dark:focus-visible:ring-white/30',
-  contrast:
-    'bg-background-color-page text-default shadow-sm shadow-black/5 transition-colors hover:bg-background-color-surface-card dark:bg-background-color-surface-card dark:text-default dark:hover:bg-background-color-surface-elevated',
-  'on-dark':
-    'bg-white/10 text-white hover:bg-white/15 focus-visible:ring-white/60 dark:bg-white/5 dark:text-white dark:hover:bg-white/10',
-}
-
-const sizeStyles: Record<ButtonSize, string> = {
-  md: 'px-5 py-2.5 text-sm',
-  lg: 'px-6 py-3 text-base',
-  xl: 'px-8 py-3.5 text-base',
-}
-
-const widthStyles: Record<ButtonWidth, string> = {
-  auto: '',
-  full: 'w-full',
-  responsive: 'w-full sm:w-auto',
-}
-
-const baseStyles =
-  'inline-flex items-center justify-center font-semibold rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 ring-offset-white dark:ring-offset-black disabled:opacity-50 disabled:cursor-not-allowed'
-
-const classes = [baseStyles, variantStyles[variant], sizeStyles[size], widthStyles[width]]
-  .filter(Boolean)
-  .join(' ')
+const classes = clsx(
+  'relative isolate inline-flex transform items-center justify-center overflow-hidden rounded-full font-semibold ring-offset-white transition duration-150 focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:ring-offset-black dark:focus-visible:ring-white',
+  {
+    'bg-black text-white mix-blend-normal shadow-none hover:-translate-y-0.5 hover:bg-black/90 hover:shadow-lg active:translate-y-0 active:bg-black/80 active:shadow-md dark:bg-white dark:text-black dark:hover:bg-white/90 dark:active:bg-white/85':
+      variant === 'primary',
+    'bg-transparent text-neutral-900 shadow-none hover:bg-black/5 hover:text-black active:bg-black/10 active:text-black dark:bg-transparent dark:text-neutral-100 dark:hover:bg-white/10 dark:hover:text-white dark:active:bg-white/15':
+      variant === 'secondary',
+  },
+  {
+    'px-5 py-2.5 text-sm': size === 'md',
+    'px-6 py-3 text-base': size === 'lg',
+    'px-8 py-3.5 text-base': size === 'xl',
+  },
+  {
+    'w-full': width === 'full',
+    'w-full sm:w-auto': width === 'responsive',
+  }
+)
 ---
 
 <a class={classes} {...linkProps}>
-  <slot />
+  <span class="relative z-10 inline-flex items-center mix-blend-normal">
+    <slot />
+  </span>
 </a>

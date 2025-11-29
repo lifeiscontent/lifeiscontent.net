@@ -36,6 +36,8 @@ if (!keywordEntry) {
   throw new Error(`Keyword not found for id: ${id}`)
 }
 
+const ogImagePath = `/open-graph/blog-postings/keywords/${id}.png`
+
 const currentKeyword: DefinedTermEntry = keywordEntry
 const allKeywords = await getCollection('defined-terms')
 const publishedEntries = await getCollection('blog-postings', publishedFilter)
@@ -69,7 +71,7 @@ const keywordLabel = keywordUsageCount === 1 ? 'blog posting' : 'blog postings'
 const browseAllHref = '/blog-postings'
 ---
 
-<Layout title={pageTitle} description={pageDescription}>
+<Layout title={pageTitle} description={pageDescription} ogImagePath={ogImagePath}>
   <Section paddingX="sm" paddingY="xl" paddingYAtSm="2xl">
     <Stack direction="row" justify="center" width="full">
       <Stack direction="column" width="full" maxWidth="4xl" gap="md">
@@ -88,14 +90,13 @@ const browseAllHref = '/blog-postings'
           {currentKeyword.data.name}
         </Heading>
         <Text tone="muted" size="base" sizeAtSm="lg">
-          {keywordUsageCount}
-          {keywordLabel} referencing “{currentKeyword.data.name}”.
+          {keywordUsageCount}&nbsp;{keywordLabel} found.
         </Text>
       </Stack>
     </Stack>
   </Section>
 
-  <Section paddingX="sm" paddingY="lg" paddingYAtSm="2xl">
+  <Section tone="page" paddingX="sm" paddingY="lg" paddingYAtSm="2xl">
     <Stack direction="row" justify="center" width="full">
       <Stack direction="column" width="full" maxWidth="4xl" gap="2xl">
         <BlogPostingList
@@ -108,12 +109,7 @@ const browseAllHref = '/blog-postings'
           </Anchor>
         </BlogPostingList>
 
-        <KeywordList
-          keywords={allKeywords}
-          title="All Keywords"
-          usageCounts={keywordUsageCounts}
-          currentKeywordId={currentKeyword.id}
-        />
+        <KeywordList keywords={allKeywords} currentKeywordId={currentKeyword.id} />
       </Stack>
     </Stack>
   </Section>

@@ -1,51 +1,17 @@
 ---
+import clsx from 'clsx'
 import type { HTMLAttributes } from 'astro/types'
 
-type PaddingX = 'none' | 'sm' | 'md' | 'lg'
-type PaddingY = 'none' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
-type Breakpoint = 'sm' | 'md'
-
-const paddingXClasses: Record<PaddingX, string> = {
-  none: '',
-  sm: 'px-4',
-  md: 'px-6',
-  lg: 'px-8',
-}
-
-const paddingYClasses: Record<PaddingY, string> = {
-  none: '',
-  sm: 'py-8',
-  md: 'py-10',
-  lg: 'py-12',
-  xl: 'py-14',
-  '2xl': 'py-16',
-}
-
-const responsivePaddingYClasses: Record<Breakpoint, Record<PaddingY, string>> = {
-  sm: {
-    none: 'sm:py-0',
-    sm: 'sm:py-8',
-    md: 'sm:py-10',
-    lg: 'sm:py-12',
-    xl: 'sm:py-14',
-    '2xl': 'sm:py-16',
-  },
-  md: {
-    none: 'md:py-0',
-    sm: 'md:py-8',
-    md: 'md:py-10',
-    lg: 'md:py-12',
-    xl: 'md:py-14',
-    '2xl': 'md:py-16',
-  },
-}
+type SectionPaddingX = 'none' | 'sm' | 'md' | 'lg'
+type SectionPaddingY = 'none' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
+type SectionTone = 'transparent' | 'page' | 'muted'
 
 interface Props extends Omit<HTMLAttributes<'section'>, 'class' | 'style'> {
   as?: keyof HTMLElementTagNameMap
-  paddingX?: PaddingX
-  paddingY?: PaddingY
-  paddingYAtSm?: PaddingY
-  paddingYAtMd?: PaddingY
+  paddingX?: SectionPaddingX
+  paddingY?: SectionPaddingY
+  paddingYAtSm?: SectionPaddingY
+  tone?: SectionTone
 }
 
 const {
@@ -53,19 +19,37 @@ const {
   paddingX = 'sm',
   paddingY = 'sm',
   paddingYAtSm,
-  paddingYAtMd,
+  tone = 'transparent',
   ...htmlProps
-}: Props = Astro.props
+} = Astro.props
 
-const className = [
+const className = clsx(
   'w-full',
-  paddingXClasses[paddingX],
-  paddingYClasses[paddingY],
-  paddingYAtSm ? responsivePaddingYClasses.sm[paddingYAtSm] : '',
-  paddingYAtMd ? responsivePaddingYClasses.md[paddingYAtMd] : '',
-]
-  .filter(Boolean)
-  .join(' ')
+  {
+    'px-4': paddingX === 'sm',
+    'px-6': paddingX === 'md',
+    'px-8': paddingX === 'lg',
+  },
+  {
+    'py-8': paddingY === 'sm',
+    'py-10': paddingY === 'md',
+    'py-12': paddingY === 'lg',
+    'py-14': paddingY === 'xl',
+    'py-16': paddingY === '2xl',
+  },
+  {
+    'sm:py-0': paddingYAtSm === 'none',
+    'sm:py-8': paddingYAtSm === 'sm',
+    'sm:py-10': paddingYAtSm === 'md',
+    'sm:py-12': paddingYAtSm === 'lg',
+    'sm:py-14': paddingYAtSm === 'xl',
+    'sm:py-16': paddingYAtSm === '2xl',
+  },
+  {
+    'bg-neutral-50 dark:bg-neutral-950': tone === 'page',
+    'bg-neutral-100 dark:bg-neutral-900': tone === 'muted',
+  }
+)
 ---
 
 <Component class={className} {...htmlProps}>

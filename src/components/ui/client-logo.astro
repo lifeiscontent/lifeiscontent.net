@@ -9,7 +9,7 @@ interface Props {
   height: number
 }
 
-const props: Props = Astro.props
+const props = Astro.props
 const { src, alt, width, height } = props
 ---
 
@@ -18,7 +18,7 @@ const { src, alt, width, height } = props
   alt={alt}
   width={width}
   height={height}
-  class="h-full w-full object-contain opacity-70 saturate-0 transition hover:opacity-100 hover:saturate-100 dark:invert dark:hover:invert-0"
+  class={`h-full w-full object-contain saturate-0 dark:invert`}
   loading="lazy"
   decoding="async"
 />

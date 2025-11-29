@@ -12,8 +12,6 @@ const socialLinks = [
   { label: 'Email', href: 'mailto:aaron@lifeiscontent.net', icon: 'email' },
   { label: 'RSS feed', href: '/rss.xml', icon: 'rss' },
 ] as const
-
-type SocialLink = (typeof socialLinks)[number]
 ---
 
 <footer class="no-print">
@@ -21,8 +19,8 @@ type SocialLink = (typeof socialLinks)[number]
     <Stack direction="row" justify="center" width="full">
       <Stack direction="column" width="full" maxWidth="4xl" gap="lg">
         <Stack direction="column" gap="xs">
-          <Eyebrow as="span" tone="default">lifeiscontent</Eyebrow>
-          <Text tone="muted">
+          <Eyebrow as="span">lifeiscontent</Eyebrow>
+          <Text tone="default">
             Purposeful stories for thoughtful builders. A mix of engineering, design, and systems
             thinking.
           </Text>
@@ -30,12 +28,12 @@ type SocialLink = (typeof socialLinks)[number]
 
         <Stack direction="row" gap="sm" wrap align="center">
           {
-            socialLinks.map((link: SocialLink) => (
+            socialLinks.map((link) => (
               <Anchor
                 href={link.href}
                 target={link.icon === 'email' ? undefined : '_blank'}
                 rel={link.icon === 'email' ? undefined : 'noopener noreferrer'}
-                variant="article"
+                variant="secondary"
                 size="sm"
                 weight="medium"
                 aria-label={link.label}

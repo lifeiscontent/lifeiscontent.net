@@ -11,7 +11,7 @@ interface Props {
   currentKeywordId?: string
 }
 
-const { keywords, title = 'Keywords', usageCounts = {}, currentKeywordId }: Props = Astro.props
+const { keywords, title = 'Keywords', usageCounts = {}, currentKeywordId } = Astro.props
 ---
 
 <Stack as="section" direction="column" gap="md">

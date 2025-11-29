@@ -1,25 +1,21 @@
 ---
+import clsx from 'clsx'
 import type { HTMLAttributes } from 'astro/types'
 
-type Gap = 'sm' | 'md' | 'lg'
-
-const gapClasses: Record<Gap, string> = {
-  sm: 'gap-4',
-  md: 'gap-5',
-  lg: 'gap-6',
-}
+type CardGap = 'sm' | 'md'
 
 interface Props extends Omit<HTMLAttributes<'article'>, 'class' | 'style'> {
-  gap?: Gap
-  align?: 'start' | 'center'
+  gap?: CardGap
 }
 
-const { gap = 'md', align = 'start', ...htmlProps }: Props = Astro.props
+const { gap = 'md', ...htmlProps } = Astro.props
+
+const className = clsx('flex h-full flex-col', {
+  'gap-4': gap === 'sm',
+  'gap-5': gap === 'md',
+})
 ---
 
-<article
-  class={`flex h-full flex-col ${gapClasses[gap]} ${align === 'center' ? 'items-center text-center' : ''}`}
-  {...htmlProps}
->
+<article class={className} {...htmlProps}>
   <slot />
 </article>

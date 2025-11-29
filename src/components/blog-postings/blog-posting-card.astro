@@ -14,7 +14,7 @@ interface Props {
   variant?: 'default' | 'compact'
 }
 
-const { blogPosting, keywords = [], variant = 'default' }: Props = Astro.props
+const { blogPosting, keywords = [], variant = 'default' } = Astro.props
 
 const metaGap = variant === 'compact' ? 'xs' : 'sm'
 const metaDirection = variant === 'compact' ? 'column' : 'row'

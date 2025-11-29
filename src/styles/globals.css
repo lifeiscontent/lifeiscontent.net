@@ -1,152 +1,307 @@
-@import "tailwindcss";
-@plugin "@tailwindcss/typography";
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
 
-@theme {
-  --color-primary-50: oklch(92.47% 0.039 291.98);
-  --color-primary-100: oklch(85.84% 0.076 292.23);
-  --color-primary-200: oklch(71.18% 0.163 290.54);
-  --color-primary-300: oklch(57.86% 0.247 288.25);
-  --color-primary-400: oklch(43.98% 0.255 285.98);
-  --color-primary-500: oklch(27.54% 0.16 285.85);
-  --color-primary-600: oklch(25.21% 0.147 285.6);
-  --color-primary-700: oklch(22.42% 0.13 286.46);
-  --color-primary-800: oklch(19.16% 0.111 285.95);
-  --color-primary-900: oklch(16.17% 0.094 285.36);
-  --color-primary-950: oklch(11.23% 0.065 286.04);
-
-  --font-family-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-family-mono: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
-
-  --spacing-18: 4.5rem;
-  --spacing-88: 22rem;
-  --spacing-128: 32rem;
-
-  --max-width-8xl: 88rem;
-  --max-width-9xl: 96rem;
-
-  --background-color-page: #ffffff;
-  --background-color-muted: oklch(96% 0.01 260);
-  --background-color-surface-card: color-mix(in oklch, #ffffff 92%, #000000 8%);
-  --background-color-surface-elevated: color-mix(in oklch, #ffffff 86%, #000000 14%);
-  --background-color-surface-glass: color-mix(in oklch, #ffffff 90%, transparent 10%);
-  --border-color-soft: color-mix(in oklch, oklch(25% 0.01 262) 18%, transparent);
-  --border-color-strong: color-mix(in oklch, oklch(20% 0.02 262) 26%, transparent);
-  --text-color-default: oklch(21% 0.02 258);
-  --text-color-muted: oklch(32% 0.015 258);
-  --text-color-subtle: oklch(40% 0.01 258);
-  --text-color-inverse: oklch(97% 0.01 258);
-  --selection-bg: var(--color-primary-100);
-  --selection-fg: var(--color-primary-900);
-  --ring-offset-color: var(--background-color-page);
-  --shadow-card-soft: 0 35px 80px rgba(15, 23, 42, 0.08);
-
-  --animate-fade-in: fadeIn 0.5s ease-in-out;
-  --animate-slide-in-up: slideInUp 0.5s ease-out;
-  --animate-slide-in-down: slideInDown 0.5s ease-out;
+@property --celestial-progress {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
 }
 
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
+@keyframes celestial-track {
+  from {
+    --celestial-progress: 0;
   }
-  100% {
-    opacity: 1;
+  to {
+    --celestial-progress: 1;
   }
 }
 
-@keyframes slideInUp {
-  0% {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  100% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@keyframes slideInDown {
-  0% {
-    transform: translateY(-20px);
-    opacity: 0;
-  }
-  100% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background-color-page: #050505;
-    --background-color-muted: oklch(22% 0.01 262);
-    --background-color-surface-card: color-mix(in oklch, #050505 85%, #ffffff 15%);
-    --background-color-surface-elevated: color-mix(in oklch, #050505 78%, #ffffff 22%);
-    --background-color-surface-glass: color-mix(in oklch, #050505 70%, transparent 30%);
-    --border-color-soft: color-mix(in oklch, oklch(85% 0.04 262) 24%, transparent);
-    --border-color-strong: color-mix(in oklch, oklch(90% 0.04 262) 35%, transparent);
-    --text-color-default: oklch(92% 0.02 262);
-    --text-color-muted: oklch(82% 0.02 262);
-    --text-color-subtle: oklch(74% 0.015 262);
-    --text-color-inverse: oklch(8% 0.02 262);
-    --selection-bg: var(--color-primary-800);
-    --selection-fg: var(--color-primary-50);
-    --ring-offset-color: var(--background-color-page);
-    --astro-code-background: oklch(16% 0.02 262);
-    --astro-code-foreground: oklch(92% 0.015 262);
-    --astro-code-token-comment: oklch(78% 0.012 250);
-    --astro-code-token-keyword: oklch(78% 0.2 305);
-    --astro-code-token-function: oklch(85% 0.06 268);
-    --astro-code-token-string: oklch(82% 0.12 155);
-    --astro-code-token-string-expression: oklch(82% 0.12 155);
-    --astro-code-token-constant: oklch(80% 0.19 40);
-    --astro-code-token-punctuation: oklch(82% 0.01 260);
-    --astro-code-token-parameter: oklch(86% 0.02 260);
-    --astro-code-highlight: color-mix(in oklch, var(--astro-code-background) 55%, var(--color-primary-500) 45%);
-  }
-}
-
-/* Global styles */
 @layer base {
   :root {
-    color-scheme: light;
-    accent-color: var(--color-primary-500);
-    --astro-code-foreground: oklch(30% 0.03 258);
-    --astro-code-background: oklch(99% 0.01 260);
-    --astro-code-token-comment: oklch(47% 0.015 240);
-    --astro-code-token-keyword: oklch(46% 0.23 305);
-    --astro-code-token-function: oklch(38% 0.06 268);
-    --astro-code-token-string: oklch(60% 0.13 155);
-    --astro-code-token-string-expression: oklch(60% 0.13 155);
-    --astro-code-token-constant: oklch(55% 0.19 35);
-    --astro-code-token-punctuation: oklch(40% 0.02 260);
-    --astro-code-token-link: var(--color-primary-500);
-    --astro-code-token-parameter: oklch(45% 0.025 260);
-    --astro-code-highlight: color-mix(in oklch, var(--astro-code-background) 70%, var(--color-primary-50) 30%);
+    /* Aurora-inspired syntax colors tuned for contrast */
+    --astro-code-foreground: theme(--color-neutral-950);
+    --astro-code-background: theme(--color-neutral-100);
+    --astro-code-token-constant: theme(--color-amber-700);
+    --astro-code-token-string: theme(--color-emerald-700);
+    --astro-code-token-comment: theme(--color-neutral-600);
+    --astro-code-token-keyword: theme(--color-fuchsia-700);
+    --astro-code-token-parameter: theme(--color-neutral-800);
+    --astro-code-token-function: theme(--color-sky-800);
+    --astro-code-token-string-expression: theme(--color-teal-700);
+    --astro-code-token-punctuation: theme(--color-neutral-700);
+    --astro-code-token-link: theme(--color-blue-700);
+
+    --celestial-sky: theme(--color-sky-50);
+    --celestial-core: theme(--color-amber-200);
+    --celestial-ring: theme(--color-orange-200);
+    --celestial-halo: theme(--color-amber-100);
+    --celestial-shadow: theme(--color-blue-100);
+    --celestial-reflection: theme(--color-rose-100);
+    --celestial-sky-top: theme(--color-sky-100);
+    --celestial-sky-bottom: theme(--color-rose-50);
+    --celestial-progress: 0;
+    --celestial-overlay: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCA0MDAgNDAwJz4KPHJlY3Qgd2lkdGg9JzQwMCcgaGVpZ2h0PSc0MDAnIGZpbGw9J25vbmUnLz4KPGcgZmlsbD0nbm9uZScgc3Ryb2tlPScjZmVmM2M3JyBzdHJva2Utd2lkdGg9JzQnIG9wYWNpdHk9JzAuNSc+CjxwYXRoIGQ9J00wIDIwMCBRMjAwIDEyMCA0MDAgMjAwJy8+CjxwYXRoIGQ9J00wIDI2MCBRMjAwIDE4MCA0MDAgMjYwJy8+CjxwYXRoIGQ9J00wIDE0MCBRMjAwIDYwIDQwMCAxNDAnLz4KPC9nPgo8ZyBmaWxsPSdub25lJyBzdHJva2U9JyNmY2QzNGQnIHN0cm9rZS13aWR0aD0nMicgb3BhY2l0eT0nMC4zNSc+CjxwYXRoIGQ9J002MCAwIFExMjAgMjAwIDYwIDQwMCcvPgo8cGF0aCBkPSdNMjAwIDAgUTI2MCAyMDAgMjAwIDQwMCcvPgo8cGF0aCBkPSdNMzQwIDAgUTQwMCAyMDAgMzQwIDQwMCcvPgo8L2c+Cjwvc3ZnPg==');
+    --celestial-grain: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc2MCcgaGVpZ2h0PSc2MCcgdmlld0JveD0nMCAwIDYwIDYwJz4KPHJlY3Qgd2lkdGg9JzYwJyBoZWlnaHQ9JzYwJyBmaWxsPSdub25lJy8+CjxnIGZpbGw9JyMwMDAwMDAnIGZpbGwtb3BhY2l0eT0nMC4wNCc+CjxjaXJjbGUgY3g9JzUnIGN5PScxMCcgcj0nMS4yJy8+CjxjaXJjbGUgY3g9JzI1JyBjeT0nOCcgcj0nMC45Jy8+CjxjaXJjbGUgY3g9JzQ1JyBjeT0nMTInIHI9JzEuMScvPgo8Y2lyY2xlIGN4PScxMicgY3k9JzI4JyByPScxJy8+CjxjaXJjbGUgY3g9JzMyJyBjeT0nMzInIHI9JzEuMicvPgo8Y2lyY2xlIGN4PSc1MicgY3k9JzMwJyByPScwLjgnLz4KPGNpcmNsZSBjeD0nMTgnIGN5PSc0OCcgcj0nMS4yJy8+CjxjaXJjbGUgY3g9JzM4JyBjeT0nNTInIHI9JzEnLz4KPGNpcmNsZSBjeD0nNTYnIGN5PSc0OCcgcj0nMC45Jy8+CjwvZz4KPC9zdmc+');
+
+    @variant dark {
+      --astro-code-foreground: theme(--color-neutral-50);
+      --astro-code-background: theme(--color-neutral-900);
+      --astro-code-token-constant: theme(--color-amber-300);
+      --astro-code-token-string: theme(--color-emerald-300);
+      --astro-code-token-comment: theme(--color-neutral-400);
+      --astro-code-token-keyword: theme(--color-fuchsia-200);
+      --astro-code-token-parameter: theme(--color-neutral-100);
+      --astro-code-token-function: theme(--color-sky-200);
+      --astro-code-token-string-expression: theme(--color-teal-200);
+      --astro-code-token-punctuation: theme(--color-neutral-200);
+      --astro-code-token-link: theme(--color-cyan-200);
+
+      --celestial-sky: theme(--color-slate-950);
+      --celestial-core: theme(--color-slate-50);
+      --celestial-ring: theme(--color-cyan-300);
+      --celestial-halo: theme(--color-indigo-600);
+      --celestial-shadow: theme(--color-slate-800);
+      --celestial-reflection: theme(--color-indigo-900);
+      --celestial-sky-top: theme(--color-slate-900);
+      --celestial-sky-bottom: theme(--color-slate-950);
+      --celestial-overlay: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCA0MDAgNDAwJz4KPHJlY3Qgd2lkdGg9JzQwMCcgaGVpZ2h0PSc0MDAnIGZpbGw9J25vbmUnLz4KPGcgZmlsbD0nbm9uZScgc3Ryb2tlPScjNjQ3NDhiJyBzdHJva2Utd2lkdGg9JzInIG9wYWNpdHk9JzAuNCc+CjxjaXJjbGUgY3g9JzIwMCcgY3k9JzIwMCcgcj0nODAnLz4KPGNpcmNsZSBjeD0nMjAwJyBjeT0nMjAwJyByPScxNDAnLz4KPGNpcmNsZSBjeD0nMjAwJyBjeT0nMjAwJyByPScyMDAnLz4KPC9nPgo8ZyBmaWxsPSdub25lJyBzdHJva2U9JyMwZWE1ZTknIHN0cm9rZS13aWR0aD0nMS41JyBvcGFjaXR5PScwLjM1Jz4KPHBhdGggZD0nTTQwIDIwMCBxMTYwIC0xMjAgMzIwIDAgcS0xNjAgMTIwIC0zMjAgMCB6Jy8+CjxwYXRoIGQ9J00xMDAgMTAwIHExMDAgNDAgMjAwIDAgcS0xMDAgLTQwIC0yMDAgMCB6Jy8+CjwvZz4KPC9zdmc+');
+    }
   }
 
+  /* Scroll-driven sun/moon background using CSS trig + blend modes */
   html {
-    @apply scroll-smooth min-w-[320px];
-    color-scheme: light dark;
+    background-color: var(--celestial-sky);
+    background-image:
+      radial-gradient(
+        80% 60% at 50% -10%,
+        color-mix(in oklab, var(--celestial-sky-top) 90%, transparent) 0%,
+        transparent 65%
+      ),
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--celestial-sky-top) 80%, transparent) 0%,
+        var(--celestial-sky-bottom) 55%,
+        var(--celestial-sky) 100%
+      ),
+      var(--celestial-grain);
+    background-size:
+      auto,
+      auto,
+      160px 160px;
+    background-repeat: no-repeat, no-repeat, repeat;
+    background-attachment: fixed, fixed, scroll;
+    color: inherit;
+    position: relative;
+    @variant dark {
+      background-image:
+        radial-gradient(
+          90% 65% at 60% -15%,
+          color-mix(in oklab, var(--celestial-sky-top) 80%, transparent) 0%,
+          transparent 70%
+        ),
+        linear-gradient(
+          180deg,
+          color-mix(in oklab, var(--celestial-sky-top) 70%, transparent) 0%,
+          var(--celestial-sky-bottom) 60%,
+          var(--celestial-sky) 100%
+        ),
+        var(--celestial-grain);
+    }
   }
 
+  html::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image: var(--celestial-overlay);
+    background-size: 120vmax 120vmax;
+    background-repeat: no-repeat;
+    background-position: center 25%;
+    mix-blend-mode: soft-light;
+    opacity: 0.18;
+    @variant dark {
+      mix-blend-mode: screen;
+      opacity: 0.15;
+      background-position: center 40%;
+    }
+  }
+
+  html::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    background-image:
+      radial-gradient(
+        130% 90% at 10% 0%,
+        color-mix(in oklab, var(--celestial-halo) 45%, transparent) 0%,
+        transparent 65%
+      ),
+      linear-gradient(
+        115deg,
+        color-mix(in oklab, var(--celestial-ring) 25%, transparent) 0%,
+        transparent 45%,
+        color-mix(in oklab, var(--celestial-reflection) 35%, transparent) 95%
+      );
+    opacity: 0.4;
+    @variant dark {
+      opacity: 0;
+    }
+  }
+
+  /* Scroll-driven sun/moon background using CSS trig + blend modes */
   body {
-    @apply font-sans text-default bg-page min-h-full m-0 leading-normal antialiased tracking-[-0.01em];
+    --celestial-angle: calc(var(--celestial-progress) * 180deg);
+    --celestial-x: calc(50% + cos(var(--celestial-angle)) * 18vmax);
+    --celestial-y: calc(72% - sin(var(--celestial-angle)) * 28vmax);
+    --celestial-reflect-x: calc(50% + cos(var(--celestial-angle)) * 12vmax);
+    --celestial-reflect-y: calc(110% + sin(var(--celestial-angle)) * 8vmax);
+    min-height: 100%;
+    background-color: transparent;
+    background-image:
+      radial-gradient(
+        circle at var(--celestial-x) var(--celestial-y),
+        color-mix(in oklab, var(--celestial-core) 85%, white) 5%,
+        color-mix(in oklab, var(--celestial-ring) 65%, transparent) 35%,
+        transparent 55%
+      ),
+      radial-gradient(
+        160% 90% at var(--celestial-reflect-x) var(--celestial-reflect-y),
+        color-mix(in oklab, var(--celestial-reflection) 35%, transparent) 10%,
+        transparent 70%
+      ),
+      linear-gradient(
+        190deg,
+        color-mix(in oklab, var(--celestial-halo) 25%, transparent) 0%,
+        transparent 60%
+      ),
+      radial-gradient(
+        140% 120% at -10% 8%,
+        color-mix(in oklab, var(--celestial-halo) 60%, transparent) 0%,
+        color-mix(in oklab, var(--celestial-ring) 35%, transparent) 45%,
+        transparent 70%
+      ),
+      radial-gradient(
+        150% 140% at 115% 120%,
+        color-mix(in oklab, var(--celestial-reflection) 55%, transparent) 10%,
+        transparent 65%
+      );
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    color: inherit;
+    animation-name: celestial-track;
+    animation-duration: 1s;
+    animation-timeline: scroll(root block);
+    animation-fill-mode: both;
+    animation-timing-function: linear;
+    position: relative;
   }
 
-  /* Selection styles */
-  ::selection {
-    background-color: var(--selection-bg);
-    color: var(--selection-fg);
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    mix-blend-mode: color-dodge;
+    background-image:
+      radial-gradient(
+        120% 80% at var(--celestial-x) calc(var(--celestial-y) - 8vmax),
+        color-mix(in oklab, var(--celestial-ring) 55%, transparent) 0%,
+        color-mix(in oklab, var(--celestial-halo) 45%, transparent) 40%,
+        transparent 75%
+      ),
+      conic-gradient(
+        from calc(var(--celestial-angle) - 30deg) at 20% 20%,
+        color-mix(in oklab, var(--celestial-reflection) 30%, transparent) 0turn,
+        transparent 0.25turn 0.75turn,
+        color-mix(in oklab, var(--celestial-halo) 25%, transparent) 1turn
+      ),
+      linear-gradient(
+        125deg,
+        color-mix(in oklab, var(--celestial-ring) 18%, transparent) 0%,
+        transparent 50%,
+        color-mix(in oklab, var(--celestial-reflection) 28%, transparent) 85%
+      );
+    opacity: 0.65;
   }
 
-}
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    mix-blend-mode: color-dodge;
+    background-image: conic-gradient(
+      from var(--celestial-angle) at var(--celestial-x) var(--celestial-y),
+      color-mix(in oklab, var(--celestial-ring) 30%, transparent) 0turn,
+      transparent 0.2turn 0.8turn,
+      color-mix(in oklab, var(--celestial-halo) 35%, transparent) 1turn
+    );
+    opacity: 0.25;
+    mask-image: radial-gradient(
+      circle at var(--celestial-x) var(--celestial-y),
+      white 10%,
+      transparent 60%
+    );
+    mask-mode: luminance;
+  }
 
-@layer utilities {
-  .no-print {
-    @media print {
-      display: none !important;
+  @variant dark {
+    body {
+      background-image:
+        radial-gradient(
+          circle at var(--celestial-x) var(--celestial-y),
+          color-mix(in oklab, var(--celestial-core) 65%, white) 4%,
+          color-mix(in oklab, var(--celestial-ring) 45%, transparent) 30%,
+          transparent 55%
+        ),
+        radial-gradient(
+          150% 85% at var(--celestial-reflect-x) var(--celestial-reflect-y),
+          color-mix(in oklab, var(--celestial-reflection) 35%, transparent) 15%,
+          transparent 70%
+        ),
+        linear-gradient(
+          185deg,
+          color-mix(in oklab, var(--celestial-halo) 40%, transparent) 0%,
+          transparent 60%
+        );
+    }
+
+    body::before {
+      mix-blend-mode: lighten;
+      background-image:
+        radial-gradient(
+          90% 70% at 80% 20%,
+          color-mix(in oklab, var(--celestial-ring) 30%, transparent) 0%,
+          transparent 75%
+        ),
+        linear-gradient(
+          120deg,
+          color-mix(in oklab, var(--celestial-halo) 25%, transparent) 0%,
+          transparent 50%,
+          color-mix(in oklab, var(--celestial-reflection) 25%, transparent) 85%
+        );
+      opacity: 0.4;
+    }
+
+    body::after {
+      mix-blend-mode: screen;
+      opacity: 0.3;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    body {
+      --celestial-progress: 0.4;
+      animation: none;
     }
   }
 }
 
+@utility no-print {
+  @media print {
+    @apply hidden!;
+  }
+}

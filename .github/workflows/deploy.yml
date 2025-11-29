@@ -64,11 +64,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run checks
-        run: pnpm check
-
       - name: Build with Astro
         run: pnpm run build
+
+      - name: Run checks
+        run: pnpm check
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

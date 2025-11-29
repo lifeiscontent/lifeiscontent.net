@@ -10,7 +10,7 @@ interface Props {
   keywordMap?: Record<string, CollectionEntry<'defined-terms'>[]> | undefined
 }
 
-const { blogPostings, emptyMessage = 'No blog postings found.', keywordMap }: Props = Astro.props
+const { blogPostings, emptyMessage = 'No blog postings found.', keywordMap } = Astro.props
 ---
 
 <Stack as="section" direction="column" gap="lg">

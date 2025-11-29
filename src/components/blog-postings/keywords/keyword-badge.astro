@@ -9,13 +9,13 @@ interface Props {
   usageCount?: number
 }
 
-const { keyword, isCurrent = false, usageCount = 0 }: Props = Astro.props
+const { keyword, isCurrent = false, usageCount = 0 } = Astro.props
 const keywordSlug = encodeURIComponent(keyword.id)
 ---
 
 <BadgeLink
   href={`/blog-postings/keywords/${keywordSlug}`}
-  variant="subtle"
+  variant="secondary"
   size="sm"
   aria-current={isCurrent ? 'page' : undefined}
 >

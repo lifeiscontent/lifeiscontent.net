@@ -1,113 +1,57 @@
 ---
+import clsx from 'clsx'
 import type { HTMLAttributes } from 'astro/types'
 
 type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6
-type HeadingSize = 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl'
-type HeadingWeight = 'normal' | 'medium' | 'semibold' | 'bold'
-type HeadingTone = 'default' | 'muted' | 'accent' | 'inherit'
-type HeadingAlign = 'left' | 'center'
-type Breakpoint = 'sm' | 'md' | 'lg'
-
-const sizeClasses: Record<HeadingSize, string> = {
-  sm: 'text-lg',
-  md: 'text-xl',
-  lg: 'text-2xl',
-  xl: 'text-3xl',
-  '2xl': 'text-4xl',
-  '3xl': 'text-5xl',
-  '4xl': 'text-6xl',
-}
-
-const responsiveSizeClassMap: Record<Breakpoint, Record<HeadingSize, string>> = {
-  sm: {
-    sm: 'sm:text-lg',
-    md: 'sm:text-xl',
-    lg: 'sm:text-2xl',
-    xl: 'sm:text-3xl',
-    '2xl': 'sm:text-4xl',
-    '3xl': 'sm:text-5xl',
-    '4xl': 'sm:text-6xl',
-  },
-  md: {
-    sm: 'md:text-lg',
-    md: 'md:text-xl',
-    lg: 'md:text-2xl',
-    xl: 'md:text-3xl',
-    '2xl': 'md:text-4xl',
-    '3xl': 'md:text-5xl',
-    '4xl': 'md:text-6xl',
-  },
-  lg: {
-    sm: 'lg:text-lg',
-    md: 'lg:text-xl',
-    lg: 'lg:text-2xl',
-    xl: 'lg:text-3xl',
-    '2xl': 'lg:text-4xl',
-    '3xl': 'lg:text-5xl',
-    '4xl': 'lg:text-6xl',
-  },
-}
-
-const weightClasses: Record<HeadingWeight, string> = {
-  normal: 'font-normal',
-  medium: 'font-medium',
-  semibold: 'font-semibold',
-  bold: 'font-bold',
-}
-
-const toneClasses: Record<HeadingTone, string> = {
-  default: 'text-default',
-  muted: 'text-muted',
-  accent: 'text-primary-600 dark:text-primary-300',
-  inherit: '',
-}
-
-const alignClasses: Record<HeadingAlign, string> = {
-  left: 'text-left',
-  center: 'text-center',
-}
+type HeadingSize = 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl'
+type HeadingWeight = 'semibold' | 'bold'
+type HeadingTone = 'default' | 'accent' | 'inherit'
 
 interface Props extends Omit<HTMLAttributes<'h1'>, 'class' | 'style'> {
   level?: HeadingLevel
   size?: HeadingSize
   sizeAtSm?: HeadingSize
-  sizeAtMd?: HeadingSize
-  sizeAtLg?: HeadingSize
   weight?: HeadingWeight
   tone?: HeadingTone
-  align?: HeadingAlign
 }
 
 const {
   level = 2,
   size = 'lg',
   sizeAtSm,
-  sizeAtMd,
-  sizeAtLg,
   weight = 'semibold',
   tone = 'default',
-  align = 'left',
   ...htmlProps
-}: Props = Astro.props
+} = Astro.props
 
 const Component = `h${level}` as keyof HTMLElementTagNameMap
-const responsiveSizeClasses = (['sm', 'md', 'lg'] as const)
-  .map((breakpoint) => {
-    const value = breakpoint === 'sm' ? sizeAtSm : breakpoint === 'md' ? sizeAtMd : sizeAtLg
-    return value ? responsiveSizeClassMap[breakpoint][value] : ''
-  })
-  .filter(Boolean)
-
-const className = [
-  sizeClasses[size],
-  ...responsiveSizeClasses,
-  weightClasses[weight],
-  toneClasses[tone],
-  alignClasses[align],
-  'leading-tight text-balance',
-]
-  .filter(Boolean)
-  .join(' ')
+const className = clsx(
+  {
+    'text-xl': size === 'md',
+    'text-2xl': size === 'lg',
+    'text-3xl': size === 'xl',
+    'text-4xl': size === '2xl',
+    'text-5xl': size === '3xl',
+    'text-6xl': size === '4xl',
+  },
+  {
+    'sm:text-xl': sizeAtSm === 'md',
+    'sm:text-2xl': sizeAtSm === 'lg',
+    'sm:text-3xl': sizeAtSm === 'xl',
+    'sm:text-4xl': sizeAtSm === '2xl',
+    'sm:text-5xl': sizeAtSm === '3xl',
+    'sm:text-6xl': sizeAtSm === '4xl',
+  },
+  {
+    'font-semibold': weight === 'semibold',
+    'font-bold': weight === 'bold',
+  },
+  {
+    'text-neutral-900 dark:text-neutral-100': tone === 'default',
+    'text-neutral-600 dark:text-neutral-300': tone === 'accent',
+  },
+  'leading-tight text-balance'
+)
 ---
 
 <Component class={className} {...htmlProps}>

@@ -1,35 +1,29 @@
 ---
 import type { HTMLAttributes } from 'astro/types'
+import clsx from 'clsx'
 
-type CueTone = 'default' | 'muted' | 'subtle'
+type CueTone = 'default' | 'subtle'
 type CueSize = 'xs' | 'sm' | 'md'
-
-const toneClasses: Record<CueTone, string> = {
-  default: 'text-default',
-  muted: 'text-muted',
-  subtle: 'text-subtle',
-}
-
-const sizeClasses: Record<CueSize, string> = {
-  xs: 'h-3 w-3',
-  sm: 'h-4 w-4',
-  md: 'h-5 w-5',
-}
 
 interface Props extends Omit<HTMLAttributes<'span'>, 'class' | 'style'> {
   tone?: CueTone
   size?: CueSize
 }
 
-const { tone = 'default', size = 'sm', ...htmlProps }: Props = Astro.props
+const { tone = 'default', size = 'sm', ...htmlProps } = Astro.props
 
-const className = [
-  'inline-flex items-center justify-center shrink-0',
-  toneClasses[tone],
-  sizeClasses[size],
-]
-  .filter(Boolean)
-  .join(' ')
+const className = clsx(
+  'inline-flex shrink-0 items-center justify-center',
+  {
+    'text-neutral-900 dark:text-neutral-100': tone === 'default',
+    'text-neutral-500 dark:text-neutral-400': tone === 'subtle',
+  },
+  {
+    'h-3 w-3': size === 'xs',
+    'h-4 w-4': size === 'sm',
+    'h-5 w-5': size === 'md',
+  }
+)
 ---
 
 <span class={className} aria-hidden="true" {...htmlProps}>

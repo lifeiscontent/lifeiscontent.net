@@ -2,5 +2,7 @@
   "editor.formatOnSave": true,
   "tailwindCSS.includeLanguages": {
     "astro": "html"
-  }
+  },
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "eslint.validate": ["astro", "typescript"]
 }

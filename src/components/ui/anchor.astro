@@ -1,8 +1,9 @@
 ---
+import clsx from 'clsx'
 import type { HTMLAttributes } from 'astro/types'
 
-type AnchorVariant = 'primary' | 'secondary' | 'article'
-type AnchorUnderline = 'always' | 'hover' | 'none'
+type AnchorVariant = 'primary' | 'secondary'
+type AnchorUnderline = 'hover' | 'none'
 type AnchorSize = 'inherit' | 'sm' | 'base'
 type AnchorWeight = 'inherit' | 'medium' | 'semibold'
 
@@ -20,43 +21,26 @@ const {
   weight = 'inherit',
   ...htmlProps
 } = Astro.props
-
-const variantStyles: Record<AnchorVariant, string> = {
-  primary:
-    'text-primary-600 hover:text-primary-500 dark:text-primary-300 dark:hover:text-primary-200',
-  secondary:
-    'text-primary-500/80 hover:text-primary-500 dark:text-primary-200/80 dark:hover:text-primary-200',
-  article:
-    'text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300',
-}
-
-const underlineStyles: Record<AnchorUnderline, string> = {
-  always: 'underline',
-  hover: 'hover:underline',
-  none: '',
-}
-
-const sizeClasses: Record<AnchorSize, string> = {
-  inherit: '',
-  sm: 'text-sm',
-  base: 'text-base',
-}
-
-const weightClasses: Record<AnchorWeight, string> = {
-  inherit: '',
-  medium: 'font-medium',
-  semibold: 'font-semibold',
-}
-
-const classes = [
-  'transition-colors',
-  sizeClasses[size],
-  weightClasses[weight],
-  variantStyles[variant],
-  underlineStyles[underline],
-]
-  .filter(Boolean)
-  .join(' ')
+const classes = clsx(
+  'transition-colors focus-visible:underline focus-visible:decoration-black focus-visible:decoration-2 focus-visible:underline-offset-4 focus-visible:outline-none dark:focus-visible:decoration-white',
+  {
+    'text-sm': size === 'sm',
+    'text-base': size === 'base',
+  },
+  {
+    'font-medium': weight === 'medium',
+    'font-semibold': weight === 'semibold',
+  },
+  {
+    'text-black hover:text-black/80 active:text-black/70 dark:text-white dark:hover:text-white/90 dark:active:text-white/80':
+      variant === 'primary',
+    'text-black/70 hover:text-black/90 active:text-black dark:text-white/70 dark:hover:text-white dark:active:text-white/85':
+      variant === 'secondary',
+  },
+  {
+    'hover:underline': underline === 'hover',
+  }
+)
 ---
 
 <a class={classes} {...htmlProps}>

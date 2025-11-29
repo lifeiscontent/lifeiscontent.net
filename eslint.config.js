@@ -2,6 +2,7 @@
 import eslintPluginAstro from 'eslint-plugin-astro'
 import tseslint from 'typescript-eslint'
 import eslintConfigPrettier from 'eslint-config-prettier'
+import eslintPluginBetterTailwindcss from 'eslint-plugin-better-tailwindcss'
 import { fileURLToPath } from 'node:url'
 import { dirname } from 'node:path'
 
@@ -38,6 +39,21 @@ const astroFlatConfigs = /** @type {FlatConfig[]} */ (
   eslintPluginAstro.configs['flat/recommended'] || eslintPluginAstro.configs.recommended
 )
 const astroRecommendedConfigs = astroFlatConfigs.map(mergeParserOptions)
+const tailwindRecommendedConfig = mergeParserOptions({
+  name: 'better-tailwindcss/recommended',
+  plugins: {
+    'better-tailwindcss': eslintPluginBetterTailwindcss,
+  },
+  settings: {
+    'better-tailwindcss': {
+      entryPoint: 'src/styles/globals.css',
+    },
+  },
+  rules: {
+    ...eslintPluginBetterTailwindcss.configs?.recommended?.rules,
+    'better-tailwindcss/enforce-consistent-line-wrapping': 'off',
+  },
+})
 
 export default [
   {
@@ -45,6 +61,7 @@ export default [
   },
   ...typeCheckedConfigs,
   ...astroRecommendedConfigs,
+  tailwindRecommendedConfig,
   eslintConfigPrettier,
   {
     rules: {

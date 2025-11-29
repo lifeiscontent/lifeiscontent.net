@@ -8,6 +8,8 @@ An Astro-powered narrative studio site pairing long-form writing with a purposef
 - Typed content collections + MDX for structured blog postings, definitions, and authors
 - Tailwind CSS v4 design system shared across components, layouts, and prose
 - RSS feed, sitemap, and canonical metadata for every page
+- Progressive Web App manifest for install prompts and metadata
+- Deterministic OpenGraph images via `astro-og-canvas`
 - GitHub Pages workflow with pnpm caching and artifact deployments
 
 ## Tech Stack
@@ -50,7 +52,7 @@ Visit `http://localhost:4321` during development.
 
 ## Writing Content
 
-Blog postings live in `src/content/blog-postings/` as MDX. Each entry follows the schema defined in `src/content/config.ts` and is validated at build time.
+Blog postings live in `src/content/blog-postings/` as MDX. Each entry follows the schema defined in `src/content.config.ts` and is validated at build time.
 
 ```mdx
 ---
@@ -81,8 +83,9 @@ Other collections (authors, defined terms, sites) follow the same pattern. Inval
 ## Configuration Touchpoints
 
 - `astro.config.mjs`: Integrations (Tailwind, sitemap, mdx), redirects, site metadata.
-- `src/content/config.ts`: Content schemas and collection types.
+- `src/content.config.ts`: Content schemas and collection types.
 - `public/`: CNAME, manifest, favicons, static exports for select posts.
+- `src/pages/open-graph/[...route].ts`: Renders OG cards using site metadata, icon, and `astro-og-canvas`.
 
 ## Project Structure
 

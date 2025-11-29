@@ -44,6 +44,8 @@ if (!entry) {
   throw new Error(`Blog posting not found for id: ${id}`)
 }
 
+const ogImagePath = `/open-graph/blog-postings/${id}.png`
+
 const { Content } = await render(entry)
 const authorEntries = await getEntries(entry.data.author)
 const keywords = await getEntries(entry.data.keywords)
@@ -69,10 +71,10 @@ const readingTimeText = readingTime(entry.body ?? '').text
 // Removed local helper functions as they are imported from @lib/content
 ---
 
-<Layout title={entry.data.headline} description={entry.data.description}>
+<Layout title={entry.data.headline} description={entry.data.description} ogImagePath={ogImagePath}>
   <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
 
-  <Section as="nav" paddingX="sm" paddingY="sm">
+  <Section as="nav" tone="muted" paddingX="sm" paddingY="sm">
     <Stack direction="row" justify="center" width="full">
       <Stack direction="column" width="full" maxWidth="4xl">
         <Stack direction="row" gap="xs" wrap align="center">
@@ -102,9 +104,9 @@ const readingTimeText = readingTime(entry.body ?? '').text
     </Stack>
   </Section>
 
-  <Section paddingX="sm" paddingY="lg" paddingYAtSm="2xl">
+  <Section tone="page" paddingX="sm" paddingY="lg" paddingYAtSm="2xl">
     <Stack direction="row" justify="center" width="full">
-      <Stack as="article" direction="column" width="full" maxWidth="4xl" gap="2xl">
+      <Stack as="article" direction="column" gap="2xl" width="full" maxWidth="4xl">
         <Stack as="header" direction="column" gap="lg">
           <Stack direction="column" gap="sm">
             <Stack direction="row" wrap gap="sm" align="center">
@@ -231,7 +233,7 @@ const readingTimeText = readingTime(entry.body ?? '').text
                     </Text>
                     <Anchor
                       href={`/blog-postings/${previousBlogPosting.id}`}
-                      variant="article"
+                      variant="primary"
                       size="base"
                       weight="semibold"
                     >
@@ -246,13 +248,13 @@ const readingTimeText = readingTime(entry.body ?? '').text
                 )}
 
                 {nextBlogPosting && (
-                  <div class="flex h-full flex-col gap-1.5 md:col-start-2">
+                  <div class={`flex h-full flex-col gap-1.5 md:col-start-2`}>
                     <Text as="span" size="xs" sizeAtSm="sm" tone="subtle" weight="medium">
                       Next Post
                     </Text>
                     <Anchor
                       href={`/blog-postings/${nextBlogPosting.id}`}
-                      variant="article"
+                      variant="primary"
                       size="base"
                       weight="semibold"
                     >
@@ -274,7 +276,7 @@ const readingTimeText = readingTime(entry.body ?? '').text
           relatedBlogPostings.length > 0 && (
             <Stack as="section" direction="column" gap="md">
               <Heading level={2} size="lg" weight="semibold">
-                Related BlogPostings
+                Related Blog Postings
               </Heading>
               <Grid columns={1} columnsAtMd={2} columnsAtLg={3} gap="lg">
                 {relatedBlogPostings.map((related: BlogPostingEntry) => (

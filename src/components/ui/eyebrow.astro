@@ -2,22 +2,19 @@
 import type { HTMLAttributes } from 'astro/types'
 import Text from './text.astro'
 
-type Tone = 'default' | 'muted' | 'subtle'
-
 type EyebrowAttributes = HTMLAttributes<'p'> & HTMLAttributes<'span'> & HTMLAttributes<'div'>
 
 interface Props extends Omit<EyebrowAttributes, 'class' | 'style'> {
   as?: keyof HTMLElementTagNameMap
-  tone?: Tone
 }
 
-const { as = 'p', tone = 'default', ...htmlProps }: Props = Astro.props
+const { as = 'p', ...htmlProps } = Astro.props
 ---
 
 <Text
   as={as}
   size="xs"
-  tone={tone}
+  tone="default"
   weight="semibold"
   tracking="wide"
   transform="uppercase"

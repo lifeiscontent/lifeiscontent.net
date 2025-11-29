@@ -1,28 +1,38 @@
 ---
+import clsx from 'clsx'
 import type { HTMLAttributes } from 'astro/types'
 
-type MaxWidth = '2xl' | '3xl' | '4xl'
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+interface Props extends Omit<HTMLAttributes<'div'>, 'class' | 'style'> {}
+const htmlProps = Astro.props
 
-type Props = Omit<HTMLAttributes<'div'>, 'class' | 'style'> & {
-  maxWidth?: MaxWidth
-}
-
-const maxWidthClasses: Record<MaxWidth, string> = {
-  '2xl': 'max-w-2xl',
-  '3xl': 'max-w-3xl',
-  '4xl': 'max-w-4xl',
-}
-
-const { maxWidth = '4xl', ...htmlProps }: Props = Astro.props
-
-const className = [
-  'w-full rounded-3xl bg-primary-50/80 px-6 py-10 shadow-lg shadow-primary-500/10 dark:bg-primary-900/25 sm:px-10 sm:py-12',
-  maxWidthClasses[maxWidth],
-]
-  .filter(Boolean)
-  .join(' ')
+const className = clsx(
+  'relative isolate w-full overflow-hidden rounded-[32px] bg-white/75 px-6 py-10 shadow-[0_25px_80px_rgba(15,23,42,0.18)] backdrop-blur-2xl backdrop-saturate-150 sm:px-10 sm:py-12',
+  'dark:bg-slate-900/70 dark:shadow-[0_30px_120px_rgba(2,6,23,0.45)]',
+  'max-w-4xl'
+)
 ---
 
 <div class={className} {...htmlProps}>
-  <slot />
+  <div
+    aria-hidden="true"
+    class="pointer-events-none absolute inset-0 -z-10 bg-linear-to-br from-white/90 via-rose-50/40 to-amber-100/40 dark:from-white/10 dark:via-white/0 dark:to-cyan-400/20"
+    style="border-radius: inherit;"
+  >
+  </div>
+  <div
+    aria-hidden="true"
+    class="pointer-events-none absolute inset-0 -z-20 opacity-75 mix-blend-soft-light dark:hidden"
+    style="border-radius: inherit; background: radial-gradient(circle at 18% 0%, rgba(255,255,255,0.9), rgba(255,255,255,0) 50%), radial-gradient(circle at 82% 85%, rgba(251,191,36,0.45), rgba(251,191,36,0) 60%), radial-gradient(120% 80% at 50% 110%, rgba(248,113,113,0.2), rgba(255,255,255,0) 70%), linear-gradient(120deg, rgba(14,165,233,0.2), rgba(244,114,182,0) 55%);"
+  >
+  </div>
+  <div
+    aria-hidden="true"
+    class="pointer-events-none absolute inset-0 -z-20 hidden opacity-70 mix-blend-soft-light dark:block"
+    style="border-radius: inherit; background: radial-gradient(circle at 20% 0%, rgba(255,255,255,0.65), rgba(255,255,255,0) 55%), radial-gradient(circle at 85% 80%, rgba(14,165,233,0.45), rgba(14,165,233,0) 60%);"
+  >
+  </div>
+  <div class="relative z-10">
+    <slot />
+  </div>
 </div>
