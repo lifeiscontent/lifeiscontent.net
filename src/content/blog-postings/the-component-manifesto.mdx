@@ -26,7 +26,7 @@ keywords:
 
 Components are where engineering and design end up meeting. When they don't agree, the UI feels off. When they do, the whole product feels considered.
 
-This is how I build component systems. The patterns mix TypeScript, interaction design, and a bit of systems thinking, so the code keeps making sense long after launch.
+This is how I build component systems. The patterns are part TypeScript discipline and part interaction design, written for code that ages well.
 
 The examples are React, but the ideas work in any component framework. Take the principles, swap the syntax.
 
@@ -534,7 +534,7 @@ type UserManagementProps = {
 }
 
 export function UserManagement({ users, onUpdateUser, variant = 'detailed' }: UserManagementProps) {
-  // Adapt behavior based on purposeful props, not arbitrary flags
+  // Adapt behavior based on the variant, not boolean toggles
 }
 ```
 
@@ -566,7 +566,7 @@ Apply the principles and the call sites change:
   editButtonText="Edit Profile"
 />
 
-// After: clear, purposeful, maintainable
+// After: clear and maintainable
 <UserCard user={user} onEdit={handleEdit} variant="compact" />
 ```
 

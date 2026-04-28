@@ -130,14 +130,14 @@ defimpl JSONEncodable, for: Atom do
 end
 ```
 
-Notice the pattern. Convert the data into something the protocol already knows. Delegate. That's it. Small, composable, no special cases.
+Notice the pattern. Convert the data into something the protocol already knows, then delegate. No special cases needed.
 
 ```elixir
 iex> JSONEncodable.to_json(~D[2024-11-10])
 "\"2024-11-10\""
 ```
 
-No edits to the original module. No forks. Just extension.
+Nothing in the original module changes. The protocol just gets extended for new types as they show up.
 
 ## Maps: the foundation for structs
 
@@ -369,7 +369,7 @@ Elixir does this everywhere:
 - `Enumerable` lets any collection participate in `Enum`.
 - `Collectable` works the other way, building collections from streams.
 
-Implement those for your own structs and suddenly the entire ecosystem understands your data.
+Implement those for your own structs and the rest of the Elixir ecosystem can work with your data without extra wiring.
 
 ## When not to spin up a protocol
 
@@ -389,6 +389,6 @@ Sometimes a protocol is overkill:
 
 ## Closing the loop
 
-Protocols are the quiet handshake that keeps Elixir code flexible. Each type voices what it needs, the system listens, and nobody is editing a giant conditional at 2 a.m.
+Protocols are the quiet handshake that keeps Elixir code flexible. Each type voices what it needs and the system listens. Nobody is editing a giant conditional just to add a new type.
 
 Find the function in your codebase that knows too much. Turn it into a protocol. The rest of the system gets a lot easier to work with.

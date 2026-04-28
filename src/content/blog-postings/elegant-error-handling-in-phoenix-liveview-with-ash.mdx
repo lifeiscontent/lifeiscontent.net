@@ -25,7 +25,7 @@ keywords:
   - ux
 ---
 
-Good products think about their failure states. A blank 500 page, or that classic `no view was found for the format: 'html'` error, yanks people right out of the experience. Those moments are part of the product too. Calm copy. A useful next step. A system that still feels like it knows where it is.
+Good products think about their failure states. A blank 500 page, or that classic `no view was found for the format: 'html'` error, yanks people right out of the experience. Those moments are part of the product too. Even a 500 page should feel like it knows what it is.
 
 This is how I design 404, 403, and 500 experiences in a Phoenix LiveView app that uses Ash. Some of it is engineering. Some of it is just paying attention to tone. The status code is the easy part. The rest is what people actually remember.
 
@@ -36,7 +36,7 @@ This is how I design 404, 403, and 500 experiences in a Phoenix LiveView app tha
 - The copy and layout should feel like the rest of your product, not a fallback page.
 - And honestly, getting these right early saves a lot of debugging later.
 
-## A quick systems sketch
+## How it fits together
 
 1. **Phoenix Endpoint** picks which renderer to use.
 2. **Error layout and templates** set the tone.
