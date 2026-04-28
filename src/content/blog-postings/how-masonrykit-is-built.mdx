@@ -1,0 +1,234 @@
+---
+'@type': 'BlogPosting'
+'@id': 'https://lifeiscontent.net/blog-postings/how-masonrykit-is-built'
+url: 'https://lifeiscontent.net/blog-postings/how-masonrykit-is-built'
+mainEntityOfPage:
+  '@type': 'WebPage'
+  '@id': 'https://lifeiscontent.net/blog-postings/how-masonrykit-is-built'
+isPartOf:
+  '@type': 'Blog'
+  '@id': 'https://lifeiscontent.net/blog-postings'
+  name: 'lifeiscontent.net Blog'
+headline: 'How MasonryKit is built'
+description: 'A walkthrough of MasonryKit and the reasoning behind its three packages: @masonrykit/core for pure math, @masonrykit/browser for DOM utilities, and @masonrykit/react for the hook. Plus the abstractions in each layer worth borrowing for your own libraries.'
+abstract: 'A walkthrough of the architecture and abstractions inside MasonryKit, layer by layer.'
+datePublished: '2026-04-28'
+dateModified: '2026-04-28'
+inLanguage: 'en-US'
+author:
+  - lifeiscontent
+keywords:
+  - architecture
+  - components
+  - react
+  - dx
+---
+
+[MasonryKit](https://github.com/masonrykit/masonrykit) is a TypeScript library for masonry-style grid layouts. The kind where cards of different heights pack into columns without leaving gaps. CSS `display: masonry` is still spotty across browsers, so this is the kind of layout you usually reach for JavaScript.
+
+The library ships three packages. This post walks through what's in each, why the boundary between them is where it is, and which abstractions inside each layer are worth borrowing.
+
+## The three packages
+
+```text
+@masonrykit/core        # Pure layout math, no DOM, no React
+    ↓
+@masonrykit/browser     # + DOM utilities. Re-exports core.
+    ↓
+@masonrykit/react       # + the useMasonry hook. Re-exports browser.
+```
+
+Each layer stacks on the one below. You install only what you need. A vanilla DOM project installs `@masonrykit/browser`. A Node script that pre-computes layouts for SSR installs `@masonrykit/core`. A React app installs `@masonrykit/react` and gets the entire stack from one import.
+
+Re-exports matter here. You never have to install or reach into a lower layer on your own.
+
+## Layer 1: core, where the math lives
+
+`@masonrykit/core` is a pure module. Cells go in, positions come out.
+
+```ts
+import { computeLayout, heightCell, aspectCell } from '@masonrykit/core'
+
+const cells = [heightCell('a', 100), aspectCell('b', 16 / 9), heightCell('c', 50)]
+
+const layout = computeLayout(cells, {
+  gridWidth: 800,
+  columnWidth: 200,
+  gap: 16,
+})
+
+for (const cell of layout.cells) {
+  console.log(cell.id, cell.x, cell.y, cell.width, cell.height)
+}
+```
+
+`computeLayout` is the entire surface of the algorithm. There are also factories for the three cell types, helpers for breakpoint resolution, viewport filtering, and column geometry. Everything else is a type.
+
+Core has two rules. It can't import anything that touches the DOM, and it has no runtime dependencies. That earns a few things.
+
+**Tests run fast.** Every layout test is a function call against pure inputs. No DOM, no rendering, no React wrapping.
+
+**The math is portable.** Need masonry on the server for SSR? Call `computeLayout`. In a Web Worker? Same call. A Vue, Svelte, Solid, or vanilla port doesn't touch the algorithm. Only the binding layer is new.
+
+**The math is easy to reason about.** Pure inputs, pure output. No hidden state. When the layout looks wrong, you log the inputs, log the output, and the bug is somewhere obvious in the geometry.
+
+The cell type itself is a discriminated union with three real shapes:
+
+```ts
+type HeightCell<M> = {
+  id: string
+  type: 'height'
+  height: number
+  columnSpan?: number
+} & Meta<M>
+
+type AspectCell<M> = {
+  id: string
+  type: 'aspect'
+  aspectRatio: number
+  columnSpan?: number
+} & Meta<M>
+
+type MeasuredCell<M> = {
+  id: string
+  type: 'measured'
+  estimatedHeight?: number
+  columnSpan?: number
+} & Meta<M>
+
+type Cell<M> = HeightCell<M> | AspectCell<M> | MeasuredCell<M>
+```
+
+Three cell types because there are three real input shapes for a masonry. You either know the height up front (a fixed-height tile), or you know the aspect ratio (an image with intrinsic dimensions), or you discover the height at render time (user-generated content). A single "cell" type with optional fields would have made the algorithm a tree of `if` statements. The discriminated union turns each branch into a clean pattern match.
+
+`Meta<M>` is also worth pausing on:
+
+```ts
+type Meta<M> = [M] extends [undefined] ? { meta?: M } : { meta: M }
+
+interface Photo {
+  src: string
+  alt: string
+}
+
+const cell = heightCell<Photo>('p1', 200, { meta: { src: '/a.jpg', alt: 'A' } })
+cell.meta.src // type-checks with no `!`
+```
+
+When you supply a generic, `meta` becomes required. When you don't, it's optional. The user's data shape flows from input to output without a single non-null assertion. Many libraries either ignore the metadata problem entirely (pass-through `unknown`) or force you into casts. This conditional type is small and it pays off every time someone uses the library with their own data.
+
+## Layer 2: browser, where the DOM lives
+
+`@masonrykit/browser` is the bridge between the math and the DOM. It's also framework-agnostic. You can use it directly to back a vanilla masonry, or compose on top of it to build a framework binding. The React package does exactly that.
+
+The whole API is small:
+
+```ts
+observeElementWidth(element, onWidth): () => void
+createMeasuredHeightTracker(onChange): MeasuredHeightTracker
+startViewTransition(callback): void
+```
+
+Each of these wraps a browser API that's a small headache to use directly.
+
+`observeElementWidth` is a `ResizeObserver` coalesced through `requestAnimationFrame`. Without that coalescing, rapid resizes can fire the callback dozens of times per frame.
+
+`createMeasuredHeightTracker` aggregates per-cell `ResizeObserver`s and de-dupes spurious 0-height reports. The 0-height filter matters because a spurious zero can land before a child has laid out, and a naive virtualizer will unmount a cell it thinks is empty.
+
+`startViewTransition` is a feature-detected wrapper around `document.startViewTransition`. Browsers without support get a synchronous no-op call. No errors, no animation.
+
+The boundary rule for this layer is that nothing here renders. It observes. The vanilla quick-start in the repo looks roughly like this:
+
+```ts
+const dispose = observeElementWidth(grid, (width) => {
+  const layout = computeLayout(cells, { gridWidth: width, columnWidth: 200, gap: 12 })
+  grid.style.setProperty('--grid-h', `${layout.height}px`)
+  grid.replaceChildren(/* … cells with --x, --y, --w, --h vars … */)
+})
+```
+
+You wrote `replaceChildren`. The library never touched a DOM node. That separation is what lets the same package back a vanilla demo and a React hook from the same source.
+
+## Layer 3: react, where the bindings live
+
+`@masonrykit/react` is one hook.
+
+```ts
+const { stableCells, gridRef, cellRef, measuredIds, layout } = useMasonry(cells, {
+  columnWidth: 240,
+  gap: 16,
+})
+```
+
+What you get back, and only what you get back:
+
+- **`layout`**. The full computed result. You decide what to render.
+- **`stableCells`**. Cells in stable DOM order across shuffles, so React's reconciler keeps the same node when you reorder.
+- **`visibleCells`**. What to paint when virtualization is on.
+- **`measuredIds`**. The set of cell ids whose input was a `measuredCell`. Use it to branch `height: auto` vs `height: cell.height` in your render.
+- **`gridRef`**. Attach to your grid element so the hook can auto-measure width.
+- **`cellRef(id)`**. Returns a ref callback for that cell. Stable identity per id, so React doesn't re-attach on every render.
+
+That's the whole API. The hook deliberately returns _data_, not _elements_. There's no `<Grid>` or `<Cell>` component, and no prop-getter helpers like `getGridProps` / `getCellProps`. You write the JSX yourself, all the way down.
+
+This is what "headless" means in MasonryKit. Some libraries use the word to mean "unstyled component". You still get a `<Component>`, the library just doesn't ship CSS. MasonryKit's hook hands you the layout numbers and the refs the observers need to wire up. Everything else is your code.
+
+The reason for that decision is composition. A consumer might need custom keyboard navigation for an a11y audit, drag-and-drop, server-rendered grids, or View Transitions only on certain changes. None of that should require a fork. With data instead of elements, it's all code at the call site.
+
+The recommended way to apply the layout numbers is via inline CSS custom properties consumed by a stylesheet:
+
+```tsx
+<div
+  ref={cellRef(cell.id)}
+  className="cell"
+  style={
+    {
+      '--x': `${cell.x}px`,
+      '--y': `${cell.y}px`,
+      '--w': `${cell.width}px`,
+      '--h': measuredIds.has(cell.id) ? null : `${cell.height}px`,
+    } as React.CSSProperties
+  }
+/>
+```
+
+```css
+.cell {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--w);
+  height: var(--h, auto);
+  translate: var(--x) var(--y);
+}
+```
+
+The className stays stable across renders. Only the var values change. The browser caches selector matching. The resulting `translate` rides the compositor lane. React's reconciler also has less work, since the `style` object varies in values, not in keys. Inline `transform: translate(...)` mutations force a fresh style invalidation every frame, even when only the transform changed. Under animation churn, the CSS-var pattern is faster.
+
+The library doesn't pick the var names for you. `--x`, `--col`, `--offset-x`. Whatever fits your codebase. Tailwind 4's `translate-x-(--x)` shorthand reads them inline as utilities if you'd rather skip the stylesheet.
+
+## Abstractions worth borrowing
+
+A few patterns from this codebase worth lifting into your own libraries.
+
+**Stable ref callbacks per id.** `cellRef(id)` returns a function whose identity doesn't change across renders. React doesn't re-run attach/detach cycles. Underneath it's a `Map<string, RefCallback>` cached behind the hook. The pattern is easy to get wrong. A naive `(id) => (el) => ...` produces a fresh function on every render and React detaches and reattaches every cell every time.
+
+**Side-channel data instead of fattened types.** `measuredIds` is a `Set<string>` returned alongside `stableCells`. The instinct might be to put `originType: 'measured'` on every `LayoutCell`. That would have leaked the input shape into the output type forever. A side-channel set is cheaper and trivial to remove later if the hook stops needing it.
+
+**Pure functions for things you'd think need hooks.** `filterVisibleCells(cells, gridTop, viewport, overscan?)` takes plain numbers and returns a sliced array. The hook reads `getBoundingClientRect()` and `window.innerHeight` and passes the values in. Virtualization is unit-testable with a couple of `Cell[]` and a viewport rectangle. No DOM mock. No jsdom.
+
+**Required-when-typed generics.** `Meta<M>` is small, but it threads the user's type through the entire library without casts. No `!`, no `as`. The standard alternative is to type the metadata as `unknown` and force consumers to cast at every read site. The conditional type avoids that.
+
+**Layer re-exports.** `@masonrykit/browser` re-exports everything from `@masonrykit/core`. `@masonrykit/react` re-exports everything from `@masonrykit/browser`. One import per layer covers the whole stack underneath. Your consumers never need to know the layering exists.
+
+## Boundary discipline is the point
+
+The hardest part of building a library like this isn't the math. It's deciding what each layer is _not_ allowed to do.
+
+Core can't reach for the DOM. Browser can't render. React can't bake in CSS conventions. Each rule narrows what the layer can be, which is what makes the layer above it possible to build. Without the rule that core stays pure, the browser layer can't be framework-agnostic. Without the rule that browser doesn't render, the React hook can't be a thin binding.
+
+If you're designing a library and you're not sure where to draw the boundaries, the question that helps me is: what would you have to delete if someone asked you to support a different framework next month? In MasonryKit the answer is "the React hook." Core and browser come along unchanged. That's the test that tells you the boundaries are in the right place.
+
+## The repo
+
+Source, demos, and install instructions live at [masonrykit/masonrykit](https://github.com/masonrykit/masonrykit). The packages are published as `@masonrykit/core`, `@masonrykit/browser`, and `@masonrykit/react`. Issues and pull requests are welcome.
