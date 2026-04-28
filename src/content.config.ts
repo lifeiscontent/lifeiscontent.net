@@ -1,15 +1,16 @@
-import { defineCollection, reference, z } from 'astro:content'
+import { defineCollection, reference } from 'astro:content'
 import { glob } from 'astro/loaders'
+import { z } from 'zod'
 
 // Reusable schema fragments for schema.org structured data
 const personSchema = z.object({
   '@type': z.literal('Person').default('Person'),
   name: z.string(),
-  email: z.string().email(),
+  email: z.email(),
   description: z.string(),
-  url: z.string().url().optional(),
-  image: z.string().url().optional(),
-  sameAs: z.array(z.string().url()).default([]),
+  url: z.url().optional(),
+  image: z.url().optional(),
+  sameAs: z.array(z.url()).default([]),
 })
 
 const definedTermSchema = z.object({
@@ -20,19 +21,19 @@ const definedTermSchema = z.object({
 
 const imageObjectSchema = z.object({
   '@type': z.literal('ImageObject').default('ImageObject'),
-  url: z.string().url(),
+  url: z.url(),
   caption: z.string().optional(),
 })
 
 const blogReferenceSchema = z.object({
   '@type': z.literal('Blog').default('Blog'),
-  '@id': z.string().url(),
+  '@id': z.url(),
   name: z.string(),
 })
 
 const webPageReferenceSchema = z.object({
   '@type': z.literal('WebPage').default('WebPage'),
-  '@id': z.string().url(),
+  '@id': z.url(),
 })
 
 const entryPointSchema = z.object({
@@ -48,29 +49,29 @@ const searchActionSchema = z.object({
 
 const blogEntitySchema = blogReferenceSchema.extend({
   '@context': z.literal('https://schema.org'),
-  url: z.string().url(),
+  url: z.url(),
   description: z.string(),
 })
 
 const websiteSchema = z.object({
   '@context': z.literal('https://schema.org'),
   '@type': z.literal('WebSite').default('WebSite'),
-  '@id': z.string().url(),
-  url: z.string().url(),
+  '@id': z.url(),
+  url: z.url(),
   name: z.string(),
   alternateName: z.string().optional(),
   description: z.string(),
   inLanguage: z.string().default('en-US'),
   publisher: reference('persons'),
-  sameAs: z.array(z.string().url()).default([]),
+  sameAs: z.array(z.url()).default([]),
   potentialAction: searchActionSchema.optional(),
 })
 
 const blogPostingSchema = z.object({
   '@context': z.literal('https://schema.org').default('https://schema.org'),
   '@type': z.literal('BlogPosting').default('BlogPosting'),
-  '@id': z.string().url(),
-  url: z.string().url(),
+  '@id': z.url(),
+  url: z.url(),
   headline: z.string(),
   description: z.string(),
   abstract: z.string().optional(),
