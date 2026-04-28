@@ -73,3 +73,6 @@ tsconfig.tsbuildinfo
 # Astro
 .astro/
 dist/
+
+# Claude Code local-only settings
+.claude/settings.local.json
