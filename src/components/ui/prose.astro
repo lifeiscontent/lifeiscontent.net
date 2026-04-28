@@ -8,16 +8,19 @@ interface Props extends Omit<HTMLAttributes<'div'>, 'class' | 'style'> {
 
 const { as: Component = 'div', ...htmlProps } = Astro.props
 const className = clsx(
-  'prose max-w-none text-neutral-900 dark:text-neutral-100',
-  'prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-neutral-900 dark:prose-headings:text-neutral-100 prose-h1:text-balance prose-h2:text-balance',
-  'prose-p:text-neutral-600 dark:prose-p:text-neutral-300 prose-strong:text-neutral-900 dark:prose-strong:text-neutral-100 prose-li:text-neutral-900 dark:prose-li:text-neutral-100 prose-lead:text-neutral-600 dark:prose-lead:text-neutral-300',
-  'prose-a:font-semibold prose-a:text-neutral-600 prose-a:no-underline hover:prose-a:text-neutral-500 dark:prose-a:text-neutral-200 dark:hover:prose-a:text-neutral-100',
-  'prose-blockquote:border-l-2 prose-blockquote:border-neutral-200 prose-blockquote:pl-6 prose-blockquote:text-neutral-900 dark:prose-blockquote:border-neutral-700 dark:prose-blockquote:text-neutral-100',
-  'prose-hr:border-neutral-200 dark:prose-hr:border-neutral-700',
-  'prose-code:bg-neutral-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-neutral-900 dark:prose-code:bg-neutral-900 dark:prose-code:text-neutral-100',
-  'prose-pre:border prose-pre:border-neutral-200 prose-pre:bg-neutral-50 prose-pre:text-neutral-900 prose-pre:shadow-none dark:prose-pre:border-neutral-700 dark:prose-pre:bg-neutral-900 dark:prose-pre:text-neutral-100',
+  'prose max-w-none font-sans text-neutral-900 dark:text-neutral-100',
+  'prose-headings:font-sans prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-neutral-900 dark:prose-headings:text-neutral-100',
+  'prose-h1:text-balance prose-h2:text-balance prose-h2:mt-14 prose-h2:mb-5 prose-h3:mt-10 prose-h3:mb-3',
+  'prose-p:text-neutral-700 dark:prose-p:text-neutral-300 prose-p:leading-[1.7]',
+  'prose-strong:text-neutral-900 dark:prose-strong:text-neutral-100 prose-strong:font-semibold',
+  'prose-li:text-neutral-700 dark:prose-li:text-neutral-300 prose-li:leading-[1.7]',
+  'prose-a:font-medium prose-a:text-neutral-900 prose-a:underline prose-a:decoration-1 prose-a:underline-offset-[0.2em] prose-a:decoration-neutral-300 hover:prose-a:decoration-[var(--color-accent-500)] dark:prose-a:text-neutral-100 dark:prose-a:decoration-neutral-700 dark:hover:prose-a:decoration-[var(--color-accent-500)]',
+  'prose-blockquote:border-l-2 prose-blockquote:border-neutral-200 prose-blockquote:pl-6 prose-blockquote:font-normal prose-blockquote:not-italic prose-blockquote:text-neutral-700 dark:prose-blockquote:border-neutral-800 dark:prose-blockquote:text-neutral-300',
+  'prose-hr:border-neutral-200 dark:prose-hr:border-neutral-800',
+  'prose-code:font-mono prose-code:bg-neutral-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-[0.92em] prose-code:font-normal prose-code:text-neutral-900 prose-code:before:content-none prose-code:after:content-none dark:prose-code:bg-neutral-900 dark:prose-code:text-neutral-100',
+  'prose-pre:font-mono prose-pre:border prose-pre:border-neutral-200 prose-pre:bg-neutral-50 prose-pre:text-neutral-900 prose-pre:shadow-none dark:prose-pre:border-neutral-800 dark:prose-pre:bg-neutral-950 dark:prose-pre:text-neutral-100',
   'prose-img:border prose-img:border-neutral-200 dark:prose-img:border-neutral-700',
-  'prose-sm sm:prose-lg'
+  'prose-base sm:prose-lg'
 )
 ---
 

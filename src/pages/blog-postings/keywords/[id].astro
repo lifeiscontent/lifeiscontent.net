@@ -8,6 +8,7 @@ import Stack from '@components/layouts/stack.astro'
 import Heading from '@components/ui/heading.astro'
 import Text from '@components/ui/text.astro'
 import Anchor from '@components/ui/anchor.astro'
+import Eyebrow from '@components/ui/eyebrow.astro'
 import type { BlogPostingEntry, DefinedTermEntry } from '@lib/content'
 import { aggregateKeywordUsages, createPublishedFilter } from '@lib/content'
 
@@ -65,9 +66,9 @@ const blogPostingKeywordMap = Object.fromEntries(
   ])
 )
 
-const pageTitle = `${currentKeyword.data.name} - Blog Postings`
-const pageDescription = `All blog postings with keyword "${currentKeyword.data.name}"`
-const keywordLabel = keywordUsageCount === 1 ? 'blog posting' : 'blog postings'
+const pageTitle = `${currentKeyword.data.name} · Blog Postings`
+const pageDescription = `Posts tagged ${currentKeyword.data.name}.`
+const keywordLabel = keywordUsageCount === 1 ? 'post' : 'posts'
 const browseAllHref = '/blog-postings'
 ---
 
@@ -75,22 +76,12 @@ const browseAllHref = '/blog-postings'
   <Section paddingX="sm" paddingY="xl" paddingYAtSm="2xl">
     <Stack direction="row" justify="center" width="full">
       <Stack direction="column" width="full" maxWidth="4xl" gap="md">
-        <Text
-          as="p"
-          size="xs"
-          tone="subtle"
-          weight="semibold"
-          tracking="wide"
-          transform="uppercase"
-          leading="snug"
-        >
-          Keyword
-        </Text>
+        <Eyebrow>Tagged</Eyebrow>
         <Heading level={1} size="2xl" sizeAtSm="3xl" weight="semibold">
           {currentKeyword.data.name}
         </Heading>
         <Text tone="muted" size="base" sizeAtSm="lg">
-          {keywordUsageCount}&nbsp;{keywordLabel} found.
+          {keywordUsageCount}&nbsp;{keywordLabel} on this topic.
         </Text>
       </Stack>
     </Stack>
@@ -109,7 +100,11 @@ const browseAllHref = '/blog-postings'
           </Anchor>
         </BlogPostingList>
 
-        <KeywordList keywords={allKeywords} currentKeywordId={currentKeyword.id} />
+        <KeywordList
+          keywords={allKeywords}
+          usageCounts={keywordUsageCounts}
+          currentKeywordId={currentKeyword.id}
+        />
       </Stack>
     </Stack>
   </Section>

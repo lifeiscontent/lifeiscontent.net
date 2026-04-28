@@ -4,5 +4,5 @@
   "@id": "https://lifeiscontent.net/blog-postings",
   "url": "https://lifeiscontent.net/blog-postings",
   "name": "lifeiscontent.net Blog",
-  "description": "Articles on web development, Elixir, architecture, DX, and software engineering principles."
+  "description": "Posts on React, Phoenix, Elixir, components, and the bits in between."
 }

@@ -8,6 +8,7 @@ import Stack from '@components/layouts/stack.astro'
 import Heading from '@components/ui/heading.astro'
 import Text from '@components/ui/text.astro'
 import Anchor from '@components/ui/anchor.astro'
+import Eyebrow from '@components/ui/eyebrow.astro'
 import {
   aggregateKeywordUsages,
   buildBlogJsonLd,
@@ -59,23 +60,11 @@ const blogPostingKeywordMap = Object.fromEntries(
   <Section paddingX="sm" paddingY="xl" paddingYAtSm="2xl">
     <Stack direction="row" justify="center" width="full">
       <Stack direction="column" width="full" maxWidth="4xl" gap="md">
-        <Text
-          as="p"
-          size="xs"
-          tone="subtle"
-          weight="semibold"
-          tracking="wide"
-          transform="uppercase"
-          leading="snug"
-        >
-          Blog Postings
-        </Text>
-        <Heading level={1} size="2xl" sizeAtSm="3xl" weight="semibold">
-          Essays &amp; dispatches
-        </Heading>
+        <Eyebrow>Index</Eyebrow>
+        <Heading level={1} size="2xl" sizeAtSm="3xl" weight="semibold"> Blog Postings. </Heading>
         <Text tone="muted" size="base" sizeAtSm="lg">
-          Systems thinking riffs, architecture deep dives, and lessons from building for people at
-          scale.
+          Posts on React, Phoenix, components, and the bits in between. I write when I think
+          something I learned might be useful to someone else.
         </Text>
       </Stack>
     </Stack>

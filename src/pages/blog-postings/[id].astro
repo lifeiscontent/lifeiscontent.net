@@ -65,7 +65,7 @@ const publishedDate = entry.data.datePublished
 const lastModifiedDate = entry.data.dateModified ?? null
 const previousBlogPosting = previous
 const nextBlogPosting = next
-const authorLabel = authorEntries.length > 1 ? 'Authors' : 'Author'
+const authorLabel = authorEntries.length > 1 ? 'authors' : 'author'
 
 const readingTimeText = readingTime(entry.body ?? '').text
 // Removed local helper functions as they are imported from @lib/content
@@ -229,7 +229,7 @@ const readingTimeText = readingTime(entry.body ?? '').text
                 {previousBlogPosting && (
                   <div class="flex h-full flex-col gap-1.5">
                     <Text as="span" size="xs" sizeAtSm="sm" tone="subtle" weight="medium">
-                      Previous Post
+                      Previous
                     </Text>
                     <Anchor
                       href={`/blog-postings/${previousBlogPosting.id}`}
@@ -250,7 +250,7 @@ const readingTimeText = readingTime(entry.body ?? '').text
                 {nextBlogPosting && (
                   <div class={`flex h-full flex-col gap-1.5 md:col-start-2`}>
                     <Text as="span" size="xs" sizeAtSm="sm" tone="subtle" weight="medium">
-                      Next Post
+                      Next
                     </Text>
                     <Anchor
                       href={`/blog-postings/${nextBlogPosting.id}`}
@@ -276,7 +276,8 @@ const readingTimeText = readingTime(entry.body ?? '').text
           relatedBlogPostings.length > 0 && (
             <Stack as="section" direction="column" gap="md">
               <Heading level={2} size="lg" weight="semibold">
-                Related Blog Postings
+                {' '}
+                More like this{' '}
               </Heading>
               <Grid columns={1} columnsAtMd={2} columnsAtLg={3} gap="lg">
                 {relatedBlogPostings.map((related: BlogPostingEntry) => (

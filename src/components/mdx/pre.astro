@@ -7,8 +7,13 @@ interface Props extends HTMLAttributes<'pre'> {}
 
 const { class: className = '', ...rest } = Astro.props
 
-const baseClasses =
-  'not-prose flex box-border overflow-x-auto overscroll-x-contain [&>code]:grow [&>code]:w-0 [&_.line]:inline-flex [&_.line]:min-w-max'
+const baseClasses = clsx(
+  'not-prose my-6 flex box-border overflow-x-auto overscroll-x-contain',
+  'rounded-md border border-neutral-200 bg-neutral-50 p-4 text-sm leading-relaxed',
+  'dark:border-neutral-800 dark:bg-neutral-950',
+  '[&>code]:grow [&>code]:w-0 [&>code]:font-mono',
+  '[&_.line]:inline-flex [&_.line]:min-w-max'
+)
 const combinedClasses = clsx(baseClasses, className)
 ---
 

@@ -1,6 +1,6 @@
 ---
+import clsx from 'clsx'
 import type { HTMLAttributes } from 'astro/types'
-import Text from './text.astro'
 
 type EyebrowAttributes = HTMLAttributes<'p'> & HTMLAttributes<'span'> & HTMLAttributes<'div'>
 
@@ -8,18 +8,14 @@ interface Props extends Omit<EyebrowAttributes, 'class' | 'style'> {
   as?: keyof HTMLElementTagNameMap
 }
 
-const { as = 'p', ...htmlProps } = Astro.props
+const { as: Component = 'p', ...htmlProps } = Astro.props
+
+const className = clsx(
+  'font-mono text-[0.72rem] leading-snug font-medium tracking-[0.18em] uppercase',
+  'text-neutral-500 dark:text-neutral-400'
+)
 ---
 
-<Text
-  as={as}
-  size="xs"
-  tone="default"
-  weight="semibold"
-  tracking="wide"
-  transform="uppercase"
-  leading="snug"
-  {...htmlProps}
->
+<Component class={className} {...htmlProps}>
   <slot />
-</Text>
+</Component>

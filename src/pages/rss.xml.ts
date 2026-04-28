@@ -9,7 +9,7 @@ export async function GET(context: APIContext) {
   const siteName = siteEntry?.data.name ?? 'lifeiscontent'
   const siteDescription =
     siteEntry?.data.description ??
-    'Purposeful stories for thoughtful builders. A mix of engineering, design, and systems thinking.'
+    'Engineering notes, component work, and writing from Aaron Reisman.'
 
   const blogPostings = sortBlogPostingsByDate(
     await getCollection('blog-postings', createPublishedFilter(now))

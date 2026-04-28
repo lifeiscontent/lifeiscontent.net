@@ -1,307 +1,132 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/typography';
 
-@property --celestial-progress {
-  syntax: '<number>';
-  inherits: true;
-  initial-value: 0;
-}
+@import '@fontsource-variable/geist/index.css';
+@import '@fontsource-variable/geist-mono/index.css';
 
-@keyframes celestial-track {
-  from {
-    --celestial-progress: 0;
-  }
-  to {
-    --celestial-progress: 1;
-  }
+@theme {
+  --font-sans:
+    'Geist Variable', 'Geist', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Roboto, sans-serif;
+  --font-display:
+    'Geist Variable', 'Geist', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Roboto, sans-serif;
+  --font-mono:
+    'Geist Mono Variable', 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    'Liberation Mono', 'Courier New', monospace;
+
+  /* The single accent. A muted clay/terracotta that reads as a deliberate choice. */
+  --color-accent-50: oklch(96% 0.015 45);
+  --color-accent-100: oklch(92% 0.03 45);
+  --color-accent-300: oklch(78% 0.08 45);
+  --color-accent-500: oklch(60% 0.13 45);
+  --color-accent-600: oklch(52% 0.14 45);
+  --color-accent-700: oklch(44% 0.12 45);
 }
 
 @layer base {
   :root {
-    /* Aurora-inspired syntax colors tuned for contrast */
-    --astro-code-foreground: theme(--color-neutral-950);
-    --astro-code-background: theme(--color-neutral-100);
-    --astro-code-token-constant: theme(--color-amber-700);
-    --astro-code-token-string: theme(--color-emerald-700);
-    --astro-code-token-comment: theme(--color-neutral-600);
-    --astro-code-token-keyword: theme(--color-fuchsia-700);
-    --astro-code-token-parameter: theme(--color-neutral-800);
-    --astro-code-token-function: theme(--color-sky-800);
-    --astro-code-token-string-expression: theme(--color-teal-700);
-    --astro-code-token-punctuation: theme(--color-neutral-700);
-    --astro-code-token-link: theme(--color-blue-700);
-
-    --celestial-sky: theme(--color-sky-50);
-    --celestial-core: theme(--color-amber-200);
-    --celestial-ring: theme(--color-orange-200);
-    --celestial-halo: theme(--color-amber-100);
-    --celestial-shadow: theme(--color-blue-100);
-    --celestial-reflection: theme(--color-rose-100);
-    --celestial-sky-top: theme(--color-sky-100);
-    --celestial-sky-bottom: theme(--color-rose-50);
-    --celestial-progress: 0;
-    --celestial-overlay: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCA0MDAgNDAwJz4KPHJlY3Qgd2lkdGg9JzQwMCcgaGVpZ2h0PSc0MDAnIGZpbGw9J25vbmUnLz4KPGcgZmlsbD0nbm9uZScgc3Ryb2tlPScjZmVmM2M3JyBzdHJva2Utd2lkdGg9JzQnIG9wYWNpdHk9JzAuNSc+CjxwYXRoIGQ9J00wIDIwMCBRMjAwIDEyMCA0MDAgMjAwJy8+CjxwYXRoIGQ9J00wIDI2MCBRMjAwIDE4MCA0MDAgMjYwJy8+CjxwYXRoIGQ9J00wIDE0MCBRMjAwIDYwIDQwMCAxNDAnLz4KPC9nPgo8ZyBmaWxsPSdub25lJyBzdHJva2U9JyNmY2QzNGQnIHN0cm9rZS13aWR0aD0nMicgb3BhY2l0eT0nMC4zNSc+CjxwYXRoIGQ9J002MCAwIFExMjAgMjAwIDYwIDQwMCcvPgo8cGF0aCBkPSdNMjAwIDAgUTI2MCAyMDAgMjAwIDQwMCcvPgo8cGF0aCBkPSdNMzQwIDAgUTQwMCAyMDAgMzQwIDQwMCcvPgo8L2c+Cjwvc3ZnPg==');
-    --celestial-grain: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc2MCcgaGVpZ2h0PSc2MCcgdmlld0JveD0nMCAwIDYwIDYwJz4KPHJlY3Qgd2lkdGg9JzYwJyBoZWlnaHQ9JzYwJyBmaWxsPSdub25lJy8+CjxnIGZpbGw9JyMwMDAwMDAnIGZpbGwtb3BhY2l0eT0nMC4wNCc+CjxjaXJjbGUgY3g9JzUnIGN5PScxMCcgcj0nMS4yJy8+CjxjaXJjbGUgY3g9JzI1JyBjeT0nOCcgcj0nMC45Jy8+CjxjaXJjbGUgY3g9JzQ1JyBjeT0nMTInIHI9JzEuMScvPgo8Y2lyY2xlIGN4PScxMicgY3k9JzI4JyByPScxJy8+CjxjaXJjbGUgY3g9JzMyJyBjeT0nMzInIHI9JzEuMicvPgo8Y2lyY2xlIGN4PSc1MicgY3k9JzMwJyByPScwLjgnLz4KPGNpcmNsZSBjeD0nMTgnIGN5PSc0OCcgcj0nMS4yJy8+CjxjaXJjbGUgY3g9JzM4JyBjeT0nNTInIHI9JzEnLz4KPGNpcmNsZSBjeD0nNTYnIGN5PSc0OCcgcj0nMC45Jy8+CjwvZz4KPC9zdmc+');
+    /* Shiki / code block tokens */
+    --astro-code-foreground: var(--color-neutral-900);
+    --astro-code-background: var(--color-neutral-50);
+    --astro-code-token-constant: var(--color-accent-700);
+    --astro-code-token-string: var(--color-emerald-700);
+    --astro-code-token-comment: var(--color-neutral-500);
+    --astro-code-token-keyword: var(--color-accent-600);
+    --astro-code-token-parameter: var(--color-neutral-700);
+    --astro-code-token-function: var(--color-neutral-900);
+    --astro-code-token-string-expression: var(--color-emerald-700);
+    --astro-code-token-punctuation: var(--color-neutral-500);
+    --astro-code-token-link: var(--color-accent-600);
 
     @variant dark {
-      --astro-code-foreground: theme(--color-neutral-50);
-      --astro-code-background: theme(--color-neutral-900);
-      --astro-code-token-constant: theme(--color-amber-300);
-      --astro-code-token-string: theme(--color-emerald-300);
-      --astro-code-token-comment: theme(--color-neutral-400);
-      --astro-code-token-keyword: theme(--color-fuchsia-200);
-      --astro-code-token-parameter: theme(--color-neutral-100);
-      --astro-code-token-function: theme(--color-sky-200);
-      --astro-code-token-string-expression: theme(--color-teal-200);
-      --astro-code-token-punctuation: theme(--color-neutral-200);
-      --astro-code-token-link: theme(--color-cyan-200);
-
-      --celestial-sky: theme(--color-slate-950);
-      --celestial-core: theme(--color-slate-50);
-      --celestial-ring: theme(--color-cyan-300);
-      --celestial-halo: theme(--color-indigo-600);
-      --celestial-shadow: theme(--color-slate-800);
-      --celestial-reflection: theme(--color-indigo-900);
-      --celestial-sky-top: theme(--color-slate-900);
-      --celestial-sky-bottom: theme(--color-slate-950);
-      --celestial-overlay: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCA0MDAgNDAwJz4KPHJlY3Qgd2lkdGg9JzQwMCcgaGVpZ2h0PSc0MDAnIGZpbGw9J25vbmUnLz4KPGcgZmlsbD0nbm9uZScgc3Ryb2tlPScjNjQ3NDhiJyBzdHJva2Utd2lkdGg9JzInIG9wYWNpdHk9JzAuNCc+CjxjaXJjbGUgY3g9JzIwMCcgY3k9JzIwMCcgcj0nODAnLz4KPGNpcmNsZSBjeD0nMjAwJyBjeT0nMjAwJyByPScxNDAnLz4KPGNpcmNsZSBjeD0nMjAwJyBjeT0nMjAwJyByPScyMDAnLz4KPC9nPgo8ZyBmaWxsPSdub25lJyBzdHJva2U9JyMwZWE1ZTknIHN0cm9rZS13aWR0aD0nMS41JyBvcGFjaXR5PScwLjM1Jz4KPHBhdGggZD0nTTQwIDIwMCBxMTYwIC0xMjAgMzIwIDAgcS0xNjAgMTIwIC0zMjAgMCB6Jy8+CjxwYXRoIGQ9J00xMDAgMTAwIHExMDAgNDAgMjAwIDAgcS0xMDAgLTQwIC0yMDAgMCB6Jy8+CjwvZz4KPC9zdmc+');
+      --astro-code-foreground: var(--color-neutral-100);
+      --astro-code-background: var(--color-neutral-950);
+      --astro-code-token-constant: var(--color-accent-300);
+      --astro-code-token-string: var(--color-emerald-300);
+      --astro-code-token-comment: var(--color-neutral-500);
+      --astro-code-token-keyword: var(--color-accent-300);
+      --astro-code-token-parameter: var(--color-neutral-300);
+      --astro-code-token-function: var(--color-neutral-100);
+      --astro-code-token-string-expression: var(--color-emerald-300);
+      --astro-code-token-punctuation: var(--color-neutral-400);
+      --astro-code-token-link: var(--color-accent-300);
     }
   }
 
-  /* Scroll-driven sun/moon background using CSS trig + blend modes */
   html {
-    background-color: var(--celestial-sky);
-    background-image:
-      radial-gradient(
-        80% 60% at 50% -10%,
-        color-mix(in oklab, var(--celestial-sky-top) 90%, transparent) 0%,
-        transparent 65%
-      ),
-      linear-gradient(
-        180deg,
-        color-mix(in oklab, var(--celestial-sky-top) 80%, transparent) 0%,
-        var(--celestial-sky-bottom) 55%,
-        var(--celestial-sky) 100%
-      ),
-      var(--celestial-grain);
-    background-size:
-      auto,
-      auto,
-      160px 160px;
-    background-repeat: no-repeat, no-repeat, repeat;
-    background-attachment: fixed, fixed, scroll;
-    color: inherit;
-    position: relative;
+    background-color: var(--color-white);
+    color: var(--color-neutral-900);
+    font-feature-settings:
+      'kern',
+      'liga',
+      'calt',
+      'ss01';
+
     @variant dark {
-      background-image:
-        radial-gradient(
-          90% 65% at 60% -15%,
-          color-mix(in oklab, var(--celestial-sky-top) 80%, transparent) 0%,
-          transparent 70%
-        ),
-        linear-gradient(
-          180deg,
-          color-mix(in oklab, var(--celestial-sky-top) 70%, transparent) 0%,
-          var(--celestial-sky-bottom) 60%,
-          var(--celestial-sky) 100%
-        ),
-        var(--celestial-grain);
+      background-color: var(--color-neutral-950);
+      color: var(--color-neutral-100);
     }
   }
 
-  html::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    background-image: var(--celestial-overlay);
-    background-size: 120vmax 120vmax;
-    background-repeat: no-repeat;
-    background-position: center 25%;
-    mix-blend-mode: soft-light;
-    opacity: 0.18;
-    @variant dark {
-      mix-blend-mode: screen;
-      opacity: 0.15;
-      background-position: center 40%;
-    }
+  /* Tabular figures for any element marked as numeric data */
+  time,
+  [data-numeric] {
+    font-variant-numeric: tabular-nums;
   }
 
-  html::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    mix-blend-mode: screen;
-    background-image:
-      radial-gradient(
-        130% 90% at 10% 0%,
-        color-mix(in oklab, var(--celestial-halo) 45%, transparent) 0%,
-        transparent 65%
-      ),
-      linear-gradient(
-        115deg,
-        color-mix(in oklab, var(--celestial-ring) 25%, transparent) 0%,
-        transparent 45%,
-        color-mix(in oklab, var(--celestial-reflection) 35%, transparent) 95%
-      );
-    opacity: 0.4;
-    @variant dark {
-      opacity: 0;
-    }
-  }
-
-  /* Scroll-driven sun/moon background using CSS trig + blend modes */
-  body {
-    --celestial-angle: calc(var(--celestial-progress) * 180deg);
-    --celestial-x: calc(50% + cos(var(--celestial-angle)) * 18vmax);
-    --celestial-y: calc(72% - sin(var(--celestial-angle)) * 28vmax);
-    --celestial-reflect-x: calc(50% + cos(var(--celestial-angle)) * 12vmax);
-    --celestial-reflect-y: calc(110% + sin(var(--celestial-angle)) * 8vmax);
-    min-height: 100%;
-    background-color: transparent;
-    background-image:
-      radial-gradient(
-        circle at var(--celestial-x) var(--celestial-y),
-        color-mix(in oklab, var(--celestial-core) 85%, white) 5%,
-        color-mix(in oklab, var(--celestial-ring) 65%, transparent) 35%,
-        transparent 55%
-      ),
-      radial-gradient(
-        160% 90% at var(--celestial-reflect-x) var(--celestial-reflect-y),
-        color-mix(in oklab, var(--celestial-reflection) 35%, transparent) 10%,
-        transparent 70%
-      ),
-      linear-gradient(
-        190deg,
-        color-mix(in oklab, var(--celestial-halo) 25%, transparent) 0%,
-        transparent 60%
-      ),
-      radial-gradient(
-        140% 120% at -10% 8%,
-        color-mix(in oklab, var(--celestial-halo) 60%, transparent) 0%,
-        color-mix(in oklab, var(--celestial-ring) 35%, transparent) 45%,
-        transparent 70%
-      ),
-      radial-gradient(
-        150% 140% at 115% 120%,
-        color-mix(in oklab, var(--celestial-reflection) 55%, transparent) 10%,
-        transparent 65%
-      );
-    background-attachment: fixed;
-    background-repeat: no-repeat;
-    color: inherit;
-    animation-name: celestial-track;
-    animation-duration: 1s;
-    animation-timeline: scroll(root block);
-    animation-fill-mode: both;
-    animation-timing-function: linear;
-    position: relative;
-  }
-
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    mix-blend-mode: color-dodge;
-    background-image:
-      radial-gradient(
-        120% 80% at var(--celestial-x) calc(var(--celestial-y) - 8vmax),
-        color-mix(in oklab, var(--celestial-ring) 55%, transparent) 0%,
-        color-mix(in oklab, var(--celestial-halo) 45%, transparent) 40%,
-        transparent 75%
-      ),
-      conic-gradient(
-        from calc(var(--celestial-angle) - 30deg) at 20% 20%,
-        color-mix(in oklab, var(--celestial-reflection) 30%, transparent) 0turn,
-        transparent 0.25turn 0.75turn,
-        color-mix(in oklab, var(--celestial-halo) 25%, transparent) 1turn
-      ),
-      linear-gradient(
-        125deg,
-        color-mix(in oklab, var(--celestial-ring) 18%, transparent) 0%,
-        transparent 50%,
-        color-mix(in oklab, var(--celestial-reflection) 28%, transparent) 85%
-      );
-    opacity: 0.65;
-  }
-
-  body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    mix-blend-mode: color-dodge;
-    background-image: conic-gradient(
-      from var(--celestial-angle) at var(--celestial-x) var(--celestial-y),
-      color-mix(in oklab, var(--celestial-ring) 30%, transparent) 0turn,
-      transparent 0.2turn 0.8turn,
-      color-mix(in oklab, var(--celestial-halo) 35%, transparent) 1turn
-    );
-    opacity: 0.25;
-    mask-image: radial-gradient(
-      circle at var(--celestial-x) var(--celestial-y),
-      white 10%,
-      transparent 60%
-    );
-    mask-mode: luminance;
+  ::selection {
+    background-color: var(--color-accent-100);
+    color: var(--color-accent-700);
   }
 
   @variant dark {
-    body {
-      background-image:
-        radial-gradient(
-          circle at var(--celestial-x) var(--celestial-y),
-          color-mix(in oklab, var(--celestial-core) 65%, white) 4%,
-          color-mix(in oklab, var(--celestial-ring) 45%, transparent) 30%,
-          transparent 55%
-        ),
-        radial-gradient(
-          150% 85% at var(--celestial-reflect-x) var(--celestial-reflect-y),
-          color-mix(in oklab, var(--celestial-reflection) 35%, transparent) 15%,
-          transparent 70%
-        ),
-        linear-gradient(
-          185deg,
-          color-mix(in oklab, var(--celestial-halo) 40%, transparent) 0%,
-          transparent 60%
-        );
-    }
-
-    body::before {
-      mix-blend-mode: lighten;
-      background-image:
-        radial-gradient(
-          90% 70% at 80% 20%,
-          color-mix(in oklab, var(--celestial-ring) 30%, transparent) 0%,
-          transparent 75%
-        ),
-        linear-gradient(
-          120deg,
-          color-mix(in oklab, var(--celestial-halo) 25%, transparent) 0%,
-          transparent 50%,
-          color-mix(in oklab, var(--celestial-reflection) 25%, transparent) 85%
-        );
-      opacity: 0.4;
-    }
-
-    body::after {
-      mix-blend-mode: screen;
-      opacity: 0.3;
+    ::selection {
+      background-color: oklch(44% 0.12 45 / 0.4);
+      color: var(--color-accent-100);
     }
   }
+}
 
-  @media (prefers-reduced-motion: reduce) {
-    body {
-      --celestial-progress: 0.4;
-      animation: none;
-    }
+/* The flare: a hairline rule under the page that picks up the accent color */
+@layer base {
+  body {
+    position: relative;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      var(--color-accent-500) 18%,
+      var(--color-accent-500) 22%,
+      transparent 100%
+    );
+    z-index: 50;
+    pointer-events: none;
   }
 }
 
 @utility no-print {
   @media print {
     @apply hidden!;
+  }
+}
+
+/* Animated hover underline for inline links — the only motion on the site */
+@utility link-underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-position: 0% 100%;
+  background-repeat: no-repeat;
+  transition: background-size 200ms ease-out;
+  &:hover,
+  &:focus-visible {
+    background-size: 100% 1px;
   }
 }
