@@ -16,9 +16,9 @@ const { variant = 'primary', size = 'md', width = 'auto', ...linkProps } = Astro
 const classes = clsx(
   'relative isolate inline-flex transform items-center justify-center overflow-hidden rounded-full font-semibold ring-offset-white transition duration-150 focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:ring-offset-black dark:focus-visible:ring-white',
   {
-    'bg-black text-white mix-blend-normal shadow-none hover:-translate-y-0.5 hover:bg-black/90 hover:shadow-lg active:translate-y-0 active:bg-black/80 active:shadow-md dark:bg-white dark:text-black dark:hover:bg-white/90 dark:active:bg-white/85':
+    'border border-transparent bg-black text-white mix-blend-normal shadow-none hover:-translate-y-0.5 hover:bg-black/90 hover:shadow-lg active:translate-y-0 active:bg-black/80 active:shadow-md dark:bg-white dark:text-black dark:hover:bg-white/90 dark:active:bg-white/85':
       variant === 'primary',
-    'bg-transparent text-neutral-900 shadow-none hover:bg-black/5 hover:text-black active:bg-black/10 active:text-black dark:bg-transparent dark:text-neutral-100 dark:hover:bg-white/10 dark:hover:text-white dark:active:bg-white/15':
+    'border border-neutral-300 bg-transparent text-neutral-900 shadow-none hover:border-neutral-400 hover:bg-black/5 hover:text-black active:bg-black/10 active:text-black dark:border-neutral-700 dark:bg-transparent dark:text-neutral-100 dark:hover:border-neutral-500 dark:hover:bg-white/10 dark:hover:text-white dark:active:bg-white/15':
       variant === 'secondary',
   },
   {
