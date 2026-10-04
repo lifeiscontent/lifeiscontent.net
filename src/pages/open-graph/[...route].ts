@@ -94,10 +94,10 @@ for (const entry of blogEntries) {
 
 const pages: Record<string, OgPage> = {
   site: {
-    title: 'I build the parts of products other people have to live with after launch.',
+    title: 'I build the parts of products people rely on long after launch.',
     eyebrow: 'Site',
     description:
-      'Software engineer working on React, TypeScript, Phoenix, and Elixir. Components, error states, microcopy, the small things that decide how an app actually feels.',
+      'Software engineer shipping since 2007 with React, TypeScript, Phoenix, and Elixir. Components, error states, microcopy, and the small things that decide how an app feels.',
   },
   'blog-postings': {
     title: 'Blog Postings',
@@ -191,7 +191,7 @@ function buildSiteTemplate(page: OgPage) {
       <div style="width:200px;height:auto;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
         ${logoSvgMarkup}
       </div>
-      <div style="display:flex;flex-direction:column;gap:24px;padding:24px 0;width:872px;">
+      <div style="display:flex;flex-direction:column;gap:24px;padding:24px 0;flex:1;min-width:0;">
         <div style="display:flex;flex-direction:column;gap:10px;">
           ${brandLabel}
           ${eyebrowLabel}
