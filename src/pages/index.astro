@@ -272,15 +272,16 @@ const siteMetadata = {
               Have a project in mind?
             </Heading>
             <Text tone="muted" size="base" sizeAtSm="lg">
-              Product engineering, component systems, refactors, the hard parts of an existing
+              Product engineering, component systems, refactors, and the hard parts of an existing
               codebase. If any of that sounds like what you need, send me a note.
             </Text>
             <Stack
               direction="column"
               directionAtSm="row"
               gap="sm"
-              gapAtSm="md"
+              gapAtSm="lg"
               align="start"
+              alignAtSm="center"
               wrap
               width="full"
               widthAtSm="auto"
@@ -293,9 +294,17 @@ const siteMetadata = {
               >
                 Email me
               </ButtonLink>
-              <ButtonLink href="/blog-postings" variant="secondary" size="lg" width="responsive">
-                Read the blog
-              </ButtonLink>
+              <Text tone="muted" size="sm" sizeAtSm="base">
+                or write to{' '}
+                <Anchor
+                  href="mailto:aaron@lifeiscontent.net"
+                  variant="inline"
+                  weight="medium"
+                  underline="always"
+                >
+                  aaron@lifeiscontent.net
+                </Anchor>
+              </Text>
             </Stack>
           </Stack>
         </CalloutPanel>
