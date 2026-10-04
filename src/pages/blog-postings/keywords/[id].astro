@@ -70,10 +70,15 @@ const browseAllHref = '/blog-postings'
 ---
 
 <Layout title={pageTitle} description={pageDescription} ogImagePath={ogImagePath}>
-  <PageSection spacing="intro">
+  <PageSection spacing="intro" gap="xl">
     <SectionHeader variant="page" eyebrow="Tagged" title={currentKeyword.data.name}>
       {keywordUsageCount}&nbsp;{keywordLabel} on this topic.
     </SectionHeader>
+    <KeywordList
+      keywords={allKeywords}
+      usageCounts={keywordUsageCounts}
+      currentKeywordId={currentKeyword.id}
+    />
   </PageSection>
 
   <PageSection tone="page" gap="2xl">
@@ -86,11 +91,5 @@ const browseAllHref = '/blog-postings'
         Browse all posts
       </Anchor>
     </BlogPostingList>
-
-    <KeywordList
-      keywords={allKeywords}
-      usageCounts={keywordUsageCounts}
-      currentKeywordId={currentKeyword.id}
-    />
   </PageSection>
 </Layout>

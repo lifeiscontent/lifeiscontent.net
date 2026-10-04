@@ -53,11 +53,12 @@ const blogPostingKeywordMap = Object.fromEntries(
 >
   <script type="application/ld+json" is:inline set:html={JSON.stringify(blogJsonLd)} />
 
-  <PageSection spacing="intro">
+  <PageSection spacing="intro" gap="xl">
     <SectionHeader variant="page" eyebrow="Index" title="Blog Postings.">
       Posts on React, Phoenix, components, and the bits in between. I write when I think something I
       learned might be useful to someone else.
     </SectionHeader>
+    <KeywordList keywords={keywords} usageCounts={keywordUsageCounts} />
   </PageSection>
 
   <PageSection tone="page" gap="2xl">
@@ -66,7 +67,5 @@ const blogPostingKeywordMap = Object.fromEntries(
       emptyMessage="No posts yet. Check back soon."
       keywordMap={blogPostingKeywordMap}
     />
-
-    <KeywordList keywords={keywords} usageCounts={keywordUsageCounts} />
   </PageSection>
 </Layout>
