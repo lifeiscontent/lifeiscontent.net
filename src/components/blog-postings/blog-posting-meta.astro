@@ -3,47 +3,28 @@ import type { CollectionEntry } from 'astro:content'
 import readingTime from 'reading-time'
 import Stack from '@components/layouts/stack.astro'
 import Text from '@components/ui/text.astro'
+import { formatLongDate } from '@lib/dates'
 
-interface Props {
+type Props = {
   blogPosting: CollectionEntry<'blog-postings'>
-  layout?: 'default' | 'compact'
+  // inline: date and reading time on one wrapping row. stacked: one per line on phones.
+  layout?: 'inline' | 'stacked'
 }
 
-const { blogPosting, layout = 'default' } = Astro.props
+const { blogPosting, layout = 'inline' } = Astro.props
+const { datePublished } = blogPosting.data
 
-const gap = layout === 'compact' ? 'xs' : 'sm'
-const directionProps =
-  layout === 'compact'
-    ? ({ direction: 'column', directionAtSm: 'row' } as const)
-    : ({ direction: 'row' } as const)
-
-const publishedDate = blogPosting.data.datePublished.toLocaleDateString('en-US', {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric',
-})
+const layoutProps =
+  layout === 'inline'
+    ? ({ direction: 'row', gap: 'sm', wrap: true, align: 'center' } as const)
+    : ({ direction: 'column', directionAtSm: 'row', gap: 'xs', align: 'start' } as const)
 ---
 
-<Stack
-  as="div"
-  direction={directionProps.direction}
-  directionAtSm={directionProps.directionAtSm}
-  gap={gap}
-  gapX="md"
-  wrap={layout === 'default'}
-  align={layout === 'compact' ? 'start' : 'center'}
->
-  <Text
-    as="time"
-    size="xs"
-    tone="subtle"
-    weight="medium"
-    datetime={blogPosting.data.datePublished.toISOString()}
-  >
-    {publishedDate}
+<Stack as="div" gapX="md" {...layoutProps}>
+  <Text as="time" size="xs" tone="subtle" weight="medium" datetime={datePublished.toISOString()}>
+    {formatLongDate(datePublished)}
   </Text>
   <Text as="span" size="xs" tone="subtle">
     {readingTime(blogPosting.body ?? '').text}
   </Text>
-  <slot />
 </Stack>

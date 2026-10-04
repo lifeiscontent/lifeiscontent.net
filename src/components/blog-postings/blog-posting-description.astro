@@ -2,15 +2,13 @@
 import type { CollectionEntry } from 'astro:content'
 import Text from '@components/ui/text.astro'
 
-interface Props {
+type Props = {
   blogPosting: CollectionEntry<'blog-postings'>
-  variant?: 'default' | 'compact'
+  size: 'sm' | 'base'
+  clamp?: 3
 }
 
-const { blogPosting, variant = 'default' } = Astro.props
-
-const size = variant === 'compact' ? 'sm' : 'base'
-const clamp: 3 | undefined = variant === 'compact' ? 3 : undefined
+const { blogPosting, size, clamp } = Astro.props
 ---
 
 <Text tone="muted" size={size} clamp={clamp}>

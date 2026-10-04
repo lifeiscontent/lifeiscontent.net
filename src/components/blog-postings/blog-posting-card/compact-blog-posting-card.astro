@@ -1,0 +1,26 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import Card from '@components/ui/card.astro'
+import Stack from '@components/layouts/stack.astro'
+import BlogPostingMeta from '../blog-posting-meta.astro'
+import BlogPostingTitle from '../blog-posting-title.astro'
+import BlogPostingDescription from '../blog-posting-description.astro'
+import BlogPostingKeywords from '../blog-posting-keywords.astro'
+
+type Props = {
+  blogPosting: CollectionEntry<'blog-postings'>
+  keywords: CollectionEntry<'defined-terms'>[]
+  headingLevel: 2 | 3
+}
+
+const { blogPosting, keywords, headingLevel } = Astro.props
+---
+
+<Card gap="sm">
+  <BlogPostingMeta blogPosting={blogPosting} layout="stacked" />
+  <Stack direction="column" gap="xs">
+    <BlogPostingTitle blogPosting={blogPosting} level={headingLevel} size="md" />
+    <BlogPostingDescription blogPosting={blogPosting} size="sm" clamp={3} />
+  </Stack>
+  {keywords.length > 0 && <BlogPostingKeywords keywords={keywords} variant="compact" />}
+</Card>

@@ -3,17 +3,16 @@ import type { CollectionEntry } from 'astro:content'
 import Heading from '@components/ui/heading.astro'
 import Anchor from '@components/ui/anchor.astro'
 
-interface Props {
+type Props = {
   blogPosting: CollectionEntry<'blog-postings'>
-  variant?: 'default' | 'compact'
+  level: 2 | 3
+  size: 'md' | 'lg'
 }
 
-const { blogPosting, variant = 'default' } = Astro.props
-
-const headingSize = variant === 'compact' ? 'md' : 'lg'
+const { blogPosting, level, size } = Astro.props
 ---
 
-<Heading level={3} size={headingSize} weight="semibold">
+<Heading level={level} size={size} weight="semibold">
   <Anchor href={`/blog-postings/${blogPosting.id}`} underline="none">
     {blogPosting.data.headline}
   </Anchor>
