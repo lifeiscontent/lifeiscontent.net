@@ -1,5 +1,5 @@
 {
   "@type": "DefinedTerm",
   "name": "Architecture",
-  "description": "Articles focused on system and software architecture."
+  "description": "Posts about how to structure systems and libraries."
 }

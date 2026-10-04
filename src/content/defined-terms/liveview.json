@@ -1,5 +1,5 @@
 {
   "@type": "DefinedTerm",
   "name": "LiveView",
-  "description": "Phoenix LiveView techniques and patterns."
+  "description": "Posts about building with Phoenix LiveView."
 }

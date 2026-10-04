@@ -1,5 +1,5 @@
 {
   "@type": "DefinedTerm",
   "name": "Ash",
-  "description": "Posts covering the Ash Framework and its ecosystem."
+  "description": "Posts about the Ash Framework for Elixir."
 }
