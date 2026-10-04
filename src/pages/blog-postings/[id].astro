@@ -51,7 +51,10 @@ const now = Date.now()
 const publishedEntries = await getCollection('blog-postings', createPublishedFilter(now))
 const sortedEntries = sortBlogPostingsByDate(publishedEntries)
 const { previous, next } = findAdjacentEntries(entry, sortedEntries)
-const relatedBlogPostings = computeRelatedEntries(entry, publishedEntries)
+// Skip posts the previous and next links already show.
+const relatedBlogPostings = computeRelatedEntries(entry, publishedEntries).filter(
+  (related) => related.id !== previous?.id && related.id !== next?.id
+)
 const relatedKeywordPairs = await Promise.all(
   relatedBlogPostings.map(
     async (relatedEntry) => [relatedEntry.id, await getEntries(relatedEntry.data.keywords)] as const
