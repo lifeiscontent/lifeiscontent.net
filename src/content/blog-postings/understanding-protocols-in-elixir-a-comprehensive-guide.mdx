@@ -13,7 +13,7 @@ headline: 'Understanding Protocols in Elixir: A Comprehensive Guide'
 description: 'How Elixir protocols make polymorphism feel like design work. Less ceremony, more clarity, and a path away from giant conditionals.'
 abstract: 'Protocols let you describe agreements between data and behavior without inheritance. This guide shows how to put that to work.'
 datePublished: '2024-11-10'
-dateModified: '2026-04-28'
+dateModified: '2026-10-05'
 inLanguage: 'en-US'
 author:
   - lifeiscontent
@@ -24,13 +24,15 @@ keywords:
   - polymorphism
 ---
 
-A system works when every piece knows its role. In Elixir we don't reach for base classes. We write protocols. Small agreements that let data tell us how it wants to behave. Treat them as design tools and the code scales without turning into a wall of conditionals.
+Elixir has no classes, so there is no base class to override when different kinds of data need different behavior. It has protocols. A protocol names one or more functions. Each data type provides its own version with `defimpl`, and Elixir picks the right version at runtime based on the value you pass in. If you know interfaces from other languages, it's a similar idea, except you can add an implementation for a type you didn't write.
 
-This is a field note on using protocols the way I do on teams. I treat them as contracts between engineering and product intent.
+Treat protocols as design tools and the code grows without turning into a wall of conditionals.
+
+This post builds one protocol from scratch, a tiny JSON encoder, and then uses the same idea for validation. The encoder is only for teaching. In a real app, use [Jason](https://hex.pm/packages/jason) or the `JSON` module built into Elixir 1.18 and later. Both use a protocol to let your types plug in, which is why the encoder makes a good example. Along the way I'll point out where protocols help and where a plain function is the better call.
 
 ## The setup: one encoder for everything
 
-Every API eventually needs to turn random data into JSON. Without protocols, you end up with a sprawling function that has to know about every type in the system:
+Every API eventually needs to turn arbitrary data into JSON. Without protocols, you end up with a sprawling function that has to know about every type in the system:
 
 ```elixir
 defmodule JSONEncoder do
@@ -49,11 +51,11 @@ It works, but it has problems:
 - **It knows too much.** The function has to understand every domain concept to do its job.
 - **It gets long fast.** The pattern matches stack up forever.
 
-Protocols give us a calmer approach.
+Protocols split that one function up by type.
 
 ## Protocols: contracts, not conditionals
 
-Define the conversation once, let each type answer for itself:
+Define the contract once, then let each type answer for itself:
 
 ```elixir
 # Step 1: Define the contract
@@ -71,9 +73,15 @@ defimpl JSONEncodable, for: Integer do
   def to_json(integer), do: Integer.to_string(integer)
 end
 
-defimpl JSONEncodable, for: Boolean do
+defimpl JSONEncodable, for: Atom do
   def to_json(true), do: "true"
   def to_json(false), do: "false"
+  def to_json(nil), do: "null"
+  def to_json(atom) do
+    atom
+    |> Atom.to_string()
+    |> JSONEncodable.to_json()
+  end
 end
 
 defimpl JSONEncodable, for: List do
@@ -84,7 +92,9 @@ defimpl JSONEncodable, for: List do
 end
 ```
 
-Now it feels less like a switch and more like a conversation:
+Two type names may look odd. Elixir strings are binaries, and protocols see binaries as `BitString`, so that is the type a string implementation targets. Also, there is no `Boolean` type to implement for. In Elixir, `true`, `false`, and `nil` are atoms, so they share the `Atom` implementation. Pattern matching on the specific values comes first, and any other atom becomes a JSON string.
+
+Each call now goes to the implementation for its type:
 
 ```elixir
 iex> JSONEncodable.to_json("hello")
@@ -119,29 +129,20 @@ defimpl JSONEncodable, for: DateTime do
     |> JSONEncodable.to_json()
   end
 end
-
-defimpl JSONEncodable, for: Atom do
-  def to_json(nil), do: "null"
-  def to_json(atom) do
-    atom
-    |> Atom.to_string()
-    |> JSONEncodable.to_json()
-  end
-end
 ```
 
-Notice the pattern. Convert the data into something the protocol already knows, then delegate. No special cases needed.
+Look at what both implementations do. They convert the value into something the protocol already knows, a string, and then delegate. No special cases needed.
 
 ```elixir
 iex> JSONEncodable.to_json(~D[2024-11-10])
 "\"2024-11-10\""
 ```
 
-Nothing in the original module changes. The protocol just gets extended for new types as they show up.
+Nothing in the original code changes. The protocol gets extended for new types as they show up, even from code you don't own.
 
 ## Maps: the foundation for structs
 
-For the protocol to be actually useful, it needs to handle maps. Most complex data ends up there:
+To be useful, the protocol needs to handle maps. Most real data ends up in one:
 
 ```elixir
 defimpl JSONEncodable, for: Map do
@@ -161,17 +162,19 @@ defimpl JSONEncodable, for: Map do
 end
 ```
 
-Now encoding nested data is straightforward:
+Each value goes back through `JSONEncodable.to_json/1`, so nesting works with no extra code:
 
 ```elixir
 iex> data = %{"name" => "Alice", "age" => 30, "active" => true}
 iex> JSONEncodable.to_json(data)
-"{\"name\":\"Alice\",\"age\":30,\"active\":true}"
+"{\"active\":true,\"age\":30,\"name\":\"Alice\"}"
 ```
+
+The keys come out in a different order than you wrote them. Elixir maps don't keep insertion order, which is fine for JSON objects but worth knowing before you write a test that compares strings.
 
 ## Now your real domain types
 
-Every product type eventually needs encoding. Instead of forcing structs through generic helpers, let each one describe itself:
+Structs don't use the `Map` implementation automatically. A struct only gets a protocol implementation when you give it one. That is a good thing, because it makes you decide what each type exposes:
 
 ```elixir
 defmodule User do
@@ -183,7 +186,7 @@ defmodule Article do
 end
 ```
 
-Now let's implement JSON encoding for these domain types:
+Each implementation picks its fields and hands a plain map to the `Map` implementation:
 
 ```elixir
 defimpl JSONEncodable, for: User do
@@ -212,7 +215,7 @@ defimpl JSONEncodable, for: Article do
 end
 ```
 
-The move here is to pick the fields you actually want to expose, convert to a map, and reuse the Map implementation. Composition beats special cases.
+`User` leaves out `created_at`, and `Article` leaves out `content`. The struct decides what goes over the wire, and the encoder doesn't need to know.
 
 Putting it to work:
 
@@ -226,9 +229,20 @@ iex> JSONEncodable.to_json(article)
 "{\"id\":1,\"title\":\"Protocols Guide\",\"author_id\":1,\"published_at\":null,\"tags\":[\"elixir\",\"tutorial\"]}"
 ```
 
+Mix structs, maps, and dates in one payload and every piece still finds its own implementation:
+
+```elixir
+iex> complex_data = %{
+...>   "user" => %User{id: 1, name: "Alice", email: "alice@example.com", role: "admin"},
+...>   "metadata" => %{"timestamp" => ~U[2024-11-10 14:30:00Z], "version" => 1}
+...> }
+iex> JSONEncodable.to_json(complex_data)
+"{\"metadata\":{\"timestamp\":\"2024-11-10T14:30:00Z\",\"version\":1},\"user\":{\"id\":1,\"name\":\"Alice\",\"email\":\"alice@example.com\",\"role\":\"admin\"}}"
+```
+
 ## Validation, same idea
 
-Protocols aren't just for serialization. I use them for any cross-cutting behavior, validation included. Same idea. Define the contract, let each type own its rules.
+Protocols aren't only for serialization. I use them for most behavior that cuts across types, and validation is a good example. Define the contract, then let each type own its rules.
 
 Start with the protocol:
 
@@ -300,14 +314,14 @@ defimpl Validatable, for: Article do
 end
 ```
 
-Each validation reads like a checklist. You accumulate errors as you go and keep them structured. The conditionals stay out of your controllers.
+Each `validate/1` reads like a checklist. Errors pile up in a list as `{field, message}` pairs (a list of `{atom, value}` pairs is what Elixir calls a keyword list), and the list is reversed at the end so they come out in the order you checked them. The conditionals stay out of your controllers.
 
 Using the protocol:
 
 ```elixir
 iex> user = %User{name: "Alice", email: "alice@example.com", role: "admin"}
 iex> Validatable.validate(user)
-{:ok, %User{name: "Alice", email: "alice@example.com", role: "admin"}}
+{:ok, %User{id: nil, name: "Alice", email: "alice@example.com", role: "admin", created_at: nil}}
 
 iex> bad_user = %User{name: "A", email: "bad-email"}
 iex> Validatable.validate(bad_user)
@@ -321,7 +335,7 @@ iex> Keyword.has_key?(errors, :email)
 true
 ```
 
-Keyword lists make downstream consumers happier. Forms, APIs, analytics tooling, all of it.
+Returning a keyword list, and not a list of strings, makes life easier for every consumer:
 
 - Field-specific access: `Keyword.get(errors, :email)`
 - Conditional logic: `Keyword.has_key?(errors, :name)`
@@ -329,7 +343,7 @@ Keyword lists make downstream consumers happier. Forms, APIs, analytics tooling,
 - Analytics: count errors by field, not raw strings
 - Partial retries: re-validate only what failed
 
-For nested data, just keep composing:
+For nested data, keep composing. Each `validate_*` helper has the same shape as the ones above. It adds errors tagged with its section, and `format_errors/2` groups them at the end:
 
 ```elixir
 # Complex validation with nested errors
@@ -338,44 +352,36 @@ def validate_nested_data(data) do
   |> validate_user_info(data.user)
   |> validate_preferences(data.preferences)
   |> validate_billing(data.billing)
-  |> format_errors()
+  |> format_errors(data)
 end
 
 # Group errors by section
-defp format_errors([]), do: {:ok, data}
-defp format_errors(errors) do
-  grouped = Keyword.group_by(errors, &elem(&1, 0), &elem(&1, 1))
+defp format_errors([], data), do: {:ok, data}
+defp format_errors(errors, _data) do
+  grouped = Enum.group_by(errors, &elem(&1, 0), &elem(&1, 1))
   {:error, grouped}
 end
 ```
 
-Now you can stitch together complex payloads and still keep things readable:
-
-```elixir
-iex> complex_data = %{
-...>   "user" => %User{id: 1, name: "Alice", email: "alice@example.com", role: "admin"},
-...>   "metadata" => %{"timestamp" => ~U[2024-11-10 14:30:00Z], "version" => 1}
-...> }
-iex> JSONEncodable.to_json(complex_data)
-# Returns complete JSON with proper nesting and type conversion
-```
+The result is a map like `%{user: ["Email must be valid"], billing: [...]}`, which is easy to show next to the right part of a form.
 
 ## The standard library already does this
 
-Elixir does this everywhere:
+Elixir's standard library uses protocols all over:
 
 - `String.Chars` powers string interpolation.
 - `Inspect` keeps debugging readable.
 - `Enumerable` lets any collection participate in `Enum`.
-- `Collectable` works the other way, building collections from streams.
+- `Collectable` works the other way. It lets `Enum.into/2` and `for ... into:` build your collection.
 
-Implement those for your own structs and the rest of the Elixir ecosystem can work with your data without extra wiring.
+Implement those for your own structs and the rest of the ecosystem works with your data. `Enum.map/2` doesn't need to know your struct exists.
 
 ## When not to spin up a protocol
 
 Sometimes a protocol is overkill:
 
-- If the transformation is purely internal, plain functions are clearer.
+- If only your own code calls it and nobody needs to extend it, plain functions are clearer.
+- If you're choosing between modules, not data types (say, a real mailer in production and a fake one in tests), you want a behaviour, not a protocol. A behaviour is a contract that a module implements. A protocol is a contract that a data type implements.
 - If only one type ever uses the behavior, a protocol adds ceremony for nothing.
 - If every type behaves identically, a helper module is enough.
 - If the contract is going to keep changing, plain functions are easier to refactor.
@@ -389,6 +395,6 @@ Sometimes a protocol is overkill:
 
 ## Closing the loop
 
-Protocols are the quiet handshake that keeps Elixir code flexible. Each type voices what it needs and the system listens. Nobody is editing a giant conditional just to add a new type.
+A protocol moves the question "how does this type behave?" out of one central function and into the type itself. New types bring their own answer, and nobody edits a giant conditional to add one.
 
 Find the function in your codebase that knows too much. Turn it into a protocol. The rest of the system gets a lot easier to work with.
