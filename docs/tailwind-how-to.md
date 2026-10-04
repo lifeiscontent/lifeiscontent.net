@@ -1,68 +1,51 @@
-## Tailwind v4 How-To
+## Tailwind v4 how-to
 
-This doc reflects the current Tailwind v4 + Astro setup. Everything below assumes the tokens, utilities, and bespoke CSS that ship in `src/styles/globals.css`.
+This guide describes the Tailwind v4 and Astro setup in this repo. The tokens and global styles are in `src/styles/globals.css`.
 
 ### 1. Ground rules
 
-1. **Token-first** – Tailwind only emits utilities for tokens declared in `@theme`. If you reach for a color, spacing value, or type scale that does not exist, add the token first. Literal hex values are noise for the compiler and break light/dark parity.
-2. **No custom spacing classes** – spacing lives in flex/grid `gap-*` utilities or the canonical section shell. Avoid `m-*`, `space-*`, `divide-*`, or bespoke border tricks to create rhythm.
-3. **Reuse primitives** – Section, Stack, Grid, Heading, Text, Anchor, etc. expose the exact props we use in the site. If a new pattern requires more, add it once inside the component rather than sprinkling conditional CSS everywhere else.
-4. **Accessibility first** – Our tokens already back accessible contrast. When creating new combinations, check both color schemes and keyboard focus states before shipping.
+1. **Tokens first.** Tailwind only makes utilities for tokens in `@theme`. If you need a new color or size, add the token first. Do not use literal hex values.
+2. **No class escape hatch.** Components omit `class` and `style` from their props. Pages pass intent props, such as `tone`, `variant`, and `spacing`. Each component maps those props to classes.
+3. **Props are types.** Declare component props with `type Props = { … }`. For HTML attributes, use `type Props = Omit<HTMLAttributes<'div'>, 'class' | 'style'> & { … }`.
+4. **Check both color schemes.** Each color needs a dark value. Check light mode, dark mode, and keyboard focus before you ship.
 
-### 2. Global layer & celestial system
+### 2. Color
 
-`src/styles/globals.css` does most of the heavy lifting:
+- The site is neutral grays plus one accent, a clay color (`--color-accent-*`).
+- Use the accent only for links and other interactive elements. The thin line at the top of the page and on `CalloutPanel` is the one decorative use.
+- Code highlighting uses violet, sky, and emerald, so the accent always means "link".
+- Text must meet 4.5:1 contrast. Muted text is `neutral-600` in light mode and `neutral-300` in dark mode.
 
-- **Root tokens** – `@layer base { :root { … } }` declares all code-theme variables plus the celestial palette used for the background gradients. Every new custom property must have a dark variant inside `@variant dark { … }` at the same selector depth.
-- **Custom property plumbing** – The scroll animation rides on `@property --celestial-progress` and the `celestial-track` keyframes applied to `body`. Extend or remix the animation by reading that property instead of inventing a second scroll timeline.
-- **Background composition** – `html`, `body`, and their pseudo-elements stack multiple gradients, grain overlays, and conic/radial fills. Modifications should tweak tokens (`--celestial-halo`, `--celestial-ring`, etc.) rather than overriding `background-*` directly. That keeps dark mode, reduced motion, and the blend modes aligned.
-- **Reduced motion** – The `@media (prefers-reduced-motion: reduce)` block locks the animation and sets a sensible fallback `--celestial-progress`. Any new motion-driven effect must respect the same guard.
-- **Utility namespace** – The `@utility no-print { … }` example is the template for future global utilities. Declare them here so Tailwind’s analyzer picks them up and dedupes output.
+### 3. Page layout
 
-### 3. Layout grammar
+- **`PageSection`** is one full-width band of a page. It centers its content in the `max-w-4xl` column.
+  - `spacing`: `compact` for the header and breadcrumb, `intro` for the first band on a page, `body` for all other bands.
+  - `tone`: `transparent` (white), `page` (light gray), or `muted`.
+  - `gap`: the space between its children.
+  - `as` and `contentAs` set the outer and inner elements, for example `as="nav"` or `contentAs="article"`.
+- **`SectionHeader`** is the eyebrow, title, and optional intro text. Use `variant="page"` for the `h1` that opens a page, `section` for an `h2` band, and `callout` for an `h2` inside a panel.
+- Put bands next to each other with no gap between them. A gap shows the white page background as a stripe.
 
-1. **Section shell** – Outer wrapper handles page padding (`px-4 py-16 sm:py-20`). Inside that, center content with `grid w-full place-items-center`, then stack real content in a `Stack` component limited to `max-w-4xl` (or `max-w-3xl` depending on the layout). Every page follows this spine.
-2. **Stacks everywhere** – Instead of manual `flex` markup, use `Stack` for direction, gap, wrap, and width controls. Props already reflect the responsive combos we actually use, so no extra `class` juggling is necessary.
-3. **Grids for collections** – Grid exposes the column counts we support. If a new breakpoint is needed, add it once in the component; do not inline `grid-cols-*` values across pages.
-4. **Whitespace as structure** – We avoid ornamental borders and rely on whitespace + tone shifts. If you feel compelled to add `border`/`divide`, consider whether a lighter/darker Section tone or additional `gap` communicates separation more cohesively.
+### 4. Primitives
 
-### 4. Component usage notes
+- **`Stack` and `Grid`** do flex and grid layout inside a band. Use their props, not `flex` or `grid-cols-*` classes.
+- **`Heading` and `Text`** set type size, tone, and weight. Both have `sizeAtSm` for the larger size at the `sm` breakpoint.
+- **`Anchor`** is a text link. **`ButtonLink`** is a link that looks like a button. Use `primary` once per section and `secondary` (outlined) for other actions.
+- **`BadgeLink`** is a pill link. Keyword tags use the `outline` variant, and `aria-current="page"` marks the current keyword.
+- **`Icon`** draws the site's icons by name (`calendar`, `clock`, `refresh`, `external`, `github`, `x`, `email`, `rss`). Add new icons to `Icon`. Do not put inline SVGs in pages.
+- **`Breadcrumb`** takes `parents` and `current`.
 
-- **Heading/Text** – Sizes and tones are trimmed to the combos actually used. If you need a new tone, add usage first (e.g., on a page) then wire the component, so dead branches don’t return.
-- **Anchor** – Supports `size="inherit" | "sm" | "base"` plus `variant="primary" | "secondary"` and `underline="none" | "hover"`. Reuse those combos instead of adding extra typography wrappers.
-- **CalloutPanel / Card** – Max width is baked into the component (always `max-w-4xl`), and Card only exposes `gap="sm|md"`. Respect that contract so future audits can keep trimming safely.
-- **Blog primitives** – Blog posting cards, lists, keyword badges, etc. already encapsulate the responsive logic and prop sets we still use; no need for extra wrappers.
+### 5. Posts
 
-### 5. Authoring with `@variant`
+- **`Prose`** styles post content. Running text stops at `40rem`, which is about 70 characters per line in Geist at 18px. Code blocks use the full column width.
+- Inline code wraps when it is wider than the screen, so long file paths do not make the page scroll sideways.
+- **`BlogPostingCard`** chooses a presentation: `default` for lists or `compact` for "More like this". Each presentation uses `BlogPostingMeta`, `BlogPostingTitle`, and `BlogPostingDescription`.
+- The post page uses `BlogPostingHeader`, `BlogPostingToc`, and `BlogPostingPager`. The table of contents shows when a post has three or more `h2` sections.
 
-`globals.css` demonstrates the preferred hierarchy:
+### 6. Checklist
 
-```css
-html {
-  /* default visuals */
-  @variant dark {
-    /* dark-mode overrides at the same selector */
-  }
-}
-
-body {
-  animation-name: celestial-track;
-  @variant dark {
-    /* dark-specific gradients */
-  }
-}
-```
-
-- `@variant hover`, `@variant focus-visible`, `@variant md`, etc., replace the old `:hover`/media queries so Tailwind can statically analyze the block.
-- `@variant *` and `@variant **` stand in for `>` and descendant selectors. Keep them at the bottom of the block to match Tailwind’s expansion order.
-- Functional variants (e.g., `@variant aria-pressed`) are preferred over custom attribute selectors. They read better and integrate with Tailwind’s deduper.
-
-### 6. Working checklist
-
-1. **Add/verify tokens** – Update `@theme` (and `@variant dark` blocks) before writing markup.
-2. **Compose with primitives** – Reach for Section/Stack/Grid/Text/Heading/Anchor/Banners first. If a change needs a new prop, add it and document the usage.
-3. **Guard light/dark & motion** – Test in both schemes and with reduced-motion enabled. Custom properties should retain sensible defaults even before JS hydrates.
-4. **Run the suite** – `pnpm check:lint`, `pnpm check:astro`, and `pnpm run build` should stay green. Lint now covers `.astro` files, and `astro check` is our oracle for type safety across components/content.
-5. **Update docs** – Any structural change (new tokens, layout deviation, component prop add/remove) gets called out here so the next pass has full context.
-
-Following these rules keeps the system cohesive: tokens drive Tailwind output, globals.css handles the immersive backdrop, and components remain narrowly scoped to the props we actually use.
+1. Add or change tokens in `@theme`, with dark values, before you write markup.
+2. Use the components above. If a change needs a new prop, add it to the component once.
+3. Run `pnpm check` and `pnpm build`. The deploy workflow runs both. `pnpm check` includes Prettier, lint, and `astro check`.
+4. Look at the changed pages in light mode, in dark mode, and at phone width.
+5. If you change a component's props or the layout rules, update this guide.
