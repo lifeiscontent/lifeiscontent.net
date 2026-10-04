@@ -1,0 +1,93 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import readingTime from 'reading-time'
+import Stack from '@components/layouts/stack.astro'
+import Heading from '@components/ui/heading.astro'
+import Text from '@components/ui/text.astro'
+import Icon from '@components/ui/icon.astro'
+import PersonInline from '@components/persons/person-inline.astro'
+import BlogPostingKeywords from './blog-posting-keywords.astro'
+import { formatLongDate } from '@lib/dates'
+
+// The top of a post: date, reading time, and authors, then the title, description,
+// last-updated date, and keywords.
+type Props = {
+  blogPosting: CollectionEntry<'blog-postings'>
+  authors: CollectionEntry<'persons'>[]
+  keywords: CollectionEntry<'defined-terms'>[]
+}
+
+const { blogPosting, authors, keywords } = Astro.props
+const { headline, description, datePublished, dateModified } = blogPosting.data
+---
+
+<Stack as="header" direction="column" gap="lg">
+  <Stack direction="column" gap="sm">
+    <Stack direction="row" wrap gap="sm" align="center">
+      <Stack direction="row" gap="xs" align="center">
+        <Icon name="calendar" tone="subtle" size="xs" />
+        <Text
+          as="time"
+          size="xs"
+          sizeAtSm="sm"
+          tone="subtle"
+          datetime={datePublished.toISOString()}
+        >
+          {formatLongDate(datePublished)}
+        </Text>
+      </Stack>
+      <Stack direction="row" gap="xs" align="center">
+        <Icon name="clock" tone="subtle" size="xs" />
+        <Text as="span" size="xs" sizeAtSm="sm" tone="subtle">
+          {readingTime(blogPosting.body ?? '').text}
+        </Text>
+      </Stack>
+      {
+        authors.length > 0 && (
+          <Stack direction="row" wrap gap="xs" align="center">
+            {authors.map((author) => (
+              <PersonInline person={author} />
+            ))}
+          </Stack>
+        )
+      }
+    </Stack>
+  </Stack>
+
+  <Stack direction="column" gap="sm">
+    <Heading level={1} size="2xl" sizeAtSm="3xl" weight="bold">
+      {headline}
+    </Heading>
+    {
+      description && (
+        <div class="max-w-[40rem]">
+          <Text tone="muted" sizeAtSm="lg">
+            {description}
+          </Text>
+        </div>
+      )
+    }
+  </Stack>
+
+  {
+    dateModified && (
+      <Stack direction="row" gap="xs" align="center">
+        <Icon name="refresh" tone="subtle" size="xs" />
+        <Text as="span" size="xs" sizeAtSm="sm" tone="subtle">
+          Last updated{' '}
+          <Text
+            as="time"
+            size="xs"
+            sizeAtSm="sm"
+            tone="subtle"
+            datetime={dateModified.toISOString()}
+          >
+            {formatLongDate(dateModified)}
+          </Text>
+        </Text>
+      </Stack>
+    )
+  }
+
+  {keywords.length > 0 && <BlogPostingKeywords keywords={keywords} />}
+</Stack>

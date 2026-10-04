@@ -125,8 +125,9 @@ export function computeRelatedEntries(entry: BlogPostingEntry, entries: BlogPost
 export function findAdjacentEntries(entry: BlogPostingEntry, sortedEntries: BlogPostingEntry[]) {
   const currentIndex = sortedEntries.findIndex((item) => item.id === entry.id)
   return {
-    previous: currentIndex < sortedEntries.length - 1 ? sortedEntries[currentIndex + 1] : null,
-    next: currentIndex > 0 ? sortedEntries[currentIndex - 1] : null,
+    previous:
+      currentIndex < sortedEntries.length - 1 ? (sortedEntries[currentIndex + 1] ?? null) : null,
+    next: currentIndex > 0 ? (sortedEntries[currentIndex - 1] ?? null) : null,
   }
 }
 

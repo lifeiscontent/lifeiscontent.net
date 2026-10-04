@@ -1,0 +1,52 @@
+---
+import type { BlogPostingEntry } from '@lib/content'
+import Stack from '@components/layouts/stack.astro'
+import Grid from '@components/layouts/grid.astro'
+import Text from '@components/ui/text.astro'
+import Anchor from '@components/ui/anchor.astro'
+
+// Links to the posts before and after this one. Renders nothing when there are neither.
+type Props = {
+  previous: BlogPostingEntry | null
+  next: BlogPostingEntry | null
+}
+
+const { previous, next } = Astro.props
+const links = [
+  previous && { label: 'Previous', entry: previous, column: '' },
+  next && { label: 'Next', entry: next, column: ' md:col-start-2' },
+].filter((link) => Boolean(link)) as {
+  label: string
+  entry: BlogPostingEntry
+  column: string
+}[]
+---
+
+{
+  links.length > 0 && (
+    <Stack as="nav" aria-label="Previous and next posts" direction="column" gap="md">
+      <Grid columns={1} columnsAtMd={2} gap="md">
+        {links.map(({ label, entry, column }) => (
+          <div class={`flex h-full flex-col gap-1.5${column}`}>
+            <Text as="span" size="xs" sizeAtSm="sm" tone="subtle" weight="medium">
+              {label}
+            </Text>
+            <Anchor
+              href={`/blog-postings/${entry.id}`}
+              variant="primary"
+              size="base"
+              weight="semibold"
+            >
+              {entry.data.headline}
+            </Anchor>
+            <div class="mt-auto">
+              <Text tone="muted" size="xs" sizeAtSm="sm" clamp={2}>
+                {entry.data.description}
+              </Text>
+            </div>
+          </div>
+        ))}
+      </Grid>
+    </Stack>
+  )
+}

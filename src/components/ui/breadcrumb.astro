@@ -1,0 +1,40 @@
+---
+import Stack from '@components/layouts/stack.astro'
+import Text from '@components/ui/text.astro'
+import Anchor from '@components/ui/anchor.astro'
+
+// The trail of parent pages. The last item is the current page and is not a link.
+type Props = {
+  parents: { label: string; href: string }[]
+  current: string
+}
+
+const { parents, current } = Astro.props
+---
+
+<Stack direction="row" gap="xs" wrap align="center">
+  {
+    parents.map((parent) => (
+      <>
+        <Text as="span" size="xs" sizeAtSm="sm" tone="subtle" weight="medium">
+          <Anchor
+            href={parent.href}
+            size="inherit"
+            weight="inherit"
+            underline="none"
+            variant="secondary"
+          >
+            {parent.label}
+          </Anchor>
+        </Text>
+        <Text as="span" size="xs" sizeAtSm="sm" tone="subtle">
+          {' '}
+          /{' '}
+        </Text>
+      </>
+    ))
+  }
+  <Text as="span" size="xs" sizeAtSm="sm" tone="default" weight="semibold">
+    {current}
+  </Text>
+</Stack>
