@@ -3,7 +3,7 @@
   "bugs": {
     "url": "https://github.com/lifeiscontent/lifeiscontent.net/issues"
   },
-  "description": "Online Presence of Aaron Reisman",
+  "description": "Engineering notes, component work, and writing from Aaron Reisman.",
   "devDependencies": {
     "@astrojs/check": "0.9.10",
     "@astrojs/mdx": "8.0.2",
