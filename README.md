@@ -9,7 +9,7 @@ An Astro-powered narrative studio site pairing long-form writing with a purposef
 - Tailwind CSS v4 design system shared across components, layouts, and prose
 - RSS feed, sitemap, and canonical metadata for every page
 - Progressive Web App manifest for install prompts and metadata
-- Deterministic OpenGraph images via `astro-og-canvas`
+- Deterministic OpenGraph images via `satori-astro`
 - GitHub Pages workflow with pnpm caching and artifact deployments
 
 ## Tech Stack
@@ -85,7 +85,7 @@ Other collections (authors, defined terms, sites) follow the same pattern. Inval
 - `astro.config.mjs`: Integrations (Tailwind, sitemap, mdx), redirects, site metadata.
 - `src/content.config.ts`: Content schemas and collection types.
 - `public/`: CNAME, manifest, favicons, static exports for select posts.
-- `src/pages/open-graph/[...route].ts`: Renders OG cards using site metadata, icon, and `astro-og-canvas`.
+- `src/pages/open-graph/[...route].ts`: Renders OG cards using site metadata, icon, and `satori-astro`.
 
 ## Project Structure
 
