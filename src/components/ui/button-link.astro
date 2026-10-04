@@ -5,7 +5,7 @@ type ButtonVariant = 'primary' | 'secondary'
 type ButtonSize = 'md' | 'lg' | 'xl'
 type ButtonWidth = 'auto' | 'full' | 'responsive'
 
-interface Props extends Omit<HTMLAttributes<'a'>, 'style' | 'class'> {
+type Props = Omit<HTMLAttributes<'a'>, 'style' | 'class'> & {
   variant?: ButtonVariant
   size?: ButtonSize
   width?: ButtonWidth

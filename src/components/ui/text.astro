@@ -13,7 +13,7 @@ type TextAttributes = HTMLAttributes<'p'> &
   HTMLAttributes<'div'> &
   HTMLAttributes<'time'>
 
-interface Props extends Omit<TextAttributes, 'class' | 'style'> {
+type Props = Omit<TextAttributes, 'class' | 'style'> & {
   as?: keyof HTMLElementTagNameMap
   size?: TextSize
   sizeAtSm?: TextSize

@@ -4,7 +4,7 @@ import type { HTMLAttributes } from 'astro/types'
 type BadgeVariant = 'primary' | 'secondary' | 'outline'
 type BadgeSize = 'xs' | 'sm'
 
-interface Props extends Omit<HTMLAttributes<'a'>, 'style' | 'class'> {
+type Props = Omit<HTMLAttributes<'a'>, 'style' | 'class'> & {
   variant?: BadgeVariant
   size?: BadgeSize
 }

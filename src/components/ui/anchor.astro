@@ -7,7 +7,7 @@ type AnchorUnderline = 'hover' | 'none'
 type AnchorSize = 'inherit' | 'sm' | 'base'
 type AnchorWeight = 'inherit' | 'medium' | 'semibold'
 
-interface Props extends Omit<HTMLAttributes<'a'>, 'style' | 'class'> {
+type Props = Omit<HTMLAttributes<'a'>, 'style' | 'class'> & {
   variant?: AnchorVariant
   underline?: AnchorUnderline
   size?: AnchorSize

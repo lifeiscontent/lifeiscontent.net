@@ -9,7 +9,7 @@ type StackJustify = 'start' | 'center' | 'end' | 'between'
 type StackWidth = 'auto' | 'full'
 type StackMaxWidth = 'none' | '2xl' | '3xl' | '4xl'
 
-interface Props extends Omit<HTMLAttributes<'div'>, 'class' | 'style'> {
+type Props = Omit<HTMLAttributes<'div'>, 'class' | 'style'> & {
   as?: keyof HTMLElementTagNameMap
   direction?: StackDirection
   directionAtSm?: StackDirection | undefined

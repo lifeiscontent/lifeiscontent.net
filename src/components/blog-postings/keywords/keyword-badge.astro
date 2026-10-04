@@ -3,7 +3,7 @@ import BadgeLink from '@components/ui/badge-link.astro'
 import Text from '@components/ui/text.astro'
 import type { CollectionEntry } from 'astro:content'
 
-interface Props {
+type Props = {
   keyword: CollectionEntry<'defined-terms'>
   isCurrent?: boolean
   usageCount?: number

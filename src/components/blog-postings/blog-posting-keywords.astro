@@ -3,7 +3,7 @@ import type { CollectionEntry } from 'astro:content'
 import BadgeLink from '@components/ui/badge-link.astro'
 import Stack from '@components/layouts/stack.astro'
 
-interface Props {
+type Props = {
   keywords: CollectionEntry<'defined-terms'>[]
   variant?: 'default' | 'compact'
 }

@@ -4,7 +4,7 @@ import BlogPostingCard from './blog-posting-card.astro'
 import Stack from '@components/layouts/stack.astro'
 import Text from '@components/ui/text.astro'
 
-interface Props {
+type Props = {
   blogPostings: CollectionEntry<'blog-postings'>[]
   emptyMessage?: string
   keywordMap?: Record<string, CollectionEntry<'defined-terms'>[]> | undefined

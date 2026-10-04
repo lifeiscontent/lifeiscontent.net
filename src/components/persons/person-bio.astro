@@ -4,7 +4,7 @@ import { Image } from 'astro:assets'
 import { createHash } from 'crypto'
 import Anchor from '@components/ui/anchor.astro'
 
-interface Props {
+type Props = {
   person: CollectionEntry<'persons'>
   size?: number
 }

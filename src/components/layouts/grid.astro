@@ -8,7 +8,7 @@ type GridGapX = 'md' | '3xl'
 type GridGapY = 'xl'
 type GridPlaceItems = 'center'
 
-interface Props extends Omit<HTMLAttributes<'div'>, 'class' | 'style'> {
+type Props = Omit<HTMLAttributes<'div'>, 'class' | 'style'> & {
   as?: keyof HTMLElementTagNameMap
   columns?: GridColumns
   columnsAtSm?: GridColumns | undefined

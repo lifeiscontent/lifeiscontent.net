@@ -4,7 +4,7 @@ import type { HTMLAttributes } from 'astro/types'
 
 type EyebrowAttributes = HTMLAttributes<'p'> & HTMLAttributes<'span'> & HTMLAttributes<'div'>
 
-interface Props extends Omit<EyebrowAttributes, 'class' | 'style'> {
+type Props = Omit<EyebrowAttributes, 'class' | 'style'> & {
   as?: keyof HTMLElementTagNameMap
 }
 

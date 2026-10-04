@@ -5,7 +5,7 @@ import type { HTMLAttributes } from 'astro/types'
 type SectionPaddingY = 'none' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
 type SectionTone = 'transparent' | 'page' | 'muted'
 
-interface Props extends Omit<HTMLAttributes<'section'>, 'class' | 'style'> {
+type Props = Omit<HTMLAttributes<'section'>, 'class' | 'style'> & {
   as?: keyof HTMLElementTagNameMap
   paddingY?: SectionPaddingY
   paddingYAtSm?: SectionPaddingY

@@ -4,7 +4,7 @@ import KeywordBadge from './keyword-badge.astro'
 import Stack from '@components/layouts/stack.astro'
 import Heading from '@components/ui/heading.astro'
 
-interface Props {
+type Props = {
   keywords: CollectionEntry<'defined-terms'>[]
   title?: string
   usageCounts?: Record<string, number>

@@ -5,7 +5,7 @@ import clsx from 'clsx'
 type CueTone = 'default' | 'subtle'
 type CueSize = 'xs' | 'sm' | 'md'
 
-interface Props extends Omit<HTMLAttributes<'span'>, 'class' | 'style'> {
+type Props = Omit<HTMLAttributes<'span'>, 'class' | 'style'> & {
   tone?: CueTone
   size?: CueSize
 }
