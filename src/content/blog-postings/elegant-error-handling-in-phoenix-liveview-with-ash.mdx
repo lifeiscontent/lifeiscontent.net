@@ -13,7 +13,7 @@ headline: 'Elegant Error Handling in Phoenix LiveView with Ash'
 description: 'How to build 404, 403, and 500 pages in Phoenix LiveView that do not feel like afterthoughts. Uses Ash exceptions and the built-in Phoenix conventions so the failure paths read like the rest of your product.'
 abstract: 'Error states are part of the product. Here is how I wire up Phoenix and Ash so they stay calm and predictable when things go wrong.'
 datePublished: '2025-04-09'
-dateModified: '2026-04-28'
+dateModified: '2026-10-05'
 inLanguage: 'en-US'
 author:
   - lifeiscontent
@@ -25,14 +25,16 @@ keywords:
   - ux
 ---
 
-Good products think about their failure states. A blank 500 page, or that classic `no view was found for the format: 'html'` error, yanks people right out of the experience. Those moments are part of the product too. Even a 500 page should feel like it knows what it is.
+Good products think about their failure states. A blank 500 page, or the raw error Phoenix shows when it has no error view set up, yanks people right out of the experience. Those moments are part of the product too. Even a 500 page should feel like it knows what it is.
 
-This is how I design 404, 403, and 500 experiences in a Phoenix LiveView app that uses Ash. Some of it is engineering. Some of it is just paying attention to tone. The status code is the easy part. The rest is what people actually remember.
+This is how I design 404, 403, and 500 pages in a Phoenix LiveView app that uses [Ash](https://ash-hq.org/). If you haven't used Ash, it's an Elixir framework where you describe your data and its rules (who can read what, what counts as valid) in one place, and Ash enforces them for you. You don't need to know much more than that to follow along.
+
+Some of it is engineering. Some of it is just paying attention to tone. The status code is the easy part. The rest is what people actually remember.
 
 ## Why failure states deserve design time
 
 - How you recover tells people how you build everything else.
-- One error can ripple across Phoenix, LiveView, and Ash, so you need to be clear about who owns what.
+- One error can pass through Phoenix, LiveView, and Ash before anyone sees it, so you need to be clear about which layer does what.
 - The copy and layout should feel like the rest of your product, not a fallback page.
 - And honestly, getting these right early saves a lot of debugging later.
 
@@ -40,12 +42,12 @@ This is how I design 404, 403, and 500 experiences in a Phoenix LiveView app tha
 
 1. **Phoenix Endpoint** picks which renderer to use.
 2. **Error layout and templates** set the tone.
-3. **Ash exceptions** raise the right HTTP status (404, 403, 500) when bang functions fail.
-4. **LiveView** inherits all of the above without extra wiring.
+3. **Ash exceptions** carry the right HTTP status (404, 403, 500) when an Ash call fails.
+4. **LiveView** gets the same pages for free when the error happens during `mount`.
 
-Once those click, the rest is mostly config.
+Once those click, the rest is mostly config. There is one catch with LiveView events, and I'll get to it near the end.
 
-## 1. Endpoint config
+## Point Phoenix at your error modules
 
 Tell Phoenix which HTML and JSON modules to use. This goes in `config/config.exs`:
 
@@ -57,9 +59,9 @@ config :my_app, MyAppWeb.Endpoint,
   ]
 ```
 
-This keeps the response format stable and gives your error pages their own layout.
+Now browser requests get an HTML error page and API requests get JSON, and the HTML pages use their own layout instead of your app's normal one.
 
-## 2. The layout
+## Give errors their own layout
 
 I keep the error layout small. No nav, no extra chrome. Just somewhere quiet for the reader to land. It lives in `lib/my_app_web/components/layouts/error.html.heex`:
 
@@ -79,9 +81,9 @@ I keep the error layout small. No nav, no extra chrome. Just somewhere quiet for
 </html>
 ```
 
-The dynamic title keeps search snippets clean and works well with screen readers.
+The title shows the status message, like "Not Found · MyApp", so the browser tab and screen readers say what happened.
 
-## 3. Microcopy that says something
+## Write copy that says something
 
 Match each status to the feeling you want. I aim for calm, plus a clear next step.
 
@@ -114,9 +116,9 @@ Match each status to the feeling you want. I aim for calm, plus a clear next ste
 </section>
 ```
 
-## 4. Keep rendering boring on purpose
+## Keep the rendering boring
 
-The `ErrorHTML` module is meant to be boring. Let Phoenix do the wiring so you can focus on the copy:
+The `ErrorHTML` module from the config should do almost nothing. `embed_templates` picks up the template files above, and `render/2` is the fallback for any status that has no template:
 
 ```elixir
 defmodule MyAppWeb.ErrorHTML do
@@ -129,11 +131,13 @@ defmodule MyAppWeb.ErrorHTML do
 end
 ```
 
+So a 404 gets your custom page, and an odd status like 418 still gets a plain "I'm a teapot" instead of a crash.
+
 ## Where Ash comes in
 
-Ash's bang functions (`read!`, `create!`, `update!`) handle both data checks and authorization. When something fails, they raise a typed exception, and Phoenix turns that into the right HTTP status. No glue code. No nested conditionals.
+In Elixir, a function whose name ends in `!` raises an exception on failure instead of returning `{:error, reason}`. Ash follows that convention. Its bang functions (`read!`, `create!`, `update!`) check that the record exists and that the current user is allowed to touch it. When either check fails, they raise an Ash exception. No glue code. No nested conditionals.
 
-Use them in LiveViews exactly like you would on the server:
+Below, `MyApp.Content` is an Ash domain (a group of related resources), and `get_post!` is a function Ash generates for it. The `actor:` option tells Ash who is asking, so it can apply your authorization rules, which Ash calls policies. Call it in `mount` the same way you would in a controller:
 
 ```elixir
 def mount(%{"id" => id}, _session, socket) do
@@ -142,9 +146,15 @@ def mount(%{"id" => id}, _session, socket) do
 end
 ```
 
-Missing record? Permission denied? Ash raises the right exception, Phoenix renders the right template. The translation happens in the [Plug Exception implementation](https://github.com/ash-project/ash_phoenix/blob/main/lib/ash_phoenix/plug/exception.ex) if you want to see it.
+Missing record? Permission denied? Ash raises the right exception, and Phoenix renders the right template.
 
-## What each one looks like in practice
+How does Phoenix know a "not found" exception means 404? Through `Plug.Exception`, a protocol that lets any exception declare its HTTP status. The [`ash_phoenix`](https://github.com/ash-project/ash_phoenix/blob/main/lib/ash_phoenix/plug/exception.ex) package implements it for Ash's errors: not found becomes 404, a policy failure becomes 403, and so on. Make sure `ash_phoenix` is in your dependencies. Without it, every Ash error shows up as a 500.
+
+## The catch: errors inside events
+
+Everything above works because the exception happens during the first `mount`, while Phoenix is still answering a normal HTTP request. A LiveView then opens a WebSocket and keeps a server process running for that page. After that point, the rules change. An exception in `handle_event` crashes the LiveView process. The client sees the crash and remounts the LiveView over the same connection, without a page reload. The user does not see your 404 or 403 page. They see the current page come back with fresh state.
+
+That is still a safe default. Nothing leaks, and the error is logged. But it means the examples below are about where the exception comes from, not about which page the user sees.
 
 **Not Found (404):**
 
@@ -155,6 +165,8 @@ def handle_event("view_post", %{"id" => id}, socket) do
 end
 ```
 
+If the post was deleted after the list loaded, `get_post!` raises a not-found error and the LiveView remounts.
+
 **Forbidden (403):**
 
 ```elixir
@@ -163,6 +175,8 @@ def handle_event("comment_on_post", params, socket) do
   {:noreply, put_flash(socket, :info, "Comment added!")}
 end
 ```
+
+If your policies don't let this user comment, `create_comment!` raises and the comment is not saved. If you want the user to see a message here, use the non-bang `create_comment` and handle `{:error, error}` with a flash.
 
 **Server Error (500):**
 
@@ -179,18 +193,20 @@ def assign_posts(socket) do
 end
 ```
 
+This one logs with some context and then re-raises, so the failure still follows the normal path.
+
 ## A few habits that help
 
 - **Re-read the copy every few months.** Make sure it still sounds like the rest of your product.
 - **Log the real error.** Keep enough detail to debug, but don't show internals to users.
-- **Keep one source of truth.** Centralize rendering so emails and APIs pick up the same tone for free.
+- **Render errors in one place.** Keep it all in `ErrorHTML` and `ErrorJSON`, so every status gets the same layout and tone.
 - **Watch the visuals.** Typography, spacing, buttons. Error views should look like they belong to your app.
 
 ## Why this holds up
 
-- **Composable.** Plug and Ash exceptions stack instead of forking.
+- **No special cases.** Ash errors declare their own status through `Plug.Exception`, so Phoenix handles them like any other exception.
 - **Format aware.** Phoenix returns JSON or HTML from the same setup, so nothing gets duplicated.
 - **Consistent voice.** Templates, layout, and copy still sound like your product, even when something failed.
-- **Easy to evolve.** New error types slot in without touching controllers.
+- **Easy to change.** Add a template like `422.html.heex` and Phoenix uses it. No controller changes.
 
 The messy edges are what people remember. When a LiveView hits a problem, the page they see should still feel like your product, just calmer. Clear copy and a useful next step is usually enough. That's what makes a product feel reliable.
