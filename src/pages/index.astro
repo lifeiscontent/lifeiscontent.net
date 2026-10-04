@@ -10,6 +10,7 @@ import novartisLogo from '@assets/images/logos/novartis.svg'
 import Layout from '@layouts/layout.astro'
 import Stack from '@components/layouts/stack.astro'
 import PageSection from '@components/layouts/page-section.astro'
+import SectionHeader from '@components/layouts/section-header.astro'
 import Grid from '@components/layouts/grid.astro'
 import BlogPostingCard from '@components/blog-postings/blog-posting-card.astro'
 import ButtonLink from '@components/ui/button-link.astro'
@@ -148,15 +149,9 @@ const siteMetadata = {
     {
       recentBlogPostings.length > 0 && (
         <PageSection tone="page" gap="2xl">
-          <Stack direction="column" gap="sm">
-            <Eyebrow>Recent writing</Eyebrow>
-            <Heading level={2} size="2xl" sizeAtSm="3xl" weight="semibold">
-              Notes from the work.
-            </Heading>
-            <Text tone="muted" size="base" sizeAtSm="lg">
-              Posts on React, Phoenix, components, and the bits in between.
-            </Text>
-          </Stack>
+          <SectionHeader eyebrow="Recent writing" title="Notes from the work.">
+            Posts on React, Phoenix, components, and the bits in between.
+          </SectionHeader>
 
           <Stack direction="column" gap="lg">
             {recentBlogPostings.map((blogPosting) => (
@@ -177,16 +172,10 @@ const siteMetadata = {
     }
 
     <PageSection tone="page" gap="2xl">
-      <Stack direction="column" gap="sm">
-        <Eyebrow>Clients</Eyebrow>
-        <Heading level={2} size="2xl" sizeAtSm="3xl" weight="semibold">
-          Some of the teams I've shipped with.
-        </Heading>
-        <Text tone="muted" size="base" sizeAtSm="lg">
-          Global pharma, consumer brands, and growth-stage startups. The work is mostly the same
-          problem at different scales.
-        </Text>
-      </Stack>
+      <SectionHeader eyebrow="Clients" title="Some of the teams I've shipped with.">
+        Global pharma, consumer brands, and growth-stage startups. The work is mostly the same
+        problem at different scales.
+      </SectionHeader>
 
       <Grid columns={2} columnsAtSm={3} gapX="3xl" gapY="xl" placeItems="center">
         {
@@ -203,16 +192,10 @@ const siteMetadata = {
     </PageSection>
 
     <PageSection tone="page" gap="xl">
-      <Stack direction="column" gap="sm">
-        <Eyebrow>Open source</Eyebrow>
-        <Heading level={2} size="2xl" sizeAtSm="3xl" weight="semibold">
-          Projects I've contributed to over the years.
-        </Heading>
-        <Text tone="muted" size="base" sizeAtSm="lg">
-          The list looks longer the older you get. Some of these I worked on heavily, some I just
-          filed bugs against. They all taught me something.
-        </Text>
-      </Stack>
+      <SectionHeader eyebrow="Open source" title="Projects I've contributed to over the years.">
+        The list looks longer the older you get. Some of these I worked on heavily, some I just
+        filed bugs against. They all taught me something.
+      </SectionHeader>
 
       <Grid columns={1} columnsAtSm={2} columnsAtLg={3} gap="lg">
         {
@@ -250,14 +233,14 @@ const siteMetadata = {
     <PageSection tone="page">
       <CalloutPanel>
         <Stack direction="column" gap="md">
-          <Eyebrow>Working together</Eyebrow>
-          <Heading level={2} size="2xl" sizeAtSm="3xl" weight="semibold">
-            Have a project in mind?
-          </Heading>
-          <Text tone="muted" size="base" sizeAtSm="lg">
+          <SectionHeader
+            variant="callout"
+            eyebrow="Working together"
+            title="Have a project in mind?"
+          >
             Product engineering, component systems, refactors, and the hard parts of an existing
             codebase. If any of that sounds like what you need, send me a note.
-          </Text>
+          </SectionHeader>
           <Stack direction="row" width="full" widthAtSm="auto">
             <ButtonLink
               href="mailto:aaron@lifeiscontent.net"

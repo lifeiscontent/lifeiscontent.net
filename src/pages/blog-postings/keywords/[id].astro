@@ -4,10 +4,8 @@ import Layout from '@layouts/layout.astro'
 import BlogPostingList from '@components/blog-postings/blog-posting-list.astro'
 import KeywordList from '@components/blog-postings/keywords/keyword-list.astro'
 import PageSection from '@components/layouts/page-section.astro'
-import Heading from '@components/ui/heading.astro'
-import Text from '@components/ui/text.astro'
+import SectionHeader from '@components/layouts/section-header.astro'
 import Anchor from '@components/ui/anchor.astro'
-import Eyebrow from '@components/ui/eyebrow.astro'
 import type { BlogPostingEntry, DefinedTermEntry } from '@lib/content'
 import { aggregateKeywordUsages, createPublishedFilter } from '@lib/content'
 
@@ -72,14 +70,10 @@ const browseAllHref = '/blog-postings'
 ---
 
 <Layout title={pageTitle} description={pageDescription} ogImagePath={ogImagePath}>
-  <PageSection spacing="intro" gap="md">
-    <Eyebrow>Tagged</Eyebrow>
-    <Heading level={1} size="2xl" sizeAtSm="3xl" weight="semibold">
-      {currentKeyword.data.name}
-    </Heading>
-    <Text tone="muted" size="base" sizeAtSm="lg">
+  <PageSection spacing="intro">
+    <SectionHeader variant="page" eyebrow="Tagged" title={currentKeyword.data.name}>
       {keywordUsageCount}&nbsp;{keywordLabel} on this topic.
-    </Text>
+    </SectionHeader>
   </PageSection>
 
   <PageSection tone="page" gap="2xl">

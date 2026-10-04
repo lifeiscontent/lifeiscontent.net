@@ -1,0 +1,30 @@
+---
+import Stack from '@components/layouts/stack.astro'
+import Eyebrow from '@components/ui/eyebrow.astro'
+import Heading from '@components/ui/heading.astro'
+import Text from '@components/ui/text.astro'
+
+// The eyebrow, title, and short intro that open a page or a section.
+type Props = {
+  eyebrow: string
+  title: string
+  // page: the h1 that opens a page. section: an h2 band on a page. callout: an h2 inside a panel.
+  variant?: 'page' | 'section' | 'callout'
+}
+
+const { eyebrow, title, variant = 'section' } = Astro.props
+const level = variant === 'page' ? 1 : 2
+const gap = variant === 'section' ? 'sm' : 'md'
+---
+
+<Stack direction="column" gap={gap}>
+  <Eyebrow>{eyebrow}</Eyebrow>
+  <Heading level={level} size="2xl" sizeAtSm="3xl" weight="semibold">{title}</Heading>
+  {
+    Astro.slots.has('default') && (
+      <Text tone="muted" size="base" sizeAtSm="lg">
+        <slot />
+      </Text>
+    )
+  }
+</Stack>
