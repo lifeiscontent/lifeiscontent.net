@@ -3,8 +3,7 @@ import { getCollection, getEntries, getEntry } from 'astro:content'
 import Layout from '@layouts/layout.astro'
 import BlogPostingList from '@components/blog-postings/blog-posting-list.astro'
 import KeywordList from '@components/blog-postings/keywords/keyword-list.astro'
-import Section from '@components/layouts/section.astro'
-import Stack from '@components/layouts/stack.astro'
+import PageSection from '@components/layouts/page-section.astro'
 import Heading from '@components/ui/heading.astro'
 import Text from '@components/ui/text.astro'
 import Eyebrow from '@components/ui/eyebrow.astro'
@@ -56,30 +55,22 @@ const blogPostingKeywordMap = Object.fromEntries(
 >
   <script type="application/ld+json" is:inline set:html={JSON.stringify(blogJsonLd)} />
 
-  <Section paddingX="sm" paddingY="xl" paddingYAtSm="2xl">
-    <Stack direction="row" justify="center" width="full">
-      <Stack direction="column" width="full" maxWidth="4xl" gap="md">
-        <Eyebrow>Index</Eyebrow>
-        <Heading level={1} size="2xl" sizeAtSm="3xl" weight="semibold"> Blog Postings. </Heading>
-        <Text tone="muted" size="base" sizeAtSm="lg">
-          Posts on React, Phoenix, components, and the bits in between. I write when I think
-          something I learned might be useful to someone else.
-        </Text>
-      </Stack>
-    </Stack>
-  </Section>
+  <PageSection spacing="intro" gap="md">
+    <Eyebrow>Index</Eyebrow>
+    <Heading level={1} size="2xl" sizeAtSm="3xl" weight="semibold"> Blog Postings. </Heading>
+    <Text tone="muted" size="base" sizeAtSm="lg">
+      Posts on React, Phoenix, components, and the bits in between. I write when I think something I
+      learned might be useful to someone else.
+    </Text>
+  </PageSection>
 
-  <Section tone="page" paddingX="sm" paddingY="lg" paddingYAtSm="2xl">
-    <Stack direction="row" justify="center" width="full">
-      <Stack direction="column" width="full" maxWidth="4xl" gap="2xl">
-        <BlogPostingList
-          blogPostings={blogPostings}
-          emptyMessage="No posts yet. Check back soon."
-          keywordMap={blogPostingKeywordMap}
-        />
+  <PageSection tone="page" gap="2xl">
+    <BlogPostingList
+      blogPostings={blogPostings}
+      emptyMessage="No posts yet. Check back soon."
+      keywordMap={blogPostingKeywordMap}
+    />
 
-        <KeywordList keywords={keywords} usageCounts={keywordUsageCounts} />
-      </Stack>
-    </Stack>
-  </Section>
+    <KeywordList keywords={keywords} usageCounts={keywordUsageCounts} />
+  </PageSection>
 </Layout>

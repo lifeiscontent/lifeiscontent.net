@@ -8,7 +8,7 @@ import BlogPostingToc from '@components/blog-postings/blog-posting-toc.astro'
 import PersonInline from '@components/persons/person-inline.astro'
 import PersonBio from '@components/persons/person-bio.astro'
 import { mdxComponents } from '@components/mdx'
-import Section from '@components/layouts/section.astro'
+import PageSection from '@components/layouts/page-section.astro'
 import Stack from '@components/layouts/stack.astro'
 import Grid from '@components/layouts/grid.astro'
 import Heading from '@components/ui/heading.astro'
@@ -75,228 +75,220 @@ const readingTimeText = readingTime(entry.body ?? '').text
 <Layout title={entry.data.headline} description={entry.data.description} ogImagePath={ogImagePath}>
   <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
 
-  <Section as="nav" aria-label="Breadcrumb" tone="muted" paddingX="sm" paddingY="sm">
-    <Stack direction="row" justify="center" width="full">
-      <Stack direction="column" width="full" maxWidth="4xl">
-        <Stack direction="row" gap="xs" wrap align="center">
-          <Text as="span" size="xs" sizeAtSm="sm" tone="subtle" weight="medium">
-            <Anchor href="/" size="inherit" weight="inherit" underline="none" variant="secondary">
-              Home
-            </Anchor>
-          </Text>
-          <Text as="span" size="xs" sizeAtSm="sm" tone="subtle"> / </Text>
-          <Text as="span" size="xs" sizeAtSm="sm" tone="subtle" weight="medium">
-            <Anchor
-              href="/blog-postings"
-              size="inherit"
-              weight="inherit"
-              underline="none"
-              variant="secondary"
-            >
-              Blog Postings
-            </Anchor>
-          </Text>
-          <Text as="span" size="xs" sizeAtSm="sm" tone="subtle"> / </Text>
-          <Text as="span" size="xs" sizeAtSm="sm" tone="default" weight="semibold">
-            {entry.data.headline}
-          </Text>
-        </Stack>
-      </Stack>
+  <PageSection as="nav" tone="muted" spacing="compact" aria-label="Breadcrumb">
+    <Stack direction="row" gap="xs" wrap align="center">
+      <Text as="span" size="xs" sizeAtSm="sm" tone="subtle" weight="medium">
+        <Anchor href="/" size="inherit" weight="inherit" underline="none" variant="secondary">
+          Home
+        </Anchor>
+      </Text>
+      <Text as="span" size="xs" sizeAtSm="sm" tone="subtle"> / </Text>
+      <Text as="span" size="xs" sizeAtSm="sm" tone="subtle" weight="medium">
+        <Anchor
+          href="/blog-postings"
+          size="inherit"
+          weight="inherit"
+          underline="none"
+          variant="secondary"
+        >
+          Blog Postings
+        </Anchor>
+      </Text>
+      <Text as="span" size="xs" sizeAtSm="sm" tone="subtle"> / </Text>
+      <Text as="span" size="xs" sizeAtSm="sm" tone="default" weight="semibold">
+        {entry.data.headline}
+      </Text>
     </Stack>
-  </Section>
+  </PageSection>
 
-  <Section tone="page" paddingX="sm" paddingY="lg" paddingYAtSm="2xl">
-    <Stack direction="row" justify="center" width="full">
-      <Stack as="article" direction="column" gap="2xl" width="full" maxWidth="4xl">
-        <Stack as="header" direction="column" gap="lg">
-          <Stack direction="column" gap="sm">
-            <Stack direction="row" wrap gap="sm" align="center">
-              <Stack direction="row" gap="xs" align="center">
-                <Cue tone="subtle" size="xs">
-                  <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5a2.25 2.25 0 0 0 2.25-2.25m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5a2.25 2.25 0 0 1 2.25 2.25v7.5"
-                    ></path>
-                  </svg>
-                </Cue>
-                <Text
-                  as="time"
-                  size="xs"
-                  sizeAtSm="sm"
-                  tone="subtle"
-                  datetime={publishedDate.toISOString()}
-                >
-                  {
-                    publishedDate.toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })
-                  }
-                </Text>
-              </Stack>
-              <Stack direction="row" gap="xs" align="center">
-                <Cue tone="subtle" size="xs">
-                  <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path>
-                  </svg>
-                </Cue>
-                <Text as="span" size="xs" sizeAtSm="sm" tone="subtle">
-                  {readingTimeText}
-                </Text>
-              </Stack>
+  <PageSection tone="page" contentAs="article" gap="2xl">
+    <Stack as="header" direction="column" gap="lg">
+      <Stack direction="column" gap="sm">
+        <Stack direction="row" wrap gap="sm" align="center">
+          <Stack direction="row" gap="xs" align="center">
+            <Cue tone="subtle" size="xs">
+              <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5a2.25 2.25 0 0 0 2.25-2.25m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5a2.25 2.25 0 0 1 2.25 2.25v7.5"
+                ></path>
+              </svg>
+            </Cue>
+            <Text
+              as="time"
+              size="xs"
+              sizeAtSm="sm"
+              tone="subtle"
+              datetime={publishedDate.toISOString()}
+            >
               {
-                authorEntries.length > 0 && (
-                  <Stack direction="row" wrap gap="xs" align="center">
-                    {authorEntries.map((authorEntry) => (
-                      <PersonInline person={authorEntry} />
-                    ))}
-                  </Stack>
-                )
+                publishedDate.toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })
               }
-            </Stack>
+            </Text>
           </Stack>
-
-          <Stack direction="column" gap="sm">
-            <Heading level={1} size="2xl" sizeAtSm="3xl" weight="bold">
-              {entry.data.headline}
-            </Heading>
-            {
-              entry.data.description && (
-                <div class="max-w-[40rem]">
-                  <Text tone="muted" sizeAtSm="lg">
-                    {entry.data.description}
-                  </Text>
-                </div>
-              )
-            }
+          <Stack direction="row" gap="xs" align="center">
+            <Cue tone="subtle" size="xs">
+              <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path>
+              </svg>
+            </Cue>
+            <Text as="span" size="xs" sizeAtSm="sm" tone="subtle">
+              {readingTimeText}
+            </Text>
           </Stack>
-
           {
-            lastModifiedDate && (
-              <Stack direction="row" gap="xs" align="center">
-                <Cue tone="subtle" size="xs">
-                  <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
-                    />
-                  </svg>
-                </Cue>
-                <Text as="span" size="xs" sizeAtSm="sm" tone="subtle">
-                  Last updated{' '}
-                  <Text
-                    as="time"
-                    size="xs"
-                    sizeAtSm="sm"
-                    tone="subtle"
-                    datetime={lastModifiedDate.toISOString()}
-                  >
-                    {lastModifiedDate.toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
-                  </Text>
-                </Text>
+            authorEntries.length > 0 && (
+              <Stack direction="row" wrap gap="xs" align="center">
+                {authorEntries.map((authorEntry) => (
+                  <PersonInline person={authorEntry} />
+                ))}
               </Stack>
             )
           }
-
-          {keywords.length > 0 && <BlogPostingKeywords keywords={keywords} />}
         </Stack>
+      </Stack>
 
-        <BlogPostingToc headings={headings} />
-
-        <Prose>
-          <Content components={mdxComponents} />
-        </Prose>
-
-        <Stack direction="column" gap="md">
-          <Heading level={3} size="md" weight="semibold">
-            About the {authorLabel}
-          </Heading>
-          <Stack direction="column" gap="lg">
-            {authorEntries.map((authorEntry) => <PersonBio person={authorEntry} />)}
-          </Stack>
-        </Stack>
-
+      <Stack direction="column" gap="sm">
+        <Heading level={1} size="2xl" sizeAtSm="3xl" weight="bold">
+          {entry.data.headline}
+        </Heading>
         {
-          (previousBlogPosting || nextBlogPosting) && (
-            <Stack as="nav" aria-label="Previous and next posts" direction="column" gap="md">
-              <Grid columns={1} columnsAtMd={2} gap="md">
-                {previousBlogPosting && (
-                  <div class="flex h-full flex-col gap-1.5">
-                    <Text as="span" size="xs" sizeAtSm="sm" tone="subtle" weight="medium">
-                      Previous
-                    </Text>
-                    <Anchor
-                      href={`/blog-postings/${previousBlogPosting.id}`}
-                      variant="primary"
-                      size="base"
-                      weight="semibold"
-                    >
-                      {previousBlogPosting.data.headline}
-                    </Anchor>
-                    <div class="mt-auto">
-                      <Text tone="muted" size="xs" sizeAtSm="sm" clamp={2}>
-                        {previousBlogPosting.data.description}
-                      </Text>
-                    </div>
-                  </div>
-                )}
-
-                {nextBlogPosting && (
-                  <div class={`flex h-full flex-col gap-1.5 md:col-start-2`}>
-                    <Text as="span" size="xs" sizeAtSm="sm" tone="subtle" weight="medium">
-                      Next
-                    </Text>
-                    <Anchor
-                      href={`/blog-postings/${nextBlogPosting.id}`}
-                      variant="primary"
-                      size="base"
-                      weight="semibold"
-                    >
-                      {nextBlogPosting.data.headline}
-                    </Anchor>
-                    <div class="mt-auto">
-                      <Text tone="muted" size="xs" sizeAtSm="sm" clamp={2}>
-                        {nextBlogPosting.data.description}
-                      </Text>
-                    </div>
-                  </div>
-                )}
-              </Grid>
-            </Stack>
-          )
-        }
-
-        {
-          relatedBlogPostings.length > 0 && (
-            <Stack as="section" direction="column" gap="md">
-              <Heading level={2} size="lg" weight="semibold">
-                {' '}
-                More like this{' '}
-              </Heading>
-              <Grid columns={1} columnsAtMd={2} columnsAtLg={3} gap="lg">
-                {relatedBlogPostings.map((related: BlogPostingEntry) => (
-                  <BlogPostingCard
-                    blogPosting={related}
-                    variant="compact"
-                    keywords={relatedKeywordMap[related.id] ?? []}
-                  />
-                ))}
-              </Grid>
-            </Stack>
+          entry.data.description && (
+            <div class="max-w-[40rem]">
+              <Text tone="muted" sizeAtSm="lg">
+                {entry.data.description}
+              </Text>
+            </div>
           )
         }
       </Stack>
+
+      {
+        lastModifiedDate && (
+          <Stack direction="row" gap="xs" align="center">
+            <Cue tone="subtle" size="xs">
+              <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+                />
+              </svg>
+            </Cue>
+            <Text as="span" size="xs" sizeAtSm="sm" tone="subtle">
+              Last updated{' '}
+              <Text
+                as="time"
+                size="xs"
+                sizeAtSm="sm"
+                tone="subtle"
+                datetime={lastModifiedDate.toISOString()}
+              >
+                {lastModifiedDate.toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}
+              </Text>
+            </Text>
+          </Stack>
+        )
+      }
+
+      {keywords.length > 0 && <BlogPostingKeywords keywords={keywords} />}
     </Stack>
-  </Section>
+
+    <BlogPostingToc headings={headings} />
+
+    <Prose>
+      <Content components={mdxComponents} />
+    </Prose>
+
+    <Stack direction="column" gap="md">
+      <Heading level={3} size="md" weight="semibold">
+        About the {authorLabel}
+      </Heading>
+      <Stack direction="column" gap="lg">
+        {authorEntries.map((authorEntry) => <PersonBio person={authorEntry} />)}
+      </Stack>
+    </Stack>
+
+    {
+      (previousBlogPosting || nextBlogPosting) && (
+        <Stack as="nav" aria-label="Previous and next posts" direction="column" gap="md">
+          <Grid columns={1} columnsAtMd={2} gap="md">
+            {previousBlogPosting && (
+              <div class="flex h-full flex-col gap-1.5">
+                <Text as="span" size="xs" sizeAtSm="sm" tone="subtle" weight="medium">
+                  Previous
+                </Text>
+                <Anchor
+                  href={`/blog-postings/${previousBlogPosting.id}`}
+                  variant="primary"
+                  size="base"
+                  weight="semibold"
+                >
+                  {previousBlogPosting.data.headline}
+                </Anchor>
+                <div class="mt-auto">
+                  <Text tone="muted" size="xs" sizeAtSm="sm" clamp={2}>
+                    {previousBlogPosting.data.description}
+                  </Text>
+                </div>
+              </div>
+            )}
+
+            {nextBlogPosting && (
+              <div class={`flex h-full flex-col gap-1.5 md:col-start-2`}>
+                <Text as="span" size="xs" sizeAtSm="sm" tone="subtle" weight="medium">
+                  Next
+                </Text>
+                <Anchor
+                  href={`/blog-postings/${nextBlogPosting.id}`}
+                  variant="primary"
+                  size="base"
+                  weight="semibold"
+                >
+                  {nextBlogPosting.data.headline}
+                </Anchor>
+                <div class="mt-auto">
+                  <Text tone="muted" size="xs" sizeAtSm="sm" clamp={2}>
+                    {nextBlogPosting.data.description}
+                  </Text>
+                </div>
+              </div>
+            )}
+          </Grid>
+        </Stack>
+      )
+    }
+
+    {
+      relatedBlogPostings.length > 0 && (
+        <Stack as="section" direction="column" gap="md">
+          <Heading level={2} size="lg" weight="semibold">
+            {' '}
+            More like this{' '}
+          </Heading>
+          <Grid columns={1} columnsAtMd={2} columnsAtLg={3} gap="lg">
+            {relatedBlogPostings.map((related: BlogPostingEntry) => (
+              <BlogPostingCard
+                blogPosting={related}
+                variant="compact"
+                keywords={relatedKeywordMap[related.id] ?? []}
+              />
+            ))}
+          </Grid>
+        </Stack>
+      )
+    }
+  </PageSection>
 </Layout>

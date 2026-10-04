@@ -9,7 +9,7 @@ import nikeLogo from '@assets/images/logos/nike.svg'
 import novartisLogo from '@assets/images/logos/novartis.svg'
 import Layout from '@layouts/layout.astro'
 import Stack from '@components/layouts/stack.astro'
-import Section from '@components/layouts/section.astro'
+import PageSection from '@components/layouts/page-section.astro'
 import Grid from '@components/layouts/grid.astro'
 import BlogPostingCard from '@components/blog-postings/blog-posting-card.astro'
 import ButtonLink from '@components/ui/button-link.astro'
@@ -110,184 +110,166 @@ const siteMetadata = {
     )
   }
   <Stack direction="column" gap="2xl">
-    <Section tone="page" paddingX="sm" paddingY="xl" paddingYAtSm="2xl">
-      <Stack direction="row" justify="center" width="full">
-        <Stack direction="column" width="full" maxWidth="4xl" gap="2xl">
-          <LogoMark src={iconSvg} alt="lifeiscontent logomark" />
-          <Eyebrow>Aaron Reisman · Software engineer</Eyebrow>
-          <Heading level={1} size="3xl" sizeAtSm="4xl" weight="bold">
-            I build the parts of products people rely on long after launch.
+    <PageSection tone="page" spacing="intro" gap="2xl">
+      <LogoMark src={iconSvg} alt="lifeiscontent logomark" />
+      <Eyebrow>Aaron Reisman · Software engineer</Eyebrow>
+      <Heading level={1} size="3xl" sizeAtSm="4xl" weight="bold">
+        I build the parts of products people rely on long after launch.
+      </Heading>
+      <Text as="p" tone="muted" size="base" sizeAtSm="lg">
+        I've been shipping software since 2007, mostly with React, TypeScript, Phoenix, and Elixir.
+        I care about the small things that decide how an app feels: components, error states,
+        microcopy. When something I learn might help someone else, I write it up here.
+      </Text>
+      <Stack
+        direction="column"
+        directionAtSm="row"
+        gap="sm"
+        gapAtSm="md"
+        align="start"
+        wrap
+        width="full"
+        widthAtSm="auto"
+      >
+        <ButtonLink
+          href="mailto:aaron@lifeiscontent.net"
+          variant="primary"
+          size="lg"
+          width="responsive"
+        >
+          Email me
+        </ButtonLink>
+        <ButtonLink href="/blog-postings" variant="secondary" size="lg" width="responsive">
+          Read the blog
+        </ButtonLink>
+      </Stack>
+    </PageSection>
+
+    {
+      recentBlogPostings.length > 0 && (
+        <PageSection tone="page" gap="2xl">
+          <Stack direction="column" gap="sm">
+            <Eyebrow>Recent writing</Eyebrow>
+            <Heading level={2} size="2xl" sizeAtSm="3xl" weight="semibold">
+              Notes from the work.
+            </Heading>
+            <Text tone="muted" size="base" sizeAtSm="lg">
+              Posts on React, Phoenix, components, and the bits in between.
+            </Text>
+          </Stack>
+
+          <Stack direction="column" gap="lg">
+            {recentBlogPostings.map((blogPosting) => (
+              <BlogPostingCard
+                blogPosting={blogPosting}
+                keywords={recentBlogPostingKeywordMap[blogPosting.id] ?? []}
+              />
+            ))}
+          </Stack>
+
+          <Stack direction="row">
+            <ButtonLink href="/blog-postings" variant="secondary" size="lg">
+              Read the archive
+            </ButtonLink>
+          </Stack>
+        </PageSection>
+      )
+    }
+
+    <PageSection tone="page" gap="2xl">
+      <Stack direction="column" gap="sm">
+        <Eyebrow>Clients</Eyebrow>
+        <Heading level={2} size="2xl" sizeAtSm="3xl" weight="semibold">
+          Some of the teams I've shipped with.
+        </Heading>
+        <Text tone="muted" size="base" sizeAtSm="lg">
+          Global pharma, consumer brands, and growth-stage startups. The work is mostly the same
+          problem at different scales.
+        </Text>
+      </Stack>
+
+      <Grid columns={2} columnsAtSm={3} gapX="3xl" gapY="xl" placeItems="center">
+        {
+          clients.map((client) => (
+            <ClientLogo
+              src={client.src}
+              alt={client.name}
+              width={client.width}
+              height={client.height}
+            />
+          ))
+        }
+      </Grid>
+    </PageSection>
+
+    <PageSection tone="page" gap="xl">
+      <Stack direction="column" gap="sm">
+        <Eyebrow>Open source</Eyebrow>
+        <Heading level={2} size="2xl" sizeAtSm="3xl" weight="semibold">
+          Projects I've contributed to over the years.
+        </Heading>
+        <Text tone="muted" size="base" sizeAtSm="lg">
+          The list looks longer the older you get. Some of these I worked on heavily, some I just
+          filed bugs against. They all taught me something.
+        </Text>
+      </Stack>
+
+      <Grid columns={1} columnsAtSm={2} columnsAtLg={3} gap="lg">
+        {
+          openSourceProjects.map((project) => (
+            <Stack as="article" direction="column" gap="xs">
+              <Anchor
+                href={project.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                variant="primary"
+                size="base"
+                weight="semibold"
+              >
+                <Heading level={3} size="xl" weight="semibold" tone="inherit">
+                  <Stack direction="row" gap="xs" align="center">
+                    {project.name}
+                    <Cue tone="default" size="sm">
+                      <svg viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M12.5 3h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V4.707l-9.146 9.147a.5.5 0 0 1-.708-.708L15.293 4H12.5a.5.5 0 0 1 0-1Z" />
+                        <path d="M5.5 5H9a.5.5 0 0 1 0 1H6v8.5A1.5 1.5 0 0 0 7.5 16h8a1.5 1.5 0 0 0 1.5-1.5V11a.5.5 0 0 1 1 0v3.5A2.5 2.5 0 0 1 15.5 17h-8A2.5 2.5 0 0 1 5 14.5V5.5a.5.5 0 0 1 .5-.5Z" />
+                      </svg>
+                    </Cue>
+                  </Stack>
+                </Heading>
+              </Anchor>
+              <Text tone="muted" leading="relaxed">
+                {project.description}
+              </Text>
+            </Stack>
+          ))
+        }
+      </Grid>
+    </PageSection>
+
+    <PageSection tone="page">
+      <CalloutPanel>
+        <Stack direction="column" gap="md">
+          <Eyebrow>Working together</Eyebrow>
+          <Heading level={2} size="2xl" sizeAtSm="3xl" weight="semibold">
+            Have a project in mind?
           </Heading>
-          <Text as="p" tone="muted" size="base" sizeAtSm="lg">
-            I've been shipping software since 2007, mostly with React, TypeScript, Phoenix, and
-            Elixir. I care about the small things that decide how an app feels: components, error
-            states, microcopy. When something I learn might help someone else, I write it up here.
+          <Text tone="muted" size="base" sizeAtSm="lg">
+            Product engineering, component systems, refactors, and the hard parts of an existing
+            codebase. If any of that sounds like what you need, send me a note.
           </Text>
-          <Stack
-            direction="column"
-            directionAtSm="row"
-            gap="sm"
-            gapAtSm="md"
-            align="start"
-            wrap
-            width="full"
-            widthAtSm="auto"
-          >
+          <Stack direction="row" width="full" widthAtSm="auto">
             <ButtonLink
               href="mailto:aaron@lifeiscontent.net"
               variant="primary"
               size="lg"
               width="responsive"
             >
-              Email me
-            </ButtonLink>
-            <ButtonLink href="/blog-postings" variant="secondary" size="lg" width="responsive">
-              Read the blog
+              aaron@lifeiscontent.net
             </ButtonLink>
           </Stack>
         </Stack>
-      </Stack>
-    </Section>
-
-    {
-      recentBlogPostings.length > 0 && (
-        <Section tone="page" paddingX="sm" paddingY="lg" paddingYAtSm="2xl">
-          <Stack direction="row" justify="center" width="full">
-            <Stack direction="column" width="full" maxWidth="4xl" gap="2xl">
-              <Stack direction="column" gap="sm">
-                <Eyebrow>Recent writing</Eyebrow>
-                <Heading level={2} size="2xl" sizeAtSm="3xl" weight="semibold">
-                  Notes from the work.
-                </Heading>
-                <Text tone="muted" size="base" sizeAtSm="lg">
-                  Posts on React, Phoenix, components, and the bits in between.
-                </Text>
-              </Stack>
-
-              <Stack direction="column" gap="lg">
-                {recentBlogPostings.map((blogPosting) => (
-                  <BlogPostingCard
-                    blogPosting={blogPosting}
-                    keywords={recentBlogPostingKeywordMap[blogPosting.id] ?? []}
-                  />
-                ))}
-              </Stack>
-
-              <Stack direction="row">
-                <ButtonLink href="/blog-postings" variant="secondary" size="lg">
-                  Read the archive
-                </ButtonLink>
-              </Stack>
-            </Stack>
-          </Stack>
-        </Section>
-      )
-    }
-
-    <Section tone="page" paddingX="sm" paddingY="lg" paddingYAtSm="2xl">
-      <Stack direction="row" justify="center" width="full">
-        <Stack direction="column" width="full" maxWidth="4xl" gap="2xl">
-          <Stack direction="column" gap="sm">
-            <Eyebrow>Clients</Eyebrow>
-            <Heading level={2} size="2xl" sizeAtSm="3xl" weight="semibold">
-              Some of the teams I've shipped with.
-            </Heading>
-            <Text tone="muted" size="base" sizeAtSm="lg">
-              Global pharma, consumer brands, and growth-stage startups. The work is mostly the same
-              problem at different scales.
-            </Text>
-          </Stack>
-
-          <Grid columns={2} columnsAtSm={3} gapX="3xl" gapY="xl" placeItems="center">
-            {
-              clients.map((client) => (
-                <ClientLogo
-                  src={client.src}
-                  alt={client.name}
-                  width={client.width}
-                  height={client.height}
-                />
-              ))
-            }
-          </Grid>
-        </Stack>
-      </Stack>
-    </Section>
-
-    <Section tone="page" paddingX="sm" paddingY="lg" paddingYAtSm="2xl">
-      <Stack direction="row" justify="center" width="full">
-        <Stack direction="column" width="full" maxWidth="4xl" gap="xl">
-          <Stack direction="column" gap="sm">
-            <Eyebrow>Open source</Eyebrow>
-            <Heading level={2} size="2xl" sizeAtSm="3xl" weight="semibold">
-              Projects I've contributed to over the years.
-            </Heading>
-            <Text tone="muted" size="base" sizeAtSm="lg">
-              The list looks longer the older you get. Some of these I worked on heavily, some I
-              just filed bugs against. They all taught me something.
-            </Text>
-          </Stack>
-
-          <Grid columns={1} columnsAtSm={2} columnsAtLg={3} gap="lg">
-            {
-              openSourceProjects.map((project) => (
-                <Stack as="article" direction="column" gap="xs">
-                  <Anchor
-                    href={project.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    variant="primary"
-                    size="base"
-                    weight="semibold"
-                  >
-                    <Heading level={3} size="xl" weight="semibold" tone="inherit">
-                      <Stack direction="row" gap="xs" align="center">
-                        {project.name}
-                        <Cue tone="default" size="sm">
-                          <svg viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M12.5 3h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V4.707l-9.146 9.147a.5.5 0 0 1-.708-.708L15.293 4H12.5a.5.5 0 0 1 0-1Z" />
-                            <path d="M5.5 5H9a.5.5 0 0 1 0 1H6v8.5A1.5 1.5 0 0 0 7.5 16h8a1.5 1.5 0 0 0 1.5-1.5V11a.5.5 0 0 1 1 0v3.5A2.5 2.5 0 0 1 15.5 17h-8A2.5 2.5 0 0 1 5 14.5V5.5a.5.5 0 0 1 .5-.5Z" />
-                          </svg>
-                        </Cue>
-                      </Stack>
-                    </Heading>
-                  </Anchor>
-                  <Text tone="muted" leading="relaxed">
-                    {project.description}
-                  </Text>
-                </Stack>
-              ))
-            }
-          </Grid>
-        </Stack>
-      </Stack>
-    </Section>
-
-    <Section tone="page" paddingX="sm" paddingY="lg" paddingYAtSm="2xl">
-      <Stack direction="row" justify="center" width="full">
-        <CalloutPanel>
-          <Stack direction="column" gap="md">
-            <Eyebrow>Working together</Eyebrow>
-            <Heading level={2} size="2xl" sizeAtSm="3xl" weight="semibold">
-              Have a project in mind?
-            </Heading>
-            <Text tone="muted" size="base" sizeAtSm="lg">
-              Product engineering, component systems, refactors, and the hard parts of an existing
-              codebase. If any of that sounds like what you need, send me a note.
-            </Text>
-            <Stack direction="row" width="full" widthAtSm="auto">
-              <ButtonLink
-                href="mailto:aaron@lifeiscontent.net"
-                variant="primary"
-                size="lg"
-                width="responsive"
-              >
-                aaron@lifeiscontent.net
-              </ButtonLink>
-            </Stack>
-          </Stack>
-        </CalloutPanel>
-      </Stack>
-    </Section>
+      </CalloutPanel>
+    </PageSection>
   </Stack>
 </Layout>

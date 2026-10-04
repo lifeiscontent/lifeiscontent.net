@@ -1,0 +1,40 @@
+---
+import type { HTMLAttributes } from 'astro/types'
+import Section from '@components/layouts/section.astro'
+import Stack from '@components/layouts/stack.astro'
+
+// A full-width band of the page with its content centered in the reading column.
+type Props = Omit<HTMLAttributes<'section'>, 'class' | 'style'> & {
+  as?: 'section' | 'div' | 'nav'
+  tone?: 'transparent' | 'page' | 'muted'
+  // compact: header and breadcrumb bars. intro: the first band on a page. body: everything else.
+  spacing?: 'compact' | 'intro' | 'body'
+  contentAs?: 'div' | 'article' | 'nav'
+  gap?: 'none' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
+}
+
+const {
+  as = 'section',
+  tone,
+  spacing = 'body',
+  contentAs = 'div',
+  gap = 'none',
+  ...htmlProps
+} = Astro.props
+
+const padding = {
+  compact: { paddingY: 'sm' },
+  intro: { paddingY: 'xl', paddingYAtSm: '2xl' },
+  body: { paddingY: 'lg', paddingYAtSm: '2xl' },
+} as const
+const toneProps = tone ? { tone } : {}
+const gapProps = gap === 'none' ? {} : { gap }
+---
+
+<Section as={as} {...toneProps} {...padding[spacing]} {...htmlProps}>
+  <Stack direction="row" justify="center" width="full">
+    <Stack as={contentAs} direction="column" width="full" maxWidth="4xl" {...gapProps}>
+      <slot />
+    </Stack>
+  </Stack>
+</Section>
