@@ -2,8 +2,8 @@
 import clsx from 'clsx'
 import type { HTMLAttributes } from 'astro/types'
 
-type AnchorVariant = 'primary' | 'secondary' | 'inline'
-type AnchorUnderline = 'hover' | 'none' | 'always'
+type AnchorVariant = 'primary' | 'secondary'
+type AnchorUnderline = 'hover' | 'none'
 type AnchorSize = 'inherit' | 'sm' | 'base'
 type AnchorWeight = 'inherit' | 'medium' | 'semibold'
 
@@ -36,13 +36,9 @@ const classes = clsx(
       variant === 'primary',
     'text-black/70 hover:text-black/90 active:text-black dark:text-white/70 dark:hover:text-white dark:active:text-white/85':
       variant === 'secondary',
-    // Links inside running text: the accent color, matching links in posts
-    'text-accent-700 decoration-accent-300 hover:text-accent-600 hover:decoration-accent-600 dark:text-accent-300 dark:decoration-accent-700 dark:hover:text-accent-100 dark:hover:decoration-accent-300':
-      variant === 'inline',
   },
   {
     'hover:underline': underline === 'hover',
-    'underline decoration-1 underline-offset-[0.2em]': underline === 'always',
   }
 )
 ---
