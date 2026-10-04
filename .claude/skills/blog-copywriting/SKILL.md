@@ -161,5 +161,5 @@ Update `dateModified` to today when rewriting an existing post. Leave `datePubli
 4. Rewrite prose section by section. Keep code blocks identical unless step 3 found a bug.
 5. Update `description`, `abstract`, and `dateModified` in the frontmatter.
 6. Run the final-pass checklist. Grep for `;` and `—` in prose (outside code fences) to be sure.
-7. Run `pnpm build` to make sure the MDX still compiles.
+7. Run `pnpm check` and then `pnpm build`. The deploy workflow runs both, and `check` includes Prettier, which `build` does not. If you touched other files (pages, components, JSON), run `pnpm prettier --write` on them first.
 8. Report what changed, what you preserved, and any claims you could not verify.
