@@ -13,7 +13,7 @@ headline: 'The Component Manifesto'
 description: 'How I think about building component systems. Six principles, plus the practical patterns that go with them.'
 abstract: 'Six principles and the patterns that come with them. Useful if you want a UI system that still makes sense in two years.'
 datePublished: '2025-07-13'
-dateModified: '2026-04-28'
+dateModified: '2026-10-05'
 inLanguage: 'en-US'
 author:
   - lifeiscontent
@@ -24,24 +24,24 @@ keywords:
   - dx
 ---
 
-Components are where engineering and design end up meeting. When they don't agree, the UI feels off. When they do, the whole product feels considered.
+Components are where engineering and design meet. When the two don't agree, the UI feels off. When they do, the whole product feels considered.
 
-This is how I build component systems. The patterns are part TypeScript discipline and part interaction design, written for code that ages well.
+This is how I build component systems. Part of it is TypeScript discipline and part of it is interaction design. All of it is aimed at code that still makes sense in two years.
 
 The examples are React, but the ideas work in any component framework. Take the principles, swap the syntax.
 
 ## Part 1: six promises
 
-Before touching code, I make six promises to myself and my collaborators:
+Before I write code, I make six promises to myself and the people I work with:
 
 1. **Every component has one job** _([↓](#principle-1-every-component-has-one-job))_
-2. **Public APIs feel permanent** _([↓](#principle-2-public-apis-are-forever))_
-3. **Complexity grows only when you actually need it** _([↓](#principle-3-complexity-should-grow-naturally))_
-4. **No abstractions without a reason** _([↓](#principle-4-no-unnecessary-abstractions))_
-5. **Names tell you what something is** _([↓](#principle-5-names-tell-stories))_
+2. **Public APIs are forever** _([↓](#principle-2-public-apis-are-forever))_
+3. **Complexity should grow naturally** _([↓](#principle-3-complexity-should-grow-naturally))_
+4. **No unnecessary abstractions** _([↓](#principle-4-no-unnecessary-abstractions))_
+5. **Names tell stories** _([↓](#principle-5-names-tell-stories))_
 6. **Props are contracts, not configuration dumps** _([↓](#principle-6-props-are-contracts-not-configuration))_
 
-Break any of these and maintenance becomes an archaeological dig.
+Each heading below matches one promise. Break any of them and maintenance turns into an archaeological dig.
 
 ### Principle 1: every component has one job
 
@@ -86,7 +86,7 @@ Focus keeps things honest. Compose smaller pieces instead of teaching one compon
 
 ### Principle 2: public APIs are forever
 
-Exports are promises. Name them carefully and make it obvious what's public. Default exports invite chaos. Named exports keep things consistent.
+Exports are promises. Name them carefully and make it obvious what's public. A default export lets every file pick its own name for the import. A named export makes everyone use the same one.
 
 ```typescript
 // ✅ Named exports enforce consistent naming
@@ -104,11 +104,11 @@ export default function Button() {
 // Someone can now import it as SubmitButton, Btn, or CoolButton.
 ```
 
-Export at the definition site so readers don't have to scroll 200 lines to find what's public. Think of the API like a product. Versions can change. The contract shouldn't surprise people.
+Put `export` on the function itself, not in a list at the bottom of the file, so readers don't have to scroll 200 lines to find what's public. Think of the API like a product. Versions can change. The contract shouldn't surprise people.
 
 ### Principle 3: complexity should grow naturally
 
-Start flat. Add structure when the code asks for it. When internals grow, move to a module. Consumers shouldn't notice.
+Start with one file. Add structure when the code asks for it. When the internals grow, turn the file into a folder with an `index.ts` that exports the same things. Code that imports the component shouldn't notice.
 
 ```typescript
 // Stage 1: Single file
@@ -132,7 +132,7 @@ Consumers keep importing from the same path. Internals can evolve quietly.
 
 ### Principle 4: no unnecessary abstractions
 
-Props aren't keepsakes. Destructure what you actually use in the signature. Forward the rest. Don't build wrapper objects "just in case."
+Destructure the props you use, right in the signature, and forward the rest. Don't keep a `props` object around "just in case."
 
 ```typescript
 // ❌ Creates unnecessary variable
@@ -152,7 +152,7 @@ export function Button({ variant, size, ...htmlProps }: ButtonProps) {
 }
 ```
 
-Only destructure `children` when you actually manipulate it:
+In the last `Button`, `children` travels inside `htmlProps`, because it goes straight to the `<button>`. Destructure `children` only when you put it somewhere else, like an inner wrapper:
 
 ```typescript
 export function Card({ variant, children }: CardProps) {
@@ -168,7 +168,7 @@ Name the spread (`htmlProps`, `domProps`) so people can see at a glance what's l
 
 ### Principle 5: names tell stories
 
-Good component systems read like a map. The names should tell you the hierarchy and what each piece is for.
+A good component system reads like a map. The names tell you the hierarchy and what each piece is for.
 
 ```typescript
 // ✅ Clear parent-child relationships
@@ -194,7 +194,7 @@ export function Header() {
 } // Header of what?
 ```
 
-When a component is domain-specific, blend the resource with the pattern:
+Some components are domain-specific: they know about your product's data, like users or products, not just layout. For those, put the resource name in front of the pattern name (`User` + `Card` = `UserCard`):
 
 ```typescript
 export function UserCard() {
@@ -208,7 +208,7 @@ export function ProductTable() {
 }
 ```
 
-Generic UI primitives belong in the design system. Domain pieces live with their feature. The names should make the boundary obvious.
+Generic UI primitives like `Card` and `Button` belong in the design system, the shared component library. Domain components live next to the feature that uses them. The names should make the boundary obvious.
 
 ### Principle 6: props are contracts, not configuration
 
@@ -232,7 +232,7 @@ type ButtonProps = {
 }
 ```
 
-You know your product better than Material UI does. Encapsulate styling choices so a brand refresh touches one module, not 500 call sites.
+A general-purpose library like Material UI has to accept `className` and style overrides, because it can't know your design. Your own components can. Keep the styling choices inside them, so a brand refresh touches one module, not 500 call sites.
 
 ```typescript
 <Button variant="danger" onClick={handleDelete}>
@@ -254,7 +254,7 @@ Naming is interface design. Use it to show hierarchy and intent.
 
 - Keep files flat until complexity earns its keep.
 - Use folders only when internal pieces shouldn't escape.
-- Export one surface per package. It's better for tree-shaking and easier to remember.
+- Give each package one entry point (one `index.ts`). It's easier to remember, and it helps tree-shaking, the bundler step that drops code you don't use.
 - Co-locate related files. The closer they sit, the easier it is to refactor them together.
 
 `Card`, `CardHeader`, and `CardFooter` belong together. `UserProfileCard` lives with its feature. The name should tell you roughly where to find it in the repo.
@@ -263,7 +263,7 @@ Naming is interface design. Use it to show hierarchy and intent.
 
 ### Use the type system as a safety net
 
-TypeScript will enforce your contracts if you set it up right. Prefer `type` for props. `interface` allows declaration merging, which component libraries usually don't want.
+TypeScript will enforce your contracts if you set it up right. Prefer `type` for props. Two `interface` declarations with the same name silently merge into one (TypeScript calls this declaration merging), and component libraries usually don't want that.
 
 ```typescript
 // ⚠️ Dangerous with interface - accidental merging
@@ -287,7 +287,7 @@ type ButtonProps = {
 // Error: Duplicate identifier 'ButtonProps'
 ```
 
-When you need another component's props, derive them with `React.ComponentProps` instead of importing custom types. It keeps things loose as APIs evolve.
+When you need another component's props, derive them with `React.ComponentProps` instead of importing a props type by name.
 
 ```typescript
 // ✅ Deriving types safely
@@ -296,11 +296,11 @@ type ListProps = {
 }
 ```
 
-If `Card` becomes generic or gets renamed, your list keeps compiling.
+If the props type behind `Card` is renamed or reshaped, `ListProps` follows along without an import change.
 
 ### Style belongs to the component
 
-Components should own their styling. Style follows state, not the consumer's mood.
+Components should own their styling. The style comes from the component's state, not from whatever class the caller passes in.
 
 ```typescript
 // ✅ Encapsulated styling
@@ -347,11 +347,11 @@ Inside modules, prefer simple names (`utils.ts`, `types.ts`, `constants.ts`). Re
 
 ## Part 4: patterns should solve problems, not create them
 
-Patterns exist to make code clearer. Use them when they actually help, not because a blog post said so.
+Patterns exist to make code clearer. Use one when it solves a problem you have, not because a blog post said so. Including this one.
 
 ### One interface, many presentations
 
-When the same data needs multiple presentations (pricing cards, media tiles, dashboards), keep one public component and swap strategies internally.
+When the same data needs multiple presentations (pricing cards, media tiles, dashboards), keep one public component. Inside it, pick an implementation based on a prop. This is the strategy pattern: each variant is a separate component, and a small selector chooses one.
 
 ```text
 pricing-card/
@@ -380,9 +380,9 @@ export function PricingCard({ plan, variant = 'default' }: PricingCardProps) {
 }
 ```
 
-Shared internals stay private. Brand updates hit every variant without copy and paste.
+Callers only ever see `PricingCard`. The shared pieces stay private, so a brand update reaches every variant without copy and paste.
 
-### Let data drive behavior
+### Compose instead of adding flags
 
 Compose UI primitives. Don't turn components into control panels full of flags.
 
@@ -412,7 +412,7 @@ Compose UI primitives. Don't turn components into control panels full of flags.
 />
 ```
 
-Boolean props look like flexibility, but really they just hide requirements. Let the data shape the interface.
+Boolean props look like flexibility. In practice, each one is a requirement the caller has to remember. Let the data shape the interface.
 
 Domain components can still be one big component. They just take structured data instead of a panel of switches.
 
@@ -472,7 +472,7 @@ type ProductCardProps = {
 
 ### Keep UI pure
 
-UI layers should be dumb about business rules. Domain layers should be dumb about CSS.
+Generic UI components should know nothing about business rules. Domain components should know nothing about CSS.
 
 ```typescript
 // ✅ Pure UI component
@@ -494,11 +494,11 @@ export function UserTable({ users }: UserTableProps) {
 }
 ```
 
-If you hold those boundaries, your design system stays stable while product teams move fast.
+Hold those boundaries and the design system stays stable while product teams move fast. (The `sort` in that last example also mutates the `users` prop in place, which is one more reason to keep it out of the UI layer.)
 
 ## Part 5: putting it together
 
-Imagine a user-management surface:
+Here is how the pieces combine for a user-management screen. Start with small components that each do one job:
 
 ```typescript
 // 1. Start with purpose-built components
@@ -513,7 +513,7 @@ export function UserList({ users, onSelectUser }: UserListProps) {
 }
 ```
 
-Organize them only when the module grows:
+Move them into a folder only when the module grows:
 
 ```text
 user-management/
@@ -524,7 +524,7 @@ user-management/
 └── types.ts              // Internal types
 ```
 
-Design the outer interface like a product surface:
+Then design the outer interface as if it were a product:
 
 ```typescript
 type UserManagementProps = {
@@ -538,11 +538,9 @@ export function UserManagement({ users, onUpdateUser, variant = 'detailed' }: Us
 }
 ```
 
-One entry point, and the composition stays predictable. That's the goal.
+Callers get one entry point, and everything inside can change without them noticing.
 
 ## A quick recap
-
-Here's the arc:
 
 - **Foundation.** Components stay single-purpose. Public APIs hold their shape.
 - **Language.** Names show hierarchy. Exports define what's public.
@@ -570,11 +568,11 @@ Apply the principles and the call sites change:
 <UserCard user={user} onEdit={handleEdit} variant="compact" />
 ```
 
-The second one reads cleanly. "Render this user, allow edits, keep it compact." That kind of clarity adds up across a codebase.
+You can read the second one out loud: "Render this user, allow edits, keep it compact." Multiply that by every call site in a codebase.
 
 ## Your next steps
 
-1. **Refactor one component today.** Pick the worst one, apply two of these promises, see how it feels.
+1. **Refactor one component today.** Pick the worst one, apply two of these promises, and see how it feels.
 2. **Share the principles.** They spread faster when a team talks about them together.
 3. **Tune them.** These are guardrails, not rules. Adjust for your product.
 4. **Write down the why.** Future teammates need to know _why_ a pattern exists, not just _how_ to use it.
