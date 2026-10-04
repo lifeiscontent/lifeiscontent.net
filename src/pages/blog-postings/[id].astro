@@ -75,7 +75,7 @@ const readingTimeText = readingTime(entry.body ?? '').text
 <Layout title={entry.data.headline} description={entry.data.description} ogImagePath={ogImagePath}>
   <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
 
-  <Section as="nav" tone="muted" paddingX="sm" paddingY="sm">
+  <Section as="nav" aria-label="Breadcrumb" tone="muted" paddingX="sm" paddingY="sm">
     <Stack direction="row" justify="center" width="full">
       <Stack direction="column" width="full" maxWidth="4xl">
         <Stack direction="row" gap="xs" wrap align="center">
@@ -229,7 +229,7 @@ const readingTimeText = readingTime(entry.body ?? '').text
 
         {
           (previousBlogPosting || nextBlogPosting) && (
-            <Stack as="nav" direction="column" gap="md">
+            <Stack as="nav" aria-label="Previous and next posts" direction="column" gap="md">
               <Grid columns={1} columnsAtMd={2} gap="md">
                 {previousBlogPosting && (
                   <div class="flex h-full flex-col gap-1.5">

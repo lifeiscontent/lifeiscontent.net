@@ -44,7 +44,7 @@
       --astro-code-background: var(--color-neutral-950);
       --astro-code-token-constant: var(--color-sky-300);
       --astro-code-token-string: var(--color-emerald-300);
-      --astro-code-token-comment: var(--color-neutral-500);
+      --astro-code-token-comment: var(--color-neutral-400);
       --astro-code-token-keyword: var(--color-violet-300);
       --astro-code-token-parameter: var(--color-neutral-300);
       --astro-code-token-function: var(--color-neutral-100);
@@ -57,11 +57,7 @@
   html {
     background-color: var(--color-white);
     color: var(--color-neutral-900);
-    font-feature-settings:
-      'kern',
-      'liga',
-      'calt',
-      'ss01';
+    font-feature-settings: 'kern', 'liga', 'calt', 'ss01';
 
     @variant dark {
       background-color: var(--color-neutral-950);

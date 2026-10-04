@@ -12,9 +12,10 @@ interface Props {
   blogPosting: CollectionEntry<'blog-postings'>
   keywords?: CollectionEntry<'defined-terms'>[] | undefined
   variant?: 'default' | 'compact'
+  headingLevel?: 2 | 3
 }
 
-const { blogPosting, keywords = [], variant = 'default' } = Astro.props
+const { blogPosting, keywords = [], variant = 'default', headingLevel = 3 } = Astro.props
 
 const metaGap = variant === 'compact' ? 'xs' : 'sm'
 const metaDirection = variant === 'compact' ? 'column' : 'row'
@@ -51,7 +52,7 @@ const readingTimeText = readingTime(blogPosting.body ?? '').text
     </Text>
   </Stack>
   <Stack direction="column" gap={variant === 'compact' ? 'xs' : 'sm'}>
-    <Heading level={3} size={headingSize} weight="semibold">
+    <Heading level={headingLevel} size={headingSize} weight="semibold">
       <Anchor href={`/blog-postings/${blogPosting.id}`} underline="none">
         {blogPosting.data.headline}
       </Anchor>

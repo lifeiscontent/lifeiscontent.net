@@ -17,7 +17,11 @@ const { blogPostings, emptyMessage = 'No blog postings found.', keywordMap } = A
   <Stack as="div" direction="column" gap="xl">
     {
       blogPostings.map((blogPosting) => (
-        <BlogPostingCard blogPosting={blogPosting} keywords={keywordMap?.[blogPosting.id] ?? []} />
+        <BlogPostingCard
+          blogPosting={blogPosting}
+          keywords={keywordMap?.[blogPosting.id] ?? []}
+          headingLevel={2}
+        />
       ))
     }
   </Stack>
