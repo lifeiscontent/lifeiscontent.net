@@ -24,11 +24,11 @@ import CalloutPanel from '@components/ui/callout-panel.astro'
 import { createPublishedFilter, sortBlogPostingsByDate } from '@lib/content'
 
 const clients = [
-  { name: 'AMGEN', src: amgenLogo, width: 80, height: 21 },
+  { name: 'Amgen', src: amgenLogo, width: 80, height: 21 },
   { name: 'Genentech', src: genentechLogo, width: 84, height: 54 },
   { name: 'Johnson & Johnson', src: johnsonLogo, width: 84, height: 54 },
   { name: 'McCormick', src: mccormickLogo, width: 84, height: 54 },
-  { name: 'NIKE', src: nikeLogo, width: 84, height: 54 },
+  { name: 'Nike', src: nikeLogo, width: 84, height: 54 },
   { name: 'Novartis', src: novartisLogo, width: 84, height: 54 },
 ]
 
@@ -47,27 +47,27 @@ const openSourceProjects = [
   },
   {
     name: 'Redux',
-    href: 'https://github.com/reactjs/redux',
+    href: 'https://github.com/reduxjs/redux',
     description:
-      'A predictable state container for JavaScript apps. Still useful for some kinds of state, even if Context and React Query handle most cases now.',
+      'A predictable state container for JavaScript apps. Still useful for some kinds of state, even if Context and TanStack Query handle most cases now.',
   },
   {
     name: 'React on Rails',
     href: 'https://github.com/shakacode/react_on_rails',
     description:
-      'Glue between React and Rails, with server-side rendering. Worth knowing if you have a Rails app you do not want to throw out.',
+      'Glue between React and Rails, with server-side rendering. Worth knowing if you have a Rails app you don\'t want to throw out.',
   },
   {
     name: 'AngularJS',
     href: 'https://angularjs.org/',
     description:
-      'The original Angular. I worked on it a long time ago and it taught me a lot about what data binding can and cannot do.',
+      'The original Angular. I worked on it a long time ago, and it taught me a lot about what two-way data binding can and can\'t do.',
   },
   {
     name: 'Backbone',
     href: 'https://backbonejs.org/',
     description:
-      'Models with key-value binding, collections with enumerable functions, views with declarative event handling. The grandparent of a lot of what we build with now.',
+      'Models, collections, and views in one small library, with events wired up declaratively. The grandparent of a lot of what we build with now.',
   },
 ]
 
@@ -188,13 +188,13 @@ const siteMetadata = {
       <Stack direction="row" justify="center" width="full">
         <Stack direction="column" width="full" maxWidth="4xl" gap="2xl">
           <Stack direction="column" gap="sm">
-            <Eyebrow>Where I've worked</Eyebrow>
+            <Eyebrow>Clients</Eyebrow>
             <Heading level={2} size="2xl" sizeAtSm="3xl" weight="semibold">
               Some of the teams I've shipped with.
             </Heading>
             <Text tone="muted" size="base" sizeAtSm="lg">
-              From Fortune 50 pharma to growth-stage startups. The work is mostly the same problem,
-              just at different scales.
+              Global pharma, consumer brands, and growth-stage startups. The work is mostly the same
+              problem at different scales.
             </Text>
           </Stack>
 
@@ -269,7 +269,7 @@ const siteMetadata = {
           <Stack direction="column" gap="md">
             <Eyebrow>Working together</Eyebrow>
             <Heading level={2} size="2xl" sizeAtSm="3xl" weight="semibold">
-              Want to work on something?
+              Have a project in mind?
             </Heading>
             <Text tone="muted" size="base" sizeAtSm="lg">
               Product engineering, component systems, refactors, the hard parts of an existing
