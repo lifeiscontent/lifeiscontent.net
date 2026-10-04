@@ -7,7 +7,6 @@ import Section from '@components/layouts/section.astro'
 import Stack from '@components/layouts/stack.astro'
 import Heading from '@components/ui/heading.astro'
 import Text from '@components/ui/text.astro'
-import Anchor from '@components/ui/anchor.astro'
 import Eyebrow from '@components/ui/eyebrow.astro'
 import {
   aggregateKeywordUsages,
@@ -75,13 +74,9 @@ const blogPostingKeywordMap = Object.fromEntries(
       <Stack direction="column" width="full" maxWidth="4xl" gap="2xl">
         <BlogPostingList
           blogPostings={blogPostings}
-          emptyMessage="No blog postings found."
+          emptyMessage="No posts yet. Check back soon."
           keywordMap={blogPostingKeywordMap}
-        >
-          <Anchor slot="empty-action" href="/blog-postings" size="sm" weight="semibold">
-            Browse archive
-          </Anchor>
-        </BlogPostingList>
+        />
 
         <KeywordList keywords={keywords} usageCounts={keywordUsageCounts} />
       </Stack>
