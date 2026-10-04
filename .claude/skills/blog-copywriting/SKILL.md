@@ -17,6 +17,8 @@ Aaron writes how-tos and short manifestos about React, TypeScript, Phoenix LiveV
 
 The voice should sound like Aaron talking to another senior practitioner over coffee. Confident but not lecturing. Personal but not performative. The reader's time is valuable.
 
+Inside `src/content/blog-postings/`, this voice overrides the ASD-STE100 rule in the global CLAUDE.md. Hedges, asides, and second person are fine here.
+
 ## Anchor voices
 
 When in doubt, ask: would Comeau, Dodds, Abramov, or McCord write it this way?
@@ -47,11 +49,21 @@ Apply in order. Do not skip steps even on a quick edit.
 
 Before changing a word, list the post's promises, facts, numbers, and references. Do not alter them in the rewrite. If the draft cites a library version, an exception class, a function name, or a benchmark, those stay. New facts cannot be invented.
 
-### 2. Length budget
+### 2. Verify claims
 
-Stay within ±10% of the original word count unless the user asks otherwise. Padding to hit a target is worse than tightening below it. Trim before you expand.
+Prose that reads well but teaches something wrong is the worst outcome. Before you edit for voice:
 
-### 3. Strip the eight AI tells
+- Run every snippet you can (`elixir`, `node`, `tsc`) in the scratchpad. Compare the real output to any REPL or iex output shown in the post.
+- Check claims about a library against its source or official docs. Aaron's own libraries are usually cloned under `~/GitHub/{owner}/{repo}`.
+- Check claims about framework behavior (lifecycles, error handling, ordering) against the docs. Do not trust memory for these.
+
+If a claim is wrong and the fix is clear, fix it and report it. If the fix needs Aaron's opinion, leave it and report it.
+
+### 3. Length budget
+
+Stay within ±10% of the original word count unless the user asks otherwise. Padding to hit a target is worse than tightening below it. Trim before you expand. Explanation added to correct a wrong claim is exempt, but report how far over the budget the post went.
+
+### 4. Strip the eight AI tells
 
 These are the common giveaways. Hunt each one explicitly.
 
@@ -64,7 +76,7 @@ These are the common giveaways. Hunt each one explicitly.
 7. **Hype adjectives** — "powerful, groundbreaking, transformative, seamless, robust." Default to "useful, solid, worth trying" unless the stakes are genuinely big.
 8. **Missing fingerprints** — if the post is generic, add one micro-example or quick aside that's already implied by the draft. Never invent technical facts. If nothing's there, tighten instead.
 
-### 4. Voice and rhythm
+### 5. Voice and rhythm
 
 - Mix short punchy lines with longer reflective ones.
 - Allow light hedges where natural: "I think," "maybe," "to be honest." Use sparingly.
@@ -72,7 +84,7 @@ These are the common giveaways. Hunt each one explicitly.
 - Prefer simple words over formal ones.
 - One short aside or imagined reader reaction per section is enough.
 
-### 5. Hard deletions
+### 6. Hard deletions
 
 Always remove:
 
@@ -82,7 +94,7 @@ Always remove:
 - **Clichés** ("at the end of the day," "north star," "single source of truth" used as filler).
 - **Self-congratulatory framing** ("thoughtful builders," "great teams," "mature engineers").
 
-### 6. Final pass
+### 7. Final pass
 
 Scan the prose against this list before reporting done:
 
@@ -92,6 +104,7 @@ Scan the prose against this list before reporting done:
 - No corporate gerunds.
 - No semicolons in prose.
 - Headings sound like a person, not a slide deck.
+- Lists that link to in-page anchors use the same words as the headings they point to.
 - The opening hook either admits something (Comeau), states a sharp claim (Dodds), or sets a scene (McCord). Not a generic "In today's world..."
 
 ## Frontmatter rules
@@ -129,7 +142,8 @@ Update `dateModified` to today when rewriting an existing post. Leave `datePubli
 
 ## Code blocks
 
-- Never alter code inside fenced blocks. Treat them as load-bearing.
+- Never restyle or rewrite code inside fenced blocks for taste. Treat them as load-bearing.
+- Do fix code that does not compile or shows wrong output, but only after you run the corrected version. Call out each code change in the report.
 - The line that introduces a code block should give the reader a reason to read it: what the code does, what to look for, or what's about to surprise them. Not "Here's the code:".
 - After a code block, write one or two sentences that highlight the key idea. Do not narrate every line.
 
@@ -143,7 +157,9 @@ Update `dateModified` to today when rewriting an existing post. Leave `datePubli
 
 1. Read the current file. Note frontmatter, all code blocks, all internal anchor links.
 2. List facts, numbers, and links you must preserve.
-3. Rewrite prose section by section. Keep code blocks character-for-character identical.
-4. Update `description`, `abstract`, and `dateModified` in the frontmatter.
-5. Run the final-pass checklist. Grep for `;` and `—` in your output to be sure.
-6. Report what changed and what you preserved.
+3. Verify the code and claims (checklist step 2).
+4. Rewrite prose section by section. Keep code blocks identical unless step 3 found a bug.
+5. Update `description`, `abstract`, and `dateModified` in the frontmatter.
+6. Run the final-pass checklist. Grep for `;` and `—` in prose (outside code fences) to be sure.
+7. Run `pnpm build` to make sure the MDX still compiles.
+8. Report what changed, what you preserved, and any claims you could not verify.
