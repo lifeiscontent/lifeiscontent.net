@@ -15,7 +15,7 @@
     'Geist Mono Variable', 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
     'Liberation Mono', 'Courier New', monospace;
 
-  /* The single accent. A muted clay/terracotta that reads as a deliberate choice. */
+  /* The single accent. A muted clay/terracotta, reserved for links and other interactive elements. */
   --color-accent-50: oklch(96% 0.015 45);
   --color-accent-100: oklch(92% 0.03 45);
   --color-accent-300: oklch(78% 0.08 45);
@@ -29,10 +29,10 @@
     /* Shiki / code block tokens */
     --astro-code-foreground: var(--color-neutral-900);
     --astro-code-background: var(--color-neutral-50);
-    --astro-code-token-constant: var(--color-accent-700);
+    --astro-code-token-constant: var(--color-sky-700);
     --astro-code-token-string: var(--color-emerald-700);
     --astro-code-token-comment: var(--color-neutral-500);
-    --astro-code-token-keyword: var(--color-accent-600);
+    --astro-code-token-keyword: var(--color-violet-700);
     --astro-code-token-parameter: var(--color-neutral-700);
     --astro-code-token-function: var(--color-neutral-900);
     --astro-code-token-string-expression: var(--color-emerald-700);
@@ -42,10 +42,10 @@
     @variant dark {
       --astro-code-foreground: var(--color-neutral-100);
       --astro-code-background: var(--color-neutral-950);
-      --astro-code-token-constant: var(--color-accent-300);
+      --astro-code-token-constant: var(--color-sky-300);
       --astro-code-token-string: var(--color-emerald-300);
       --astro-code-token-comment: var(--color-neutral-500);
-      --astro-code-token-keyword: var(--color-accent-300);
+      --astro-code-token-keyword: var(--color-violet-300);
       --astro-code-token-parameter: var(--color-neutral-300);
       --astro-code-token-function: var(--color-neutral-100);
       --astro-code-token-string-expression: var(--color-emerald-300);

@@ -9,12 +9,14 @@ interface Props extends Omit<HTMLAttributes<'div'>, 'class' | 'style'> {
 const { as: Component = 'div', ...htmlProps } = Astro.props
 const className = clsx(
   'prose max-w-none font-sans text-neutral-900 dark:text-neutral-100',
+  // Keep running text near 70 characters per line (40rem at 18px Geist). Code blocks keep the full column width.
+  '[&>*:not(pre)]:max-w-[40rem]',
   'prose-headings:font-sans prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-neutral-900 dark:prose-headings:text-neutral-100',
-  'prose-h1:text-balance prose-h2:text-balance prose-h2:mt-14 prose-h2:mb-5 prose-h3:mt-10 prose-h3:mb-3',
+  'prose-headings:scroll-mt-8 prose-h1:text-balance prose-h2:text-balance prose-h2:mt-14 prose-h2:mb-5 prose-h3:mt-10 prose-h3:mb-3',
   'prose-p:text-neutral-700 dark:prose-p:text-neutral-300 prose-p:leading-[1.7]',
   'prose-strong:text-neutral-900 dark:prose-strong:text-neutral-100 prose-strong:font-semibold',
   'prose-li:text-neutral-700 dark:prose-li:text-neutral-300 prose-li:leading-[1.7]',
-  'prose-a:font-medium prose-a:text-neutral-900 prose-a:underline prose-a:decoration-1 prose-a:underline-offset-[0.2em] prose-a:decoration-neutral-300 hover:prose-a:decoration-[var(--color-accent-500)] dark:prose-a:text-neutral-100 dark:prose-a:decoration-neutral-700 dark:hover:prose-a:decoration-[var(--color-accent-500)]',
+  'prose-a:font-medium prose-a:text-accent-700 prose-a:underline prose-a:decoration-1 prose-a:underline-offset-[0.2em] prose-a:decoration-accent-300 hover:prose-a:text-accent-600 hover:prose-a:decoration-accent-600 dark:prose-a:text-accent-300 dark:prose-a:decoration-accent-700 dark:hover:prose-a:text-accent-100 dark:hover:prose-a:decoration-accent-300',
   'prose-blockquote:border-l-2 prose-blockquote:border-neutral-200 prose-blockquote:pl-6 prose-blockquote:font-normal prose-blockquote:not-italic prose-blockquote:text-neutral-700 dark:prose-blockquote:border-neutral-800 dark:prose-blockquote:text-neutral-300',
   'prose-hr:border-neutral-200 dark:prose-hr:border-neutral-800',
   'prose-code:font-mono prose-code:bg-neutral-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-[0.92em] prose-code:font-normal prose-code:text-neutral-900 prose-code:before:content-none prose-code:after:content-none dark:prose-code:bg-neutral-900 dark:prose-code:text-neutral-100',

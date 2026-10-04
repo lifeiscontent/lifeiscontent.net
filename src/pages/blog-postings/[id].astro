@@ -4,6 +4,7 @@ import readingTime from 'reading-time'
 import Layout from '@layouts/layout.astro'
 import BlogPostingCard from '@components/blog-postings/blog-posting-card.astro'
 import BlogPostingKeywords from '@components/blog-postings/blog-posting-keywords.astro'
+import BlogPostingToc from '@components/blog-postings/blog-posting-toc.astro'
 import PersonInline from '@components/persons/person-inline.astro'
 import PersonBio from '@components/persons/person-bio.astro'
 import { mdxComponents } from '@components/mdx'
@@ -46,7 +47,7 @@ if (!entry) {
 
 const ogImagePath = `/open-graph/blog-postings/${id}.png`
 
-const { Content } = await render(entry)
+const { Content, headings } = await render(entry)
 const authorEntries = await getEntries(entry.data.author)
 const keywords = await getEntries(entry.data.keywords)
 const now = Date.now()
@@ -167,9 +168,11 @@ const readingTimeText = readingTime(entry.body ?? '').text
             </Heading>
             {
               entry.data.description && (
-                <Text tone="muted" sizeAtSm="lg">
-                  {entry.data.description}
-                </Text>
+                <div class="max-w-[40rem]">
+                  <Text tone="muted" sizeAtSm="lg">
+                    {entry.data.description}
+                  </Text>
+                </div>
               )
             }
           </Stack>
@@ -208,6 +211,8 @@ const readingTimeText = readingTime(entry.body ?? '').text
 
           {keywords.length > 0 && <BlogPostingKeywords keywords={keywords} />}
         </Stack>
+
+        <BlogPostingToc headings={headings} />
 
         <Prose>
           <Content components={mdxComponents} />
