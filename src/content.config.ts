@@ -1,6 +1,6 @@
 import { defineCollection, reference } from 'astro:content'
 import { glob } from 'astro/loaders'
-import { z } from 'zod'
+import { z } from 'astro/zod'
 
 // Reusable schema fragments for schema.org structured data
 const personSchema = z.object({
