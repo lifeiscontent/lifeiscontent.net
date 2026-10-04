@@ -2,13 +2,11 @@
 import clsx from 'clsx'
 import type { HTMLAttributes } from 'astro/types'
 
-type SectionPaddingX = 'none' | 'sm' | 'md' | 'lg'
 type SectionPaddingY = 'none' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
 type SectionTone = 'transparent' | 'page' | 'muted'
 
 interface Props extends Omit<HTMLAttributes<'section'>, 'class' | 'style'> {
   as?: keyof HTMLElementTagNameMap
-  paddingX?: SectionPaddingX
   paddingY?: SectionPaddingY
   paddingYAtSm?: SectionPaddingY
   tone?: SectionTone
@@ -16,7 +14,6 @@ interface Props extends Omit<HTMLAttributes<'section'>, 'class' | 'style'> {
 
 const {
   as: Component = 'section',
-  paddingX = 'sm',
   paddingY = 'sm',
   paddingYAtSm,
   tone = 'transparent',
@@ -24,12 +21,7 @@ const {
 } = Astro.props
 
 const className = clsx(
-  'w-full',
-  {
-    'px-4': paddingX === 'sm',
-    'px-6': paddingX === 'md',
-    'px-8': paddingX === 'lg',
-  },
+  'w-full px-4',
   {
     'py-8': paddingY === 'sm',
     'py-10': paddingY === 'md',

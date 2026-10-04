@@ -9,8 +9,7 @@ interface Props {
   height: number
 }
 
-const props = Astro.props
-const { src, alt, width, height } = props
+const { src, alt, width, height } = Astro.props
 ---
 
 <Image
