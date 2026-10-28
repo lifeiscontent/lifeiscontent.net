@@ -1,0 +1,202 @@
+---
+'@type': 'BlogPosting'
+'@id': 'https://lifeiscontent.net/blog-postings/auth-that-doesnt-trap-your-users'
+url: 'https://lifeiscontent.net/blog-postings/auth-that-doesnt-trap-your-users'
+mainEntityOfPage:
+  '@type': 'WebPage'
+  '@id': 'https://lifeiscontent.net/blog-postings/auth-that-doesnt-trap-your-users'
+isPartOf:
+  '@type': 'Blog'
+  '@id': 'https://lifeiscontent.net/blog-postings'
+  name: 'lifeiscontent.net Blog'
+headline: "Auth that doesn't trap your users"
+description: 'An account is only as strong as the weakest way back into it. How to design sign-in, 2FA, and recovery so a hacked inbox or a hijacked phone number does not take everything with it.'
+abstract: 'How accounts actually get taken over through SMS, email resets, social login, recovery flows, and support desks, and what to build instead.'
+datePublished: '2026-10-28'
+dateModified: '2026-10-28'
+inLanguage: 'en-US'
+author:
+  - lifeiscontent
+keywords:
+  - security
+  - authentication
+  - passkeys
+---
+
+I just went through every account I own and redid the 2FA on all of them. Some sites let me set things up the way I wanted. A lot of them didn't. Some made me keep a phone number on file. Some let me add a hardware key but kept "text me a code instead" sitting right under it. A few had no second factor at all and leaned entirely on my inbox.
+
+I can't fix any of that from the user side. The people who can fix it are the people who build login pages. So this post is for them. If you build auth, you decide how hard it is to steal your users' accounts, and most of that decision lives in places you probably don't think of as "auth."
+
+## Draw every way into the account
+
+When you picture your sign-in, you probably picture the form. Email, password, maybe a code. That form is one door. Every other way to end up signed in as a user is also a door, and attackers don't care which one they walk through.
+
+Try this for your app. Write down every path that ends in "signed in as this user," then follow each one until you hit something an attacker could take over. A pretty common setup looks like this:
+
+```text
+Your app
+├── password ──────────── "forgot password" ── email inbox
+├── Sign in with Google ─ Google account ───── recovery phone (SMS)
+├── TOTP code ─────────── "lost your device?" ─ email inbox
+└── support chat ──────── "verify the last 4 of your phone number"
+```
+
+Now follow the email inbox. If its own recovery is a text message, the whole tree hangs off one phone number, and the solid-looking TOTP setup in the middle doesn't matter.
+
+That's the core idea of this post: **an account is only as strong as the weakest path into it.** Every section below is about finding those paths and either closing them or making them as strong as the front door.
+
+## Phone numbers are not identities
+
+SMS codes feel safe because they arrive on a device in your pocket. But the code goes to a phone _number_, and your carrier decides which SIM or eSIM that number reaches.
+
+There are a few ways that goes wrong:
+
+- **SIM swapping.** An attacker talks the carrier into moving your number to their SIM or eSIM, or pays an insider to do it. From then on, your texts and calls go to them. The [FBI's IC3](https://www.ic3.gov/PSA/2022/PSA220208) got 1,611 SIM swap complaints in 2021, with more than $68 million in reported losses.
+- **Port-out fraud.** Same result, but the number moves to a different carrier.
+- **Number recycling.** People change numbers and forget to update their accounts. Carriers hand the old number to someone new, who starts getting someone else's codes. In 2021, [Princeton researchers](https://recyclednumbers.cs.princeton.edu/) looked at 259 available numbers at two US carriers and found 171 still tied to accounts on popular sites.
+- **Interception.** SMS was never designed to be confidential. Attackers with access to the SS7 signaling network have used it to reroute texts.
+
+If you want one story that shows "a phone number is an account," it's [Jack Dorsey's](https://www.wired.com/story/jack-dorsey-twitter-hacked/). In 2019 attackers took over his phone number and used Twitter's old text-to-tweet feature to post from his account. The CEO of Twitter got hacked through a Twitter feature, and nobody needed his password.
+
+NIST's digital identity guidelines ([SP 800-63B-4](https://pages.nist.gov/800-63-4/sp800-63b.html), finalized in 2025) call SMS and voice codes a _restricted_ authenticator. Organizations that follow them can still offer SMS, but they have to explain the risk and give users a non-restricted alternative.
+
+So what should you do with phone numbers?
+
+- Don't require one to sign up or to turn on 2FA.
+- If you support SMS codes, let users remove them once they add something stronger, and enforce that on the server. A factor that's still enrolled is a factor an attacker can ask for.
+- Never let SMS _alone_ stand in for a stronger factor. "Lost your security key? We'll text you" turns the key into decoration.
+
+## Your inbox is a master key
+
+Almost every service has a "forgot password" link that emails a reset link. If that link is all it takes, then control of the inbox is control of the account. Magic-link login with no other factor makes this explicit.
+
+That's not always wrong. Email-only login can be a fair call for a low-stakes app. But it has failure modes you should plan for:
+
+- **A reset shouldn't skip 2FA.** If the user has a second factor, resetting the password should not remove it or bypass it. Reset the password, then still ask for the second factor.
+- **Domains expire.** If a user signs up with `alex@some-startup.com` and that startup dies, whoever buys the domain can set up mail for that address and receive your reset links.
+- **Changing the email is how attackers stay in.** Once an attacker is in, swapping the account email locks the real owner out of recovery. Verify the new address, alert the old one, and make the change slow enough to cancel. More on that below.
+
+## Sign in with Google moves the risk
+
+Social login works well for users who already protect their Google or Apple account. You don't store a password, and you get the provider's own sign-in protections. Just don't assume the provider did 2FA. A normal ID token doesn't promise that.
+
+It also concentrates risk. If your app accepts "Sign in with Google" as enough on its own, then a hacked Google account is a hacked account with you. And Google's own recovery might be the SMS number from the last section.
+
+That's not a reason to drop social login. It's a reason to let users add a passkey with you, and to let the careful ones require it, or switch the Google route off. An extra login method only helps if the weaker one can't still get in by itself.
+
+There's also a bug that's easy to write here, and it has burned real products. An OpenID Connect ID token tells you who issued it and a stable ID for the user (`iss` and `sub`), plus profile claims like `email`. It's very tempting to look up the user by email:
+
+```ts
+const user = await db.users.findByEmail(claims.email)
+```
+
+Don't. Email claims can be unverified, can change, and in some setups can be typed in by whoever administers the identity provider. This has happened twice in recent years. In June 2023 Descope disclosed [nOAuth](https://www.descope.com/blog/post/noauth). Some apps that used multi-tenant Microsoft Entra ID (then Azure AD) matched users by email, so an attacker with their own tenant could set their email to a victim's address and sign in as the victim.
+
+Then in January 2025 [Truffle Security](https://trufflesecurity.com/blog/millions-at-risk-due-to-google-s-oauth-flaw) bought the domain of a dead startup, recreated its Google Workspace accounts, and got into former employees' accounts on third-party tools. Their writeup also reported that Google's `sub` sometimes changed for the same user, which is part of why some apps fell back to email in the first place.
+
+Key the link on issuer and subject, and treat email as profile data. This assumes your OIDC library has already validated the token's signature, issuer, audience, expiry, and nonce:
+
+```ts
+type IdTokenClaims = {
+  iss: string
+  sub: string
+  email?: string
+  email_verified?: boolean
+}
+
+async function findUserForFederatedLogin(claims: IdTokenClaims) {
+  const identity = await db.identities.find({
+    issuer: claims.iss,
+    subject: claims.sub,
+  })
+
+  // A matching email is not proof of ownership. Linking a new provider to an
+  // existing account happens only from a signed-in session, after a fresh
+  // second factor.
+  return identity?.user ?? null
+}
+```
+
+If an existing user wants to add Google to their account, have them sign in the normal way, ask for a fresh second factor, and then link. Your app never merges two identities because a string matched. If the `sub` lookup misses for someone you expected, the answer is "no account," not "try email."
+
+## Authenticator codes still get phished
+
+Authenticator app codes (TOTP) are a big step up from SMS. Moving a phone number doesn't move the secret. If you support them, a few details matter more than people expect:
+
+- **Rate limit guesses.** A six-digit code has one million values, and most servers accept a couple of time steps at once for clock drift. Without limits, an attacker who already has the password just keeps trying.
+- **Accept each code only once.** [RFC 6238](https://www.rfc-editor.org/rfc/rfc6238.html#section-5.2) says a verifier must not accept the same code a second time after it validates. Record the accepted time step per secret, and do the check-and-write atomically so two servers can't both accept it.
+- **Encrypt the shared secret.** Unlike a password hash, the server needs the real TOTP secret to check codes. Keep the encryption key out of the database, so a dump of the table isn't a dump of everyone's second factor.
+
+The real limit of TOTP is that a human types it in. A good phishing page sits between your user and your site, passes along the password, asks for the code, and passes that along too, in real time. Kits like [Evilginx](https://github.com/kgretzky/evilginx2) automate the whole thing and keep the session cookie at the end. The user did everything right, and the attacker still walks away signed in.
+
+## Passkeys make phishing a lot harder
+
+Hardware security keys solved this years ago, but only for people who bought one. Passkeys bring the same idea to the phone and laptop people already have. A passkey is scoped to your site's domain (the "relying party ID"), and the browser won't use it for any other site. A fake `examp1e.com` can ask all it likes, and there is no `example.com` passkey to give it. There's no code to type, so there's nothing to relay.
+
+That's why I think passkeys should be the default second factor, and ideally the default way to sign in. Some things to get right:
+
+- **Validate properly on the server.** Check the challenge, origin, RP ID, signature, and the user verification flag. If a passkey replaces both password and 2FA, require user verification (a PIN or biometric), not just a tap.
+- **Let users register more than one.** A phone, a laptop, a hardware key in a drawer. If you only allow one, you'll get lockouts, and the pressure to add a weak fallback will win.
+- **Know what synced passkeys depend on.** Passkeys in iCloud Keychain or Google Password Manager are end-to-end encrypted, but they still rest on that Apple or Google account and its recovery. That's far better than SMS. Users who want something independent can add a hardware key such as a YubiKey, whose private key can't be exported.
+- **Don't undo the win with a fallback.** If the page offers "Use your passkey" and, under it, "Try another way: text me a code," the attacker clicks the second one. Decide on the server which methods are allowed to satisfy a login for this user, and don't offer the rest.
+
+Passkeys fix phishing for the sign-in step. They don't fix a stolen session cookie, a sloppy recovery flow, or an attacker who signs in once and quietly enrolls their own passkey. That's the next section.
+
+## Recovery is where good auth goes to die
+
+You can build perfect sign-in and still lose accounts through recovery, because recovery is the path for "this person can't prove who they are the normal way." It needs real evidence, and then delays and alerts on top so the owner gets a chance to notice.
+
+Here's what I'd want from any service I use:
+
+1. **Recovery codes.** Show a set of random, one-time codes when the user turns on 2FA. Store them hashed, like passwords. Regenerating them kills the old set.
+2. **Several strong factors instead of one weak fallback.** Two passkeys that don't share a sync account beat a passkey plus SMS.
+3. **A hold on anything that hands over control.** Changing the email, adding a factor during recovery, or recovering with no factor at all should start a timer, alert the verified contacts on file, and let the owner freeze it. Removing a factor the user says was stolen is different. That should happen right away.
+4. **Fresh authentication for sensitive changes.** Before changing the email, password, or 2FA, adding a passkey, linking a provider, or generating new recovery codes, ask for a strong factor again, even if the user is already signed in. A stolen session cookie shouldn't be enough to take the whole account.
+5. **Clean up after recovery.** Revoke other sessions, refresh tokens, and remembered devices. Then show the user every passkey, linked provider, and API token on the account, because an attacker who got in once has probably left one behind.
+6. **No free information.** Rate limit the recovery flow itself, and don't let it reveal whether an account exists or which factors it has.
+7. **An opt-in for high-risk users.** Google's [Advanced Protection Program](https://landing.google.com/advancedprotection/) and Apple's [Recovery Key](https://support.apple.com/en-us/109345) both let people trade convenience for stricter recovery, and both warn that recovery gets slower or can fail for good. Journalists, admins, and anyone holding crypto might want that deal.
+
+## Your phone is a single point of failure
+
+Here's a scenario people rarely plan for: someone steals your phone while it's unlocked, or after watching you type the passcode. On a lot of phones that one device holds the email app, the authenticator app, the passkeys, and the SIM that gets the SMS codes. Every "second factor" is now in the same pocket.
+
+You can't fix that for your users, but you can avoid making it worse. Don't let any single factor reset all the others. Encourage at least one recovery method that doesn't live on the phone, like printed codes or a hardware key.
+
+## Your support team is an auth method
+
+If someone on your support team can reset a user's 2FA after hearing the right answers on a call, that call is a login path. According to [Bloomberg's reporting](https://finance.yahoo.com/news/mgm-resorts-hackers-broke-tricking-111102542.html), the 2023 MGM Resorts breach started with a call to the IT help desk from someone pretending to be an employee. [CISA and the FBI](https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-320a) later described the same group, Scattered Spider, using help desk resets as a standard move.
+
+Give support the same rules as the product. They should start the same delayed, noisy recovery flow, not skip it. Details like "last four of your SSN" or "billing zip code" don't prove anything, because they're often public or sitting in some breach dump.
+
+## Passwords still matter, a little
+
+If you still use passwords, the current NIST guidance is short and kind of freeing:
+
+- Require at least 15 characters if the password is the only factor, or 8 if it's one part of 2FA. Allow at least 64.
+- Drop composition rules ("one uppercase, one symbol"). People respond to them in predictable ways, so they cost a lot of usability for little real strength.
+- Don't force periodic rotation. Require a change when there's evidence of compromise.
+- Check new passwords against lists of common and breached passwords.
+- Let password managers work. Allow paste and autofill.
+
+For storage, [OWASP recommends](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html) Argon2id first, then scrypt, with bcrypt for legacy systems. If you do use bcrypt, know that it ignores anything past 72 bytes. Whatever you pick, tune the cost settings and store them with the hash so you can raise them later.
+
+That's the baseline for the password itself. Everything earlier in this post is about what happens when it leaks anyway.
+
+## A checklist you can steal
+
+If I had to fit this post on a sticky note for anyone building login:
+
+- Draw every way into the account, and what each one depends on.
+- Offer passkeys, and let users register several.
+- Make SMS optional and removable, and never let it stand in for a stronger factor.
+- Don't let a password reset skip 2FA.
+- Link federated logins by `iss` and `sub`, never by email.
+- Rate limit TOTP, accept each code once, and encrypt the secrets.
+- Make changes that hand over control slow, loud, and cancellable. Let users kill a stolen factor instantly.
+- Don't let any one factor reset all the others.
+- Clean up sessions and any new factors after recovery.
+- Hold support to the same rules as the product.
+
+None of this shows up on a login page. Your users will never read your recovery flow or sit in on a support call. They only find out what you built when they try to lock their account down. Either they add a passkey, turn off the weaker options, and move on, or they learn, the way I kept learning while going through my own accounts, that their careful setup still hangs off a text message they aren't allowed to remove.
+
+You get to decide which of those experiences they have. Build the one where every door is as strong as the front door.

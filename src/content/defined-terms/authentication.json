@@ -1,0 +1,5 @@
+{
+  "@type": "DefinedTerm",
+  "name": "Authentication",
+  "description": "Posts about sign-in, second factors, and account recovery."
+}
