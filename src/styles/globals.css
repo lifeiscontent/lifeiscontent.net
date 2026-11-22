@@ -54,7 +54,8 @@
   }
 
   html {
-    background-color: var(--color-white);
+    /* The same surface as the page sections (neutral-50), so header, footer and sections read as one page. */
+    background-color: var(--color-neutral-50);
     color: var(--color-neutral-900);
     font-feature-settings: 'kern', 'liga', 'calt', 'ss01';
 
