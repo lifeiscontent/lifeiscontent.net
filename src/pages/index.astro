@@ -113,15 +113,19 @@ const siteMetadata = {
   <Stack direction="column">
     <PageSection tone="page" spacing="intro" gap="2xl">
       <LogoMark src={iconSvg} alt="lifeiscontent logomark" />
-      <Eyebrow>Aaron Reisman · Software engineer</Eyebrow>
-      <Heading level={1} size="3xl" sizeAtSm="4xl" weight="bold">
-        I build the parts of products people rely on long after launch.
-      </Heading>
-      <Text as="p" tone="muted" size="base" sizeAtSm="lg">
-        I've been shipping software since 2007, mostly with React, TypeScript, Phoenix, and Elixir.
-        I care about the small things that decide how an app feels: components, error states,
-        microcopy. When something I learn might help someone else, I write it up here.
-      </Text>
+      <Stack direction="column" gap="lg">
+        <Eyebrow>Aaron Reisman · Software engineer</Eyebrow>
+        <Heading level={1} size="3xl" sizeAtSm="4xl" weight="bold">
+          I build the parts of products people rely on long after launch.
+        </Heading>
+        <div class="max-w-[40rem]">
+          <Text as="p" tone="muted" size="base" sizeAtSm="lg">
+            I've been shipping software since 2007, mostly with React, TypeScript, Phoenix, and
+            Elixir. I care about the small things that decide how an app feels: components, error
+            states, microcopy. When something I learn might help someone else, I write it up here.
+          </Text>
+        </div>
+      </Stack>
       <Stack
         direction="column"
         directionAtSm="row"
@@ -153,7 +157,7 @@ const siteMetadata = {
             Posts on React, Phoenix, components, and the bits in between.
           </SectionHeader>
 
-          <Stack direction="column" gap="lg">
+          <Stack direction="column" gap="xl">
             {recentBlogPostings.map((blogPosting) => (
               <BlogPostingCard
                 blogPosting={blogPosting}
@@ -191,7 +195,7 @@ const siteMetadata = {
       </Grid>
     </PageSection>
 
-    <PageSection tone="page" gap="xl">
+    <PageSection tone="page" gap="2xl">
       <SectionHeader eyebrow="Open source" title="Projects I've contributed to over the years.">
         The list looks longer the older you get. Some of these I worked on heavily, some I just
         filed bugs against. They all taught me something.
@@ -209,7 +213,7 @@ const siteMetadata = {
                 size="base"
                 weight="semibold"
               >
-                <Heading level={3} size="xl" weight="semibold" tone="inherit">
+                <Heading level={3} size="lg" weight="semibold" tone="inherit">
                   <Stack direction="row" gap="xs" align="center">
                     {project.name}
                     <Icon name="external" size="sm" />
