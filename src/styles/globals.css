@@ -1,8 +1,7 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/typography';
 
-@import '@fontsource-variable/geist/index.css';
-@import '@fontsource-variable/geist-mono/index.css';
+@import './fonts.css';
 
 @theme {
   --font-sans:
