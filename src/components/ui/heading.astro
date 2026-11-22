@@ -50,7 +50,9 @@ const className = clsx(
     'text-neutral-900 dark:text-neutral-100': tone === 'default',
     'text-neutral-600 dark:text-neutral-300': tone === 'muted',
   },
-  'font-sans tracking-tight leading-[1.1] text-balance'
+  'font-sans tracking-tight leading-[1.1] text-balance',
+  // Pull large text left by its side bearing so its ink lines up with the smaller text below it.
+  '-ms-[0.024em]'
 )
 ---
 
