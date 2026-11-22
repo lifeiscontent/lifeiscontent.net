@@ -22,9 +22,11 @@ const gap = variant === 'section' ? 'sm' : 'md'
   <Heading level={level} size="2xl" sizeAtSm="3xl" weight="semibold">{title}</Heading>
   {
     Astro.slots.has('default') && (
-      <Text tone="muted" size="base" sizeAtSm="lg">
-        <slot />
-      </Text>
+      <div class="max-w-[40rem]">
+        <Text tone="muted" size="base" sizeAtSm="lg">
+          <slot />
+        </Text>
+      </div>
     )
   }
 </Stack>

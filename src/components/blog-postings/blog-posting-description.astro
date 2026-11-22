@@ -11,6 +11,8 @@ type Props = {
 const { blogPosting, size, clamp } = Astro.props
 ---
 
-<Text tone="muted" size={size} clamp={clamp}>
-  {blogPosting.data.description || blogPosting.data.abstract}
-</Text>
+<div class="max-w-[40rem]">
+  <Text tone="muted" size={size} clamp={clamp}>
+    {blogPosting.data.description || blogPosting.data.abstract}
+  </Text>
+</div>
