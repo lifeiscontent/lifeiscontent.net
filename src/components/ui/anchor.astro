@@ -22,7 +22,9 @@ const {
   ...htmlProps
 } = Astro.props
 const classes = clsx(
-  'transition-colors focus-visible:underline focus-visible:decoration-black focus-visible:decoration-2 focus-visible:underline-offset-4 focus-visible:outline-none dark:focus-visible:decoration-white',
+  'transition-colors focus-visible:underline focus-visible:decoration-black focus-visible:decoration-2 focus-visible:underline-offset-4 focus-visible:outline-hidden dark:focus-visible:decoration-white',
+  // An icon-only link has no text to underline, so it gets the same 2px ring as ButtonLink.
+  'has-[>span>svg]:rounded-sm has-[>span>svg]:inline-flex focus-visible:has-[>span>svg]:outline-2 focus-visible:has-[>span>svg]:outline-offset-2 focus-visible:has-[>span>svg]:outline-solid focus-visible:has-[>span>svg]:outline-black dark:focus-visible:has-[>span>svg]:outline-white',
   {
     'text-sm': size === 'sm',
     'text-base': size === 'base',
