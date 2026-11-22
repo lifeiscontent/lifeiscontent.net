@@ -10,7 +10,9 @@ type Props = {
 }
 
 // 68px spans from the cap top of the name to the last baseline of the bio (measured with
-// webwhy audit, media-alignment). Change it when the name or bio type changes.
+// webwhy audit, media-alignment). In the row, sm:mt-[7px] moves the avatar down to the name's
+// cap top (the half-leading of text-lg plus the space above its capitals). Change both when the
+// name or bio type changes.
 const { person, size = 68 } = Astro.props
 
 const emailHash = createHash('md5').update(person.data.email.toLowerCase().trim()).digest('hex')
@@ -48,7 +50,6 @@ function labelForUrl(href: string) {
     sm:flex-row sm:items-start sm:gap-6
   `}
 >
-  {/* In the row, move the avatar down to the cap top of the name: the half-leading of text-lg plus the space above its capitals. */}
   <div class="shrink-0 sm:mt-[7px]">
     <Image
       src={avatarUrl}
